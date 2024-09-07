@@ -1,31 +1,37 @@
 /**
-  @page DualCore_Standalone USB Host Dual Core application
+  @page DualCore_Standalone USB Host Dual Core example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    USB_Host/DualCore_Standalone/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the USB Host Dual Core application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the USB Host Dual Core example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
   
-@par Application Description
+@par Example Description
 
-This application is a part of the USB Host Library package using STM32Cube firmware. It describes how to use
+This example is a part of the USB Host Library package using STM32Cube firmware. It describes how to use
 USB host application based on the STM32F4xx multi core support feature integrating Mass Storage (MSC) and
-Human Interface (HID) in the same project.
+Humain Interface (HID) in the same project.
 
-This is a typical application on how to use the STM32F4xx USB OTG Host peripheral to operate with an USB MSC
+This is a typical example on how to use the STM32F4xx USB OTG Host peripheral to operate with an USB MSC
 device connected to the High Speed port and a HID device connected to the Full Speed port.
 
 At the beginning of the main program the HAL_Init() function is called to reset all the peripherals,
@@ -45,8 +51,8 @@ initialized. The STM32 MCU behaves as a MSC/HID Host, it enumerates the devices 
 manufacturer name, Serial no and product name information and displays it on the LCD screen. 
 
 A menu is displayed and the user can select any operation from the menu using the Joystick buttons:
- - "Mass Storage demo" operation starts the Mass Storage application.
- - "Human Interface demo" operation starts the Human Interface application.
+ - "Mass Storage demo" operation starts the Mass Storage example.
+ - "Humain Interface demo" operation starts the Humain Interface example.
  - "Re-Enumerate MSC" operation performs a new Enumeration of the MSC device.
  - "Re-Enumerate HID" operation performs a new Enumeration of the HID device (keyboard/mouse).
 
@@ -66,13 +72,13 @@ For more details about the STM32Cube USB Host library, please refer to UM1720
 @par USB Library Configuration
 
 To select the appropriate USB Core to work with, user must add the following macro defines within the
-compiler preprocessor (already done in the preconfigured projects provided with this application):
+compiler preprocessor (already done in the preconfigured projects provided with this example):
       - "USE_USB_HS" and "USE_USB_FS" when using USB Dual Core Mode
 
 It is possible to fine tune needed USB Host features by modifying defines values in USBH configuration
-file "usbh_conf.h" available under the project includes directory, in a way to fit the application
+file “usbh_conf.h” available under the project includes directory, in a way to fit the application
 requirements, such as:
-  - Level of debug: USBH_DEBUG_LEVEL
+- Level of debug: USBH_DEBUG_LEVEL
                   0: No debug messages
                   1: Only User messages are shown
                   2: User and Error messages are shown
@@ -80,14 +86,10 @@ requirements, such as:
    By default debug messages are displayed on the debugger IO terminal; to redirect the Library
    messages on the LCD screen, lcd_log.c driver need to be added to the application sources.
 
-@par Keywords
-
-Connectivity, USB_Host, HID, MSC, Full Speed, High Speed, OTG, enumeration, mass storage, mouse, USB Stick
    
 @par Directory contents
 
   - USB_Host/DualCore_Standalone/Src/main.c                  Main program
-  - USB_Host/DualCore_Standalone/Src/usbh_diskio_dma.c       FatFS usbh diskio driver implementation
   - USB_Host/DualCore_Standalone/Src/system_stm32f4xx.c      STM32F4xx system clock configuration file
   - USB_Host/DualCore_Standalone/Src/stm32f4xx_it.c          Interrupt handlers
   - USB_Host/DualCore_Standalone/Src/dual_menu.c             Main Menu State Machine
@@ -100,29 +102,28 @@ Connectivity, USB_Host, HID, MSC, Full Speed, High Speed, OTG, enumeration, mass
   - USB_Host/DualCore_Standalone/Src/mouse.c                 HID mouse functions  
   - USB_Host/DualCore_Standalone/Src/keyboard.c              HID keyboard functions
   - USB_Host/DualCore_Standalone/Inc/main.h                  Main program header file
-  - USB_Host/DualCore_Standalone/Inc/usbh_diskio_dma.h       FatFS usbh diskio driver header file
   - USB_Host/DualCore_Standalone/Inc/stm32f4xx_it.h          Interrupt handlers header file
   - USB_Host/DualCore_Standalone/Inc/lcd_log_conf.h          LCD log configuration file
   - USB_Host/DualCore_Standalone/Inc/stm32f4xx_hal_conf.h    HAL configuration file
   - USB_Host/DualCore_Standalone/Inc/usbh_conf.h             USB Host driver Configuration file
-  - USB_Host/DualCore_Standalone/Inc/ffconf.h                FAT file system module configuration file
+  - USB_Host/DualCore_Standalone/Inc/ffconf.h                FatFs Module Configuration file
  
 
 @par Hardware and Software environment
 
-  - This application runs on STM32F429xx/STM32F439xx devices.
+  - This example runs on STM32F429xx/STM32F439xx devices.
     
-  - This application has been tested with STMicroelectronics STM324x9I-EVAL RevB 
+  - This example has been tested with STMicroelectronics STM324x9I-EVAL RevB 
     evaluation boards and can be easily tailored to any other supported device 
     and development board.
 
   - STM324x9I-EVAL RevB Set-up
     - Plug the USB key into the STM324x9I-EVAL board through 'USB micro A-Male 
       to A-Female' cable to the connector:
-      - CN9 : to use USB High Speed (HS) with embedded PHY(U7)
+      - CN9 : to use USB High Speed (HS) 
     - Plug the HID device(Mouse/Keyboard) into the STM324x9I-EVAL board through 'USB micro A-Male 
       to A-Female' cable to the connector:
-      - CN14: to use USB Full Speed (FS)
+      - CN14: to use USB Full Speed (FS) with embedded PHY(U7)
               Please ensure that jumper JP16 is not fitted.
 
 
@@ -131,6 +132,7 @@ Connectivity, USB_Host, HID, MSC, Full Speed, High Speed, OTG, enumeration, mass
 In order to make the program work, you must do the following :
  - Open your preferred toolchain 
  - Rebuild all files and load your image into target memory
- - Run the application
+ - Run the example
  
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

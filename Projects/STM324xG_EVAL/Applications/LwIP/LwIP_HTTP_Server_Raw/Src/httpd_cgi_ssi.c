@@ -2,25 +2,35 @@
   ******************************************************************************
   * @file    LwIP/LwIP_HTTP_Server_Raw/Src/httpd_cg_ssi.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Webserver SSI and CGI handlers
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "lwip/debug.h"
+#include "httpd.h"
 #include "lwip/tcp.h"
-#include "lwip/apps/httpd.h"
-#include "http_cgi_ssi.h"
+#include "fs.h"
 
 
 #include <string.h>
@@ -56,7 +66,7 @@ static void ADC_Configuration(void)
   /* ADC3 Configuration ------------------------------------------------------*/
   hadc.Instance = ADC3;
   hadc.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-  hadc.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc.Init.Resolution = ADC_RESOLUTION12b;
   hadc.Init.ScanConvMode = DISABLE;
   hadc.Init.ContinuousConvMode = ENABLE;
   hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
@@ -73,7 +83,7 @@ static void ADC_Configuration(void)
   sConfig.Offset = 0;
   HAL_ADC_ConfigChannel(&hadc, &sConfig);
 
-  /* Enable EOC interrupt */
+  /* Enable EOC interupt */
   HAL_ADC_Start(&hadc);
 
 }
@@ -106,7 +116,7 @@ u16_t ADC_Handler(int iIndex, char *pcInsert, int iInsertLen)
      /* get digits to display */
      
      Digit1= ADCVal/1000;
-     Digit2= (ADCVal-(Digit1*1000))/100;
+     Digit2= (ADCVal-(Digit1*1000))/100 ;
      Digit3= (ADCVal-((Digit1*1000)+(Digit2*100)))/10;
      Digit4= ADCVal -((Digit1*1000)+(Digit2*100)+ (Digit3*10));
         
@@ -138,7 +148,7 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
     BSP_LED_Off(LED3);
     BSP_LED_Off(LED4);
     
-    /* Check cgi parameter : application GET /leds.cgi?led=2&led=4 */
+    /* Check cgi parameter : example GET /leds.cgi?led=2&led=4 */
     for (i=0; i<iNumParams; i++)
     {
       /* check parameter "led" */
@@ -167,17 +177,22 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
 }
 
 /**
-  * @brief  Http webserver Init
-  */
-void http_server_init(void)
-{
-  /* Httpd Init */
-  httpd_init();
-  
+ * Initialize SSI handlers
+ */
+void httpd_ssi_init(void)
+{  
   /* configure SSI handlers (ADC page SSI) */
   http_set_ssi_handler(ADC_Handler, (char const **)TAGS, 1);
-  
+}
+
+/**
+ * Initialize CGI handlers
+ */
+void httpd_cgi_init(void)
+{ 
   /* configure CGI handlers (LEDs control CGI) */
   CGI_TAB[0] = LEDS_CGI;
-  http_set_cgi_handlers(CGI_TAB, 1);  
+  http_set_cgi_handlers(CGI_TAB, 1);
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -22,17 +22,17 @@
 
 
 /* Expanded data source object for stdio input */
-#ifdef JFILE 
+//#if 0
 typedef struct {
   struct jpeg_source_mgr pub;	/* public fields */
 
-  JFILE * infile;		/* source stream */
+  FILE * infile;		/* source stream */
   JOCTET * buffer;		/* start of buffer */
   boolean start_of_file;	/* have we gotten any data yet? */
 } my_source_mgr;
 
 typedef my_source_mgr * my_src_ptr;
-#endif /* 0 */
+//#endif /* 0 */
 
 #define INPUT_BUF_SIZE  4096	/* choose an efficiently fread'able size */
 
@@ -41,7 +41,7 @@ typedef my_source_mgr * my_src_ptr;
  * Initialize source --- called by jpeg_read_header
  * before any data is actually read.
  */
-#ifdef JFILE 
+//#if 0
 METHODDEF(void)
 init_source (j_decompress_ptr cinfo)
 {
@@ -53,7 +53,7 @@ init_source (j_decompress_ptr cinfo)
    */
   src->start_of_file = TRUE;
 }
-#endif /* 0 */
+//#endif /* 0 */
 
 METHODDEF(void)
 init_mem_source (j_decompress_ptr cinfo)
@@ -94,7 +94,7 @@ init_mem_source (j_decompress_ptr cinfo)
  * Data beyond this point must be rescanned after resumption, so move it to
  * the front of the buffer rather than discarding it.
  */
-#ifdef JFILE 
+//#if 0
 METHODDEF(boolean)
 fill_input_buffer (j_decompress_ptr cinfo)
 {
@@ -102,7 +102,7 @@ fill_input_buffer (j_decompress_ptr cinfo)
   size_t nbytes;
 
   nbytes = JFREAD(src->infile, src->buffer, INPUT_BUF_SIZE);
-  
+
   if (nbytes <= 0) {
     if (src->start_of_file)	/* Treat empty input file as fatal error */
       ERREXIT(cinfo, JERR_INPUT_EMPTY);
@@ -119,7 +119,7 @@ fill_input_buffer (j_decompress_ptr cinfo)
 
   return TRUE;
 }
-#endif /* JFILE */
+//#endif /* 0 */
 
 METHODDEF(boolean)
 fill_mem_input_buffer (j_decompress_ptr cinfo)
@@ -208,9 +208,9 @@ term_source (j_decompress_ptr cinfo)
  * The caller must have already opened the stream, and is responsible
  * for closing it after finishing decompression.
  */
-#ifdef JFILE
+//#if 0
 GLOBAL(void)
-jpeg_stdio_src (j_decompress_ptr cinfo, JFILE * infile)
+jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
 {
   my_src_ptr src;
 
@@ -241,7 +241,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, JFILE * infile)
   src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
   src->pub.next_input_byte = NULL; /* until buffer loaded */
 }
-#endif /* JFILE */
+//#endif /* 0 */
 
 /*
  * Prepare for input from a supplied memory buffer.

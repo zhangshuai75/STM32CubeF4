@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    LTDC/LTDC_Display_2Layers/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example describes how to configure the LTDC peripheral 
   *          to display two Layers at the same time.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -36,23 +55,11 @@
 /* Private variables ---------------------------------------------------------*/
 LTDC_HandleTypeDef LtdcHandle;
 
-__IO uint32_t ReloadFlag = 0;
-
-/* Pictures position */
-uint32_t Xpos1 = 0;
-uint32_t Xpos2 = 0;
-uint32_t Ypos1 = 0;
-uint32_t Ypos2 = 160;
-
 /* Private function prototypes -----------------------------------------------*/
 static void LCD_Config(void); 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
-static void PicturesPosition(uint32_t* x1, 
-                         uint32_t* y1, 
-                         uint32_t* x2, 
-                         uint32_t* y2, 
-                         uint32_t index);
+
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -62,7 +69,8 @@ static void PicturesPosition(uint32_t* x1,
   */
 int main(void)
 {
-  uint32_t index = 0;
+  uint32_t tobuttom = 0;
+  uint32_t totop = 0;
 
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, instruction and Data caches
@@ -72,7 +80,7 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock */
   SystemClock_Config();
 
   /* Configure LED3 */
@@ -80,87 +88,38 @@ int main(void)
   
   /*##-1- LCD Configuration ##################################################*/ 
   /* Configure 2 layers w/ Blending */
-  LCD_Config();
-  
-  /* Infinite loop */
+  LCD_Config(); 
+
   while (1)
-  { 
-    for (index = 0; index < 40; index++)
+  {
+    for (tobuttom = 1; tobuttom < 41; tobuttom++)
     {
-      /* calculate new picture position */
-      PicturesPosition(&Xpos1, &Ypos1, &Xpos2, &Ypos2, (index+1));
-      
-      /* reconfigure the layer1 position  without Reloading*/
-      HAL_LTDC_SetWindowPosition_NoReload(&LtdcHandle, Xpos1, Ypos1, 0);
-      /* reconfigure the layer2 position  without Reloading*/
-      HAL_LTDC_SetWindowPosition_NoReload(&LtdcHandle, Xpos2, Ypos2, 1);
-      /* Ask for LTDC reload within next vertical blanking*/
-      ReloadFlag = 0;
-      HAL_LTDC_Reload(&LtdcHandle,LTDC_SRCR_VBR);
-      
-      while(ReloadFlag == 0)
-      {
-        /* wait till reload takes effect (in the next vertical blanking period) */
-      }
+      /* move the picture */
+      /* reconfigure the layer1 position */
+      HAL_LTDC_SetWindowPosition(&LtdcHandle, 0, (tobuttom*4), 0); 
+      /* reconfigure the layer2 position */
+      HAL_LTDC_SetWindowPosition(&LtdcHandle, 0, (160 - (tobuttom*4)), 1); 
+      HAL_Delay(50);
     }
     HAL_Delay(500);
+    for (totop = 1; totop < 41; totop++)
+    {
+      /* move the picture */
+      /* reconfigure the layer1 position */
+      HAL_LTDC_SetWindowPosition(&LtdcHandle, 0, (160 - (totop*4)), 0); 
+      /* reconfigure the layer2 position */
+      HAL_LTDC_SetWindowPosition(&LtdcHandle, 0, (totop*4), 1); 
+      HAL_Delay(50);
+    }
+    HAL_Delay(500);
+
     
-    for (index = 0; index < 40; index++)
-    {
-      /* calculate new picture position */
-      PicturesPosition(&Xpos2, &Ypos2, &Xpos1, &Ypos1, (index+1));
-      
-      /* reconfigure the layer1 position  without Reloading*/
-      HAL_LTDC_SetWindowPosition_NoReload(&LtdcHandle, Xpos1, Ypos1, 0);
-      /* reconfigure the layer2 position  without Reloading*/
-      HAL_LTDC_SetWindowPosition_NoReload(&LtdcHandle, Xpos2, Ypos2, 1);
-      /* Ask for LTDC reload within next vertical blanking*/
-      ReloadFlag = 0;
-      HAL_LTDC_Reload(&LtdcHandle,LTDC_SRCR_VBR);
-      
-      while(ReloadFlag == 0)
-      {
-        /* wait till reload takes effect (in the next vertical blanking period) */
-      }
-    }
-    HAL_Delay(500);
   }
 }
 
 /**
-  * @brief  calculate pictures position.
-  * @param  x1:    picture1 x position
-  * @param  y1:    picture1 y position
-  * @param  x2:    picture2 x position
-  * @param  y2:    picture2 y position
-  * @param  index: 
-  * @retval None
-  */
-static void PicturesPosition(uint32_t* x1, uint32_t* y1, uint32_t* x2, uint32_t* y2, uint32_t index)
-{
-  /* picture1 position */
-  *x1 = 0;
-  *y1 = index*4; 
-  
-  /* picture2 position */
-  *x2 = 0;
-  *y2 = 160 - index*4;
-}
-
-/**
-  * @brief  Reload Event callback.
-  * @param  hltdc: pointer to a LTDC_HandleTypeDef structure that contains
-  *                the configuration information for the LTDC.
-  * @retval None
-  */
-void HAL_LTDC_ReloadEventCallback(LTDC_HandleTypeDef *hltdc)
-{
-  ReloadFlag = 1;
-}
-
-/**
   * @brief LCD Configuration.
-  * @note  This function Configure the LTDC peripheral :
+  * @note  This function Configure tha LTDC peripheral :
   *        1) Configure the Pixel Clock for the LCD
   *        2) Configure the LTDC Timing and Polarity
   *        3) Configure the LTDC Layer 1 :
@@ -179,7 +138,7 @@ static void LCD_Config(void)
   LTDC_LayerCfgTypeDef pLayerCfg;
   LTDC_LayerCfgTypeDef pLayerCfg1;
 
-  /* Initialization of ILI9341 component*/
+  /* Initializaton of ILI9341 component*/
   ili9341_Init();
   
 /* LTDC Initialization -------------------------------------------------------*/
@@ -217,9 +176,9 @@ static void LCD_Config(void)
   LtdcHandle.Init.AccumulatedVBP = 3; 
   /* Accumulated active width = Hsync + HBP + Active Width - 1 */ 
   LtdcHandle.Init.AccumulatedActiveH = 323;
-  /* Accumulated active height = Vsync + VBP + Active Height - 1 */
+  /* Accumulated active height = Vsync + VBP + Active Heigh - 1 */
   LtdcHandle.Init.AccumulatedActiveW = 269;
-  /* Total height = Vsync + VBP + Active Height + VFP - 1 */
+  /* Total height = Vsync + VBP + Active Heigh + VFP - 1 */
   LtdcHandle.Init.TotalHeigh = 327;
   /* Total width = Hsync + HBP + Active Width + HFP - 1 */
   LtdcHandle.Init.TotalWidth = 279;
@@ -346,7 +305,7 @@ static void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef  PeriphClkInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -366,7 +325,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -379,10 +338,10 @@ static void SystemClock_Config(void)
 
   /*##-2- LTDC Clock Configuration ###########################################*/  
   /* LCD clock configuration */
-  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 MHz */
-  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 MHz */
-  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/4 = 48 MHz */
-  /* LTDC clock frequency = PLLLCDCLK / RCC_PLLSAIDIVR_8 = 48/8 = 6 MHz */
+  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 Mhz */
+  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 Mhz */
+  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/4 = 48 Mhz */
+  /* LTDC clock frequency = PLLLCDCLK / RCC_PLLSAIDIVR_8 = 48/8 = 6 Mhz */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
   PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
   PeriphClkInitStruct.PLLSAI.PLLSAIR = 4;
@@ -397,14 +356,15 @@ static void SystemClock_Config(void)
   */
 static void Error_Handler(void)
 {
-  /* Turn LED3 on */
-  BSP_LED_On(LED3);
-  while(1)
-  {
-  }
+    /* Turn LED3 on */
+    BSP_LED_On(LED3);
+    while(1)
+    {
+    }
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -431,3 +391,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

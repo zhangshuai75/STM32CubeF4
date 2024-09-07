@@ -1,28 +1,34 @@
 /**
-  @page Demonstrations   Demonstrations STM32F411RE-Nucleo
+  @page Demo   Demo STM32F411RE-Nucleo
  
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
-  * @file    Demonstrations/readme.txt 
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
+  * @file    readme.txt 
   * @author  MCD Application Team
+  * @version V1.0.0
+  * @date    26-June-2014
   * @brief   Description of STM32F411RE-Nucleo Demo
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
 @par Demo Description
 
-Demonstration firmware based on STM32Cube. This example helps you to discover
-STM32 Cortex-M devices that are plugged onto your STM32 Nucleo board.
+The provided demonstration firmware based on STM32Cube helps you to discover STM32 
+Cortex-M devices that can be plugged on a STM32NUCLEO board. 
 
 At the beginning of the main program the HAL_Init() function is called to reset 
 all the peripherals, initialize the Flash interface and the systick.
@@ -66,20 +72,20 @@ access to uSD card to parse bmp images:
 
  - If SD Card is not FAT formatted, a message will be displayed on TFT. 
    In this case, format the SD card and put into its root directory the .bmp 
-   files available within the "BMP_128x160" folder under "Utilities/Media/Pictures"
+   files available within the FW package under \Media folder.
 
  - If the content of the SD card is other than a bitmap file, a message will 
    be displayed on TFT mentioning that it is not supported.
-   In this case, put into the SD card's root directory the .bmp
-   files available within the "BMP_128x160" folder under "Utilities/Media/Pictures" 
-   which are respecting the following criteria:
-    o Dimensions: 128x160
-    o Width: 128 pixels
-    o Height: 160 pixels
-    o Bit depth: 16
-    o Item type: BMP file
-    o The name of the bmp image file must not exceed 11 characters (including
-      .bmp extension).
+   In this case, put into the SD card's root directory the .bmp 
+   files available within the FW package under \Media folder which are respecting
+   the following criteria:
+   o Dimensions: 128x160
+   o Width: 128 pixels
+   o Height: 160 pixels
+   o Bit depth: 16
+   o Item type: BMP file
+   o The name of the bmp image file must not exceed 11 characters (including
+     .bmp extension).
 
 
 @note Care must be taken when using HAL_Delay(), this function provides accurate
@@ -89,15 +95,11 @@ access to uSD card to parse bmp images:
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to
+@note The application need to ensure that the SysTick time base is always set to
       1 millisecond to have correct HAL operation.
 
 @note The clock setting is configured to have the max product performance (max clock frequency) 
       so not optimized in term of power consumption.
-
-@par Keywords
-
-Demonstrations, Adafruit, Shield, TFT, Joystick, SD Card, Display
 
 @par Directory contents
  
@@ -114,16 +116,16 @@ Demonstrations, Adafruit, Shield, TFT, Joystick, SD Card, Display
 
 @par Hardware and Software environment
 
-  - This demonstration runs on STM32F411xEx devices.
+  - This example runs on STM32F411xEx devices.
     
-  - This demonstration has been tested with STMicroelectronics STM32F4xx-Nucleo RevC 
+  - This example has been tested with STMicroelectronics STM32F4xx-Nucleo RevC 
     discovery boards and can be easily tailored to any other supported device 
     and development board.
     
   - A SDSC microSD card (capacity up to 4GB), must contain the .bmp files
-    available within the "BMP_128x160" folder under "Utilities/Media/Pictures" 
+    available under the FW package \Media folder.
     
-  - Adafruit 1.8" TFT shield must be connected on CN7,CN8, CN9 and CN10 Arduino connectors, 
+  - Adafruit 1.8" TFT shield must be connected on CN5,CN6, CN8 and CN9 Arduino connectors, 
     for more details please refer to UM1726.
 
 For more details about the adafruit 1.8" TFT shield, please visit: 
@@ -135,7 +137,8 @@ http://www.adafruit.com/blog/2012/04/26/new-product-adafruit-1-8-18-bit-color-tf
 In order to make the program work, you must do the following :
  - Open your preferred toolchain 
  - Rebuild all files and load your image into target memory
- - Run the demonstration
+ - Run the example
 
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */
+ 

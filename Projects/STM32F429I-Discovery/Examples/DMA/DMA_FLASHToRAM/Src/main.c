@@ -2,18 +2,37 @@
   ******************************************************************************
   * @file    DMA/DMA_FLASHToRAM/Src/main.c  
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example provides a description of how to use a DMA channel 
   *          to transfer a word data buffer from FLASH memory to embedded 
   *          SRAM memory through the STM32F4xx HAL API.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -71,11 +90,11 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure LED3 and LED4 */
+  /* Initialize LED3 & LED4*/
   BSP_LED_Init(LED3);
   BSP_LED_Init(LED4);
 
-/* Configure the system clock to 180 MHz */
+/* Configure the system clock to 180 Mhz */
   SystemClock_Config();     
   
   /* Configure and enable the DMA Stream for Memory to Memory transfer */
@@ -103,28 +122,32 @@ int main(void)
   * @retval None
   */
 static void DMA_Config(void)
-{
+{   
   /*## -1- Enable DMA2 clock #################################################*/
-  __HAL_RCC_DMA2_CLK_ENABLE();
+  __DMA2_CLK_ENABLE();
 
   /*##-2- Select the DMA functional Parameters ###############################*/
-  DmaHandle.Init.Channel = DMA_CHANNEL;                     /* DMA_CHANNEL_0                    */
-  DmaHandle.Init.Direction = DMA_MEMORY_TO_MEMORY;          /* M2M transfer mode                */
-  DmaHandle.Init.PeriphInc = DMA_PINC_ENABLE;               /* Peripheral increment mode Enable */
-  DmaHandle.Init.MemInc = DMA_MINC_ENABLE;                  /* Memory increment mode Enable     */
-  DmaHandle.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD; /* Peripheral data alignment : Word */
-  DmaHandle.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;    /* memory data alignment : Word     */
-  DmaHandle.Init.Mode = DMA_NORMAL;                         /* Normal DMA mode                  */
-  DmaHandle.Init.Priority = DMA_PRIORITY_HIGH;              /* priority level : high            */
-  DmaHandle.Init.FIFOMode = DMA_FIFOMODE_ENABLE;            /* FIFO mode enabled                */
-  DmaHandle.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_1QUARTERFULL; /* FIFO threshold: 1/4 full   */
-  DmaHandle.Init.MemBurst = DMA_MBURST_SINGLE;              /* Memory burst                     */
+  DmaHandle.Init.Channel = DMA_CHANNEL;                     /* DMA_CHANNEL_0                    */                     
+  DmaHandle.Init.Direction = DMA_MEMORY_TO_MEMORY;          /* M2M transfer mode                */           
+  DmaHandle.Init.PeriphInc = DMA_PINC_ENABLE;               /* Peripheral increment mode Enable */                 
+  DmaHandle.Init.MemInc = DMA_MINC_ENABLE;                  /* Memory increment mode Enable     */                   
+  DmaHandle.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD; /* Peripheral data alignment : Word */    
+  DmaHandle.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;    /* memory data alignment : Word     */     
+  DmaHandle.Init.Mode = DMA_NORMAL;                         /* Normal DMA mode                  */  
+  DmaHandle.Init.Priority = DMA_PRIORITY_HIGH;              /* priority level : high            */  
+  DmaHandle.Init.FIFOMode = DMA_FIFOMODE_DISABLE;           /* FIFO mode disabled               */        
+  DmaHandle.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;  
+  DmaHandle.Init.MemBurst = DMA_MBURST_SINGLE;              /* Memory burst                     */  
   DmaHandle.Init.PeriphBurst = DMA_PBURST_SINGLE;           /* Peripheral burst                 */
-
+  
   /*##-3- Select the DMA instance to be used for the transfer : DMA2_Stream0 #*/
   DmaHandle.Instance = DMA_STREAM;
 
-  /*##-4- Initialize the DMA stream ##########################################*/
+  /*##-4- Select Callbacks functions called after Transfer complete and Transfer error */
+  DmaHandle.XferCpltCallback  = TransferComplete;
+  DmaHandle.XferErrorCallback = TransferError;
+  
+  /*##-5- Initialize the DMA stream ##########################################*/
   if(HAL_DMA_Init(&DmaHandle) != HAL_OK)
   {
     /* Turn LED3/LED4 on: in case of Initialization Error */
@@ -134,11 +157,7 @@ static void DMA_Config(void)
     {
     }
   }
- 
-  /*##-5- Select Callbacks functions called after Transfer complete and Transfer error */
-  HAL_DMA_RegisterCallback(&DmaHandle, HAL_DMA_XFER_CPLT_CB_ID, TransferComplete);
-  HAL_DMA_RegisterCallback(&DmaHandle, HAL_DMA_XFER_ERROR_CB_ID, TransferError);
-
+  
   /*##-6- Configure NVIC for DMA transfer complete/error interrupts ##########*/
   HAL_NVIC_SetPriority(DMA_STREAM_IRQ, 0, 0);
   HAL_NVIC_EnableIRQ(DMA_STREAM_IRQ);
@@ -207,7 +226,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -226,7 +245,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -257,7 +276,6 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
-
 /**
   * @}
   */ 
@@ -265,3 +283,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */ 
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -2,19 +2,28 @@
   ******************************************************************************
   * @file    Demonstrations/Src/usbd_desc.c
   * @author  MCD Application Team
-  * @brief   This file provides the USBD descriptors and string formatting method.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   This file provides the USBD descriptors and string formating method.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_core.h"
@@ -83,6 +92,11 @@ uint8_t *     USBD_HID_SerialStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *
 uint8_t *     USBD_HID_ConfigStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *length);
 uint8_t *     USBD_HID_InterfaceStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *length);
 
+#ifdef USB_SUPPORT_USER_STRING_DESC
+uint8_t *     USBD_HID_USRStringDesc (USBD_SpeedTypeDef speed, uint8_t idx , uint16_t *length);  
+#endif /* USB_SUPPORT_USER_STRING_DESC */  
+
+
 USBD_DescriptorsTypeDef HID_Desc =
 {
   USBD_HID_DeviceDescriptor,
@@ -119,7 +133,7 @@ __ALIGN_BEGIN uint8_t hUSBDDeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
     USBD_IDX_PRODUCT_STR,       /*Index of product string*/
     USBD_IDX_SERIAL_STR,        /*Index of serial number string*/
     USBD_MAX_NUM_CONFIGURATION  /*bNumConfigurations*/
-  }; /* USB_DeviceDescriptor */
+  } ; /* USB_DeviceDescriptor */
 
 /* USB Standard Device Descriptor */
 #if defined ( __ICCARM__ ) /*!< IAR Compiler */
@@ -288,3 +302,6 @@ uint8_t *  USBD_HID_InterfaceStrDescriptor( USBD_SpeedTypeDef speed , uint16_t *
 /**
   * @}
   */ 
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+

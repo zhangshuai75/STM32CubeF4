@@ -1,34 +1,41 @@
 /**
-  @page CDC_Standalone USB Device Communication (CDC) application
+  @page CDC_Standalone USB Device Communication (CDC) example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    USB_Device/CDC_Standalone/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the USB Device CDC application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the USB Device CDC example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Application Description 
+@par Example Description 
 
-This application shows how to use the USB device application based on the Device Communication Class (CDC) 
-following the PSTN subprotocol using the USB Device and UART peripherals.
+This example is a part of the USB Device Library package using STM32Cube firmware. It describes how to 
+use USB device application based on the Device Communication Class (CDC) following the PSTN subprotocol
+in the STM32F4xx devices using the OTG-USB and UART peripherals.
 
-This is a typical application on how to use the STM32F4xx USB OTG Device peripheral where the STM32 MCU
+This is a typical example on how to use the STM32F4xx USB OTG Device peripheral where the STM32 MCU
 behaves as a USB-to-RS232 bridge following the Virtual COM Port (VCP) implementation.
  - On one side, the STM32 exchanges data with a PC host through USB interface in Device mode.
  - On the other side, the STM32 exchanges data with other devices (same host, other host,
-   other devicesâ€¦) through the UART interface (RS232).
+   other devices�) through the UART interface (RS232).
 
 At the beginning of the main program the HAL_Init() function is called to reset all the peripherals,
 initialize the Flash interface and the systick. The user is provided with the SystemClock_Config()
@@ -77,7 +84,7 @@ download from www.st.com.
 @note The user has to check the list of the COM ports in Device Manager to find out the number of the
       COM ports that have been assigned (by OS) to the VCP interface.
 
-This application uses UART as a communication interface. The UART instance and associated resources
+This example uses UART as a communication interface. The UART instance and associated resources
 (GPIO, NVIC) can be tailored in "usbd_cdc_interface.h" header file according to your hardware 
 configuration. Moreover, this application can be customized to communicate with interfaces other than UART.
 For that purpose a template CDC interface is provided in: 
@@ -99,16 +106,13 @@ To run this application, the user can use one of the following configurations:
    and all data sent from this terminal will be received by the same terminal in loopback mode.
    This mode is useful for test and performance measurements.
 
-@note If using this example in loopback mode (ie. USART Tx IO connected to USART Rx IO on STM32 side) 
-and with baudrates higher than 9600, there might be communication errors.
-
 @note Care must be taken when using HAL_Delay(), this function provides accurate delay (in milliseconds)
       based on variable incremented in SysTick ISR. This implies that if HAL_Delay() is called from
       a peripheral ISR process, then the SysTick interrupt must have higher priority (numerically lower)
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
       
 For more details about the STM32Cube USB Device library, please refer to UM1734 
@@ -118,14 +122,11 @@ For more details about the STM32Cube USB Device library, please refer to UM1734
 @par USB Library Configuration
 
 To select the appropriate USB Core to work with, user must add the following macro defines within the
-compiler preprocessor (already done in the preconfigured projects provided with this application):
+compiler preprocessor (already done in the preconfigured projects provided with this example):
       - "USE_USB_HS" when using USB High Speed (HS) Core
       - "USE_USB_FS" when using USB Full Speed (FS) Core 
       - "USE_USB_HS" and "USE_USB_HS_IN_FS" when using USB High Speed (HS) Core in FS mode 
       
-@par Keywords
-
-Connectivity, USB_Device, USB, Full Speed, High Speed, CDC, PSTN, HyperTerminal, VCP, Com port, 
 
 @par Directory contents 
 
@@ -146,9 +147,9 @@ Connectivity, USB_Device, USB, Full Speed, High Speed, CDC, PSTN, HyperTerminal,
 
 @par Hardware and Software environment
 
-  - This application runs on STM32F429xx/STM32F439xx devices.
+  - This example runs on STM32F429xx/STM32F439xx devices.
     
-  - This application has been tested with STMicroelectronics STM324x9I-EVAL RevB 
+  - This example has been tested with STMicroelectronics STM324x9I-EVAL RevB 
     evaluation boards and can be easily tailored to any other supported device 
     and development board.
 
@@ -177,10 +178,10 @@ In order to make the program work, you must do the following :
    - STM324x9I-EVAL_USBH-FS: to configure the project for STM32F4xx devices using USB OTG FS peripheral
    - STM324x9I-EVAL_USBH-HS-IN-FS: to configure the project for STM32F4xx devices and use USB OTG HS 
                                    peripheral In FS (using embedded PHY).
- - Run the application
+ - Run the example
  - Install the USB virtual COM port driver
  - Find out the number of the COM port assigned to the STM32 CDC device
  - Open a serial terminal application and start the communication
 
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

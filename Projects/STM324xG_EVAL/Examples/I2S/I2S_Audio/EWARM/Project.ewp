@@ -582,8 +582,8 @@
         <debug>1</debug>
         <option>
           <name>OOCOutputFormat</name>
-          <version>3</version>
-          <state>1</state>
+          <version>2</version>
+          <state>0</state>
         </option>
         <option>
           <name>OCOutputOverride</name>
@@ -591,7 +591,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>Project.hex</state>
+          <state>Project.srec</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -599,7 +599,7 @@
         </option>
         <option>
           <name>OOCObjCopyEnable</name>
-          <state>1</state>
+          <state>0</state>
         </option>
       </data>
     </settings>
@@ -1044,9 +1044,6 @@
     </group>
     <group>
       <name>User</name>
-      <file>
-        <name>$PROJ_DIR$\..\Src\audio_if.c</name>
-      </file>
       <file>
         <name>$PROJ_DIR$\..\Src\main.c</name>
       </file>

@@ -1,53 +1,65 @@
 /**
   ******************************************************************************
-  * @file    LibJPEG/LibJPEG_Encoding/Src/main.c 
+  * @file    main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014 
   * @brief   Main program body
   *          This sample code shows how to compress BMP file to JPEG file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* Private typedef -----------------------------------------------------------*/
 typedef enum
 {
-  APPLICATION_IDLE = 0,
-  APPLICATION_START
-} MSC_ApplicationTypeDef;
+  APPLICATION_IDLE = 0,  
+  APPLICATION_START    
+}
+MSC_ApplicationTypeDef; 
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 FATFS USBDISK_FatFs;  /* File system object for USB logical drive */
-FIL MyFile, MyFile1;  /* File object */
+FIL MyFile, MyFile1;   /* File object */
 char USBDISKPath[4];  /* USB disk logical drive path */
 
 RGB_typedef *RGB_matrix;
-uint8_t  _aucLine[2048];
-uint32_t counter = 0, bytesread;
-uint32_t offset = 0;
+  
+uint8_t   _aucLine[2048];
+uint32_t  counter = 0, bytesread;
+uint32_t  offset = 0;
 uint32_t line_counter = 0;
 
-USBH_HandleTypeDef  hUSBHost;
+USBH_HandleTypeDef  hUSB_Host;
 /* Variable to save the state of USB */
 MSC_ApplicationTypeDef Appli_state = APPLICATION_IDLE;
-DMA2D_HandleTypeDef DMA2DHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
+DMA2D_HandleTypeDef hdma2d_eval;
 static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength);
-static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id);
+static void USBH_UserProcess (USBH_HandleTypeDef *phost, uint8_t id );
 static void LCD_Config(void);
 
 /* Private functions ---------------------------------------------------------*/
@@ -66,72 +78,74 @@ int main(void)
        - Global MSP (MCU Support Package) initialization
      */
   HAL_Init();
-
-  /* Configure the system clock to 180 MHz */
+  
+  /* Configure the system clock to 180 Mhz */
   SystemClock_Config();
-
+  
   /*##-1- LCD Configuration ##################################################*/
   LCD_Config();    
-
+  
   /*##-2- Link the USB Host disk I/O driver ##################################*/
   if(FATFS_LinkDriver(&USBH_Driver, USBDISKPath) == 0)
   {
     /*##-3- Init Host Library ################################################*/
-    USBH_Init(&hUSBHost, USBH_UserProcess, 0);
-
+    USBH_Init(&hUSB_Host, USBH_UserProcess, 0);
+    
     /*##-4- Add Supported Class ##############################################*/
-    USBH_RegisterClass(&hUSBHost, USBH_MSC_CLASS);
-
+    USBH_RegisterClass(&hUSB_Host, USBH_MSC_CLASS);
+    
     /*##-5- Start Host Process ###############################################*/
-    USBH_Start(&hUSBHost);
-
+    USBH_Start(&hUSB_Host);
+    
     /*##-6- Run Application (Blocking mode) ##################################*/
     while (1)
     {
       /* USB Host Background task */
-      USBH_Process(&hUSBHost);
-
+      USBH_Process(&hUSB_Host);
+      
       /* Mass Storage Application State Machine */
       switch(Appli_state)
       {
       case APPLICATION_START:
-        
-        /*##-4- Create and Open a new jpg image file with write access #######*/
+
+        /*##-4- Create and Open a new jpg image file with write access ########*/
         if(f_open(&MyFile1, "image.jpg", FA_CREATE_ALWAYS | FA_WRITE) == FR_OK)
         {
-          /*##-5- Open the BMP image with read access ########################*/
+        
+          /*##-5- Open the BMP image with read access ############################*/
           if(f_open(&MyFile, "image.bmp", FA_READ) == FR_OK)
           {
-            /*##-6- Jpeg encoding ############################################*/
+          
+            /* Jpeg encoding */
             jpeg_encode(&MyFile, &MyFile1, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_QUALITY, _aucLine);
-            
+          
             /* Close the BMP and JPEG files */
             f_close(&MyFile1);
             f_close(&MyFile);
-            
-            /*##-7- Jpeg decoding ############################################*/
-            /* Open the BMP file for read */
-            if(f_open(&MyFile1, "image.jpg", FA_READ) == FR_OK)
-            {
-              /* Jpeg Decoding for display to LCD */
-              jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
-              
-              /* Close the BMP file */
-              f_close(&MyFile1);  
-            }
           }
-        }
+        }   
         
+        /* Open the BMP file for read */
+        if(f_open(&MyFile1, "image.jpg", FA_READ) == FR_OK)
+        {  
+        }
+  
+        /* Jpeg Decoding for display to LCD */
+        jpeg_decode(&MyFile1, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
+  
+        /* Close the BMP file */
+        f_close(&MyFile1);  
+  
         Appli_state = APPLICATION_IDLE;
         break;
-
+        
       case APPLICATION_IDLE:
       default:
         break;      
       }
     }
-  }
-
+    }  
+  
   /* Infinite loop */
   while (1)
   {
@@ -144,8 +158,10 @@ int main(void)
   * @param  DataLength: Row width in output buffer
   * @retval None
   */
+
 static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
 {
+    
 #ifdef DONT_USE_DMA2D
   uint32_t  ARGB32Buffer[IMAGE_WIDTH];
   RGB_matrix =  (RGB_typedef*)Row;
@@ -159,35 +175,36 @@ static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
       (RGB_matrix[counter].R) | 0xFF000000)
     );
 
-    *(__IO uint32_t *)(LCD_BUFFER + (counter*4) + (IMAGE_WIDTH * line_counter * 4)) = ARGB32Buffer[counter];
+    *(__IO uint32_t *)(LCD_BUFFER + (counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)) = ARGB32Buffer[counter];
   }
 #endif
 
-#ifdef USE_DMA2D
+#ifdef USE_DMA2D  
+  
   offset = LCD_BUFFER + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4);
-
-  /* Configure the DMA2D Mode, Color Mode and output offset */
-  DMA2DHandle.Init.Mode         = DMA2D_M2M_PFC;
-  DMA2DHandle.Init.ColorMode    = DMA2D_ARGB8888;
-  DMA2DHandle.Init.OutputOffset = 0;     
-
+  
+/* Configure the DMA2D Mode, Color Mode and output offset */
+  hdma2d_eval.Init.Mode         = DMA2D_M2M_PFC;
+  hdma2d_eval.Init.ColorMode    = DMA2D_ARGB8888;
+  hdma2d_eval.Init.OutputOffset = 0;     
+  
   /* Foreground Configuration */
-  DMA2DHandle.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
-  DMA2DHandle.LayerCfg[1].InputAlpha = 0xFF;
-  DMA2DHandle.LayerCfg[1].InputColorMode = DMA2D_INPUT_RGB888;
-  DMA2DHandle.LayerCfg[1].InputOffset = 0;
-
-  DMA2DHandle.Instance = DMA2D; 
-
+  hdma2d_eval.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
+  hdma2d_eval.LayerCfg[1].InputAlpha = 0xFF;
+  hdma2d_eval.LayerCfg[1].InputColorMode = CM_RGB888;
+  hdma2d_eval.LayerCfg[1].InputOffset = 0;
+  
+  hdma2d_eval.Instance = DMA2D; 
+  
   /* DMA2D Initialization */
-  if(HAL_DMA2D_Init(&DMA2DHandle) == HAL_OK) 
+  if(HAL_DMA2D_Init(&hdma2d_eval) == HAL_OK) 
   {
-    if(HAL_DMA2D_ConfigLayer(&DMA2DHandle, 1) == HAL_OK) 
+    if(HAL_DMA2D_ConfigLayer(&hdma2d_eval, 1) == HAL_OK) 
     {
-      if (HAL_DMA2D_Start(&DMA2DHandle, (uint32_t)Row, (uint32_t)offset, IMAGE_WIDTH, 1) == HAL_OK)
+      if (HAL_DMA2D_Start(&hdma2d_eval, (uint32_t)Row, (uint32_t)offset, IMAGE_WIDTH, 1) == HAL_OK)
       {
         /* Polling For DMA transfer */  
-        HAL_DMA2D_PollForTransfer(&DMA2DHandle, 10);
+        HAL_DMA2D_PollForTransfer(&hdma2d_eval, 10);
       }
     }
   }   
@@ -195,15 +212,16 @@ static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
 
 #ifdef SWAP_RB
   uint32_t pixel = 0, result = 0, result1 = 0;
-
-  for(counter = 0; counter < IMAGE_WIDTH; counter++)
-  {
-    pixel = *(__IO uint32_t *)(LCD_BUFFER + (counter*4) + (IMAGE_WIDTH * line_counter * 4)); 
-    result1 = (((pixel & 0x00FF0000) >> 16) | ((pixel & 0x000000FF) << 16));
-    pixel = pixel & 0xFF00FF00;
-    result = (result1 | pixel);
-    *(__IO uint32_t *)(LCD_BUFFER + (counter*4) + (IMAGE_WIDTH * line_counter * 4)) = result;
-  }  
+  
+   for(counter = 0; counter < IMAGE_WIDTH; counter++)
+   {
+     pixel = *(__IO uint32_t *)(LCD_BUFFER + (counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)); 
+     result1 = (((pixel & 0x00FF0000) >> 16) | ((pixel & 0x000000FF) << 16));
+     pixel = pixel & 0xFF00FF00;
+     result = (result1 | pixel);
+     *(__IO uint32_t *)(LCD_BUFFER + (counter*4) + (IMAGE_WIDTH * (IMAGE_HEIGHT - line_counter - 1) * 4)) = result;
+     
+   }  
 #endif
 
   line_counter++;
@@ -212,12 +230,11 @@ static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
 
 /**
   * @brief  LCD Configuration.
-  * @param  None
   * @retval None
   */
 static void LCD_Config(void)
 {
-  /* Initialize the LCD */  
+  /* Initialize the LCD*/  
   BSP_LCD_Init();
   
   /* Background Layer Initialization */
@@ -237,29 +254,21 @@ static void LCD_Config(void)
 }
 
 /**
-  * @brief  User Process
-  * @param  None
-  * @retval None
-  */
-static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
-{
+* @brief  User Process
+* @param  None
+* @retval None
+*/
+static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
+{  
   switch (id)
   { 
   case HOST_USER_DISCONNECTION:
-    Appli_state = APPLICATION_IDLE;
-    if (f_mount(0, "", 0) != FR_OK)
-    {
-      /* FatFs Initialization Error */
-    }
-    break;
-  
-  case HOST_USER_CONNECTION:
     Appli_state = APPLICATION_IDLE;
     if (f_mount(&USBDISK_FatFs, "", 0) != FR_OK)
     {
       /* FatFs Initialization Error */
     }
-    break;    
+    break;
     
   case HOST_USER_CLASS_ACTIVE:
     Appli_state = APPLICATION_START;
@@ -293,7 +302,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -340,3 +349,5 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

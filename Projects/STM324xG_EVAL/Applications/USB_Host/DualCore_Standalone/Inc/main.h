@@ -1,20 +1,30 @@
 /**
   ******************************************************************************
-  * @file    USB_Host/DualCore_Standalone/Inc/main.h
+  * @file    USB_Host/DualCore_Standalone/Inc/main.h 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Header for main.c module
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+  
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H
 #define __MAIN_H
@@ -22,41 +32,39 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stdio.h"
 #include "usbh_core.h"
-#include "usbh_msc.h"
+#include "usbh_msc.h" 
 #include "usbh_hid.h"
 #include "usbh_hid_parser.h"
 #include "stm324xg_eval_io.h"
 #include "lcd_log.h"
 #include "ff.h"
-#include "ff_gen_drv.h"
-#include "usbh_diskio_dma.h"
 
 /* Exported types ------------------------------------------------------------*/
 typedef enum {
   APPLI_HID_IDLE = 0,
-  APPLI_HID_WAIT,
+  APPLI_HID_WAIT,  
   APPLI_HID_START,
-  APPLI_HID_MOUSE,
-  APPLI_HID_KEYBOARD,
+  APPLI_HID_MOUSE,  
+  APPLI_HID_KEYBOARD,    
 }Demo_HID_State;
 
 typedef enum {
   HID_MOUSE_IDLE = 0,
-  HID_MOUSE_WAIT,
-  HID_MOUSE_START,
+  HID_MOUSE_WAIT, 
+  HID_MOUSE_START,       
 }Demo_mouse_State;
 
 typedef enum {
   HID_KEYBOARD_IDLE = 0,
-  HID_KEYBOARD_WAIT,
-  HID_KEYBOARD_START,
+  HID_KEYBOARD_WAIT,  
+  HID_KEYBOARD_START,    
 }Demo_keyboard_State;
 
 typedef enum {
   DEMO_IDLE = 0,
   DEMO_WAIT,
   DEMO_MSC_START,
-  DEMO_HID_START,
+  DEMO_HID_START, 
   DEMO_HID,
   DEMO_MSC,
   DEMO_MSC_REENUMERATE,
@@ -67,7 +75,7 @@ typedef enum {
   APPLI_MSC_IDLE = 0,
   APPLI_MSC_WAIT,
   APPLI_MSC_FILE_OPERATIONS,
-  APPLI_MSC_EXPLORER,
+  APPLI_MSC_EXPLORER, 
 }Demo_MSC_State;
 
 typedef struct _DemoStateMachine {
@@ -76,15 +84,15 @@ typedef struct _DemoStateMachine {
   __IO Demo_HID_State       hid_state;
   __IO Demo_mouse_State     mouse_state;
   __IO Demo_keyboard_State  keyboard_state;
-  __IO uint8_t              select;
+  __IO uint8_t              select; 
 }DEMO_StateMachine;
 
 typedef enum {
   APPLICATION_IDLE = 0,
-  APPLICATION_FS_DISCONNECT,
+  APPLICATION_FS_DISCONNECT,  
   APPLICATION_FS_START,
-  APPLICATION_FS_READY,
-  APPLICATION_HS_DISCONNECT,
+  APPLICATION_FS_READY, 
+  APPLICATION_HS_DISCONNECT,  
   APPLICATION_HS_START,
   APPLICATION_HS_READY,
   APPLICATION_RUNNING,
@@ -102,11 +110,10 @@ extern uint8_t *DEMO_MOUSE_menu[];
 extern uint8_t prev_select;
 
 /* Exported constants --------------------------------------------------------*/
-#define hUSBHost                           hUSBHost_HS
 /* Exported macro ------------------------------------------------------------*/
 #define LCD_UsrLogY(...)                   LCD_LineColor = LCD_COLOR_YELLOW;\
                                            printf(__VA_ARGS__);\
-
+                                            
 /* Exported functions ------------------------------------------------------- */
 FRESULT Explore_Disk(char *path, uint8_t recu_level);
 void MSC_File_Operations(void);
@@ -125,3 +132,5 @@ void DUAL_MenuProcess(void);
 void DUAL_MenuInit(void);
 void Demo_ProbeKey(JOYState_TypeDef state);
 #endif /* __MAIN_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

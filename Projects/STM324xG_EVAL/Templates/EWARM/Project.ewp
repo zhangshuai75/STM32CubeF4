@@ -2019,9 +2019,6 @@
         </excluded>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\..\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_exti.c</name>
-      </file>
-      <file>
         <name>$PROJ_DIR$\..\..\..\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.c</name>
       </file>
       <file>
@@ -2076,9 +2073,6 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\..\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\..\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pcd_ex.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\..\..\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_pwr.c</name>

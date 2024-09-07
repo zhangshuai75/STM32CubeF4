@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Host/HID_Standalone/Src/keyboard.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file implements the HID keyboard functions
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -59,7 +69,7 @@ void HID_KeyboardMenuProcess(void)
   case HID_KEYBOARD_WAIT:
     if(hid_demo.select != prev_select)
     {
-      prev_select = hid_demo.select;
+      prev_select = hid_demo.select ;
       HID_SelectItem(DEMO_KEYBOARD_menu, hid_demo.select & 0x7F);
       /* Handle select item */
       if(hid_demo.select & 0x80)
@@ -132,25 +142,25 @@ void USR_KEYBRD_ProcessData(uint8_t data)
       KeybrdCharYpos = KYBRD_FIRST_COLUMN;
     }
   }
-    else if(data == '\r')
+  else if(data == '\r')
   {
-    /* Manage deletion of character and update cursor location */
+    /* Manage deletion of character and upadte cursor location */
     if( KeybrdCharYpos == KYBRD_FIRST_COLUMN) 
     {
       /* First character of first line to be deleted */
       if(KeybrdCharXpos == KYBRD_FIRST_LINE)
-      { 
+      {  
         KeybrdCharYpos = KYBRD_FIRST_COLUMN; 
       }
       else
       {
-        KeybrdCharXpos -= SMALL_FONT_LINE_WIDTH;
-        KeybrdCharYpos = (KYBRD_LAST_COLUMN - SMALL_FONT_COLUMN_WIDTH); 
+        KeybrdCharXpos += SMALL_FONT_LINE_WIDTH;
+        KeybrdCharYpos = (KYBRD_LAST_COLUMN + SMALL_FONT_COLUMN_WIDTH); 
       }
     }
     else
     {
-      KeybrdCharYpos -= SMALL_FONT_COLUMN_WIDTH; 
+      KeybrdCharYpos += SMALL_FONT_COLUMN_WIDTH;      
     } 
     BSP_LCD_DisplayChar(KeybrdCharYpos, KeybrdCharXpos, ' '); 
   }
@@ -180,3 +190,5 @@ void USR_KEYBRD_ProcessData(uint8_t data)
     }
   }
 }               
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

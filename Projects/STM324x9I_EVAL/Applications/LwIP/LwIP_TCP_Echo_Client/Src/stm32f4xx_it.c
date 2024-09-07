@@ -1,23 +1,34 @@
 /**
   ******************************************************************************
-  * @file    LwIP/LwIP_TCP_Echo_Client/Src/stm32f4xx_it.c 
+  * @file    LwIP\LwIP_TCP_Echo_Client\Src\stm32f4xx_it.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main Interrupt Service Routines.
-  *
+  *   
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f4xx_hal.h"
+#include "stm324x9i_eval.h"
 #include "main.h"
 #include "stm32f4xx_it.h"
 
@@ -25,7 +36,6 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern ETH_HandleTypeDef EthHandle;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -34,7 +44,7 @@ extern ETH_HandleTypeDef EthHandle;
 /******************************************************************************/
 
 /**
-  * @brief  This function handles NMI exception.
+  * @brief   This function handles NMI exception.
   * @param  None
   * @retval None
   */
@@ -115,6 +125,16 @@ void SysTick_Handler(void)
 }
 
 /**
+  * @brief  This function handles External line 8 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
+}
+
+/**
   * @brief  This function handles EXTI15_10
   * @param  None
   * @retval None
@@ -129,15 +149,6 @@ void EXTI15_10_IRQHandler(void)
 /*  available peripheral interrupt handler's name please refer to the startup */
 /*  file (startup_stm32f4xx.s).                                               */
 /******************************************************************************/
-/**
-  * @brief  This function handles Ethernet interrupt request.
-  * @param  None
-  * @retval None
-  */
-void ETH_IRQHandler(void)
-{
- HAL_ETH_IRQHandler(&EthHandle);
-}
 
 /**
   * @brief  This function handles PPP interrupt request.
@@ -147,3 +158,5 @@ void ETH_IRQHandler(void)
 /*void PPP_IRQHandler(void)
 {
 }*/
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

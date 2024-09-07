@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Device/CDC_Standalone/Src/usbd_cdc_interface.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Source file for USBD CDC interface
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -49,11 +59,10 @@ TIM_HandleTypeDef  TimHandle;
 extern USBD_HandleTypeDef  USBD_Device;
 
 /* Private function prototypes -----------------------------------------------*/
-static int8_t CDC_Itf_Init(void);
-static int8_t CDC_Itf_DeInit(void);
-static int8_t CDC_Itf_Control(uint8_t cmd, uint8_t* pbuf, uint16_t length);
-static int8_t CDC_Itf_Receive(uint8_t* pbuf, uint32_t *Len);
-static int8_t CDC_Itf_TransmitCplt(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
+static int8_t CDC_Itf_Init     (void);
+static int8_t CDC_Itf_DeInit   (void);
+static int8_t CDC_Itf_Control  (uint8_t cmd, uint8_t* pbuf, uint16_t length);
+static int8_t CDC_Itf_Receive  (uint8_t* pbuf, uint32_t *Len);
 
 static void Error_Handler(void);
 static void ComPort_Config(void);
@@ -64,8 +73,7 @@ USBD_CDC_ItfTypeDef USBD_CDC_fops =
   CDC_Itf_Init,
   CDC_Itf_DeInit,
   CDC_Itf_Control,
-  CDC_Itf_Receive,
-  CDC_Itf_TransmitCplt
+  CDC_Itf_Receive
 };
 
 /* Private functions ---------------------------------------------------------*/
@@ -86,15 +94,14 @@ static int8_t CDC_Itf_Init(void)
       - Parity      = No parity
       - BaudRate    = 115200 baud
       - Hardware flow control disabled (RTS and CTS signals) */
-  UartHandle.Instance          = USARTx;
-  UartHandle.Init.BaudRate     = 115200;
-  UartHandle.Init.WordLength   = UART_WORDLENGTH_8B;
-  UartHandle.Init.StopBits     = UART_STOPBITS_1;
-  UartHandle.Init.Parity       = UART_PARITY_NONE;
-  UartHandle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-  UartHandle.Init.Mode         = UART_MODE_TX_RX;
-  UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
-    
+  UartHandle.Instance        = USARTx;
+  UartHandle.Init.BaudRate   = 115200;
+  UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+  UartHandle.Init.StopBits   = UART_STOPBITS_1;
+  UartHandle.Init.Parity     = UART_PARITY_NONE;
+  UartHandle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+  UartHandle.Init.Mode       = UART_MODE_TX_RX;
+  
   if(HAL_UART_Init(&UartHandle) != HAL_OK)
   {
     /* Initialization Error */
@@ -103,7 +110,7 @@ static int8_t CDC_Itf_Init(void)
   
   /*##-2- Put UART peripheral in IT reception process ########################*/
   /* Any data received will be stored in "UserTxBuffer" buffer  */
-  if(HAL_UART_Receive_IT(&UartHandle, (uint8_t *)(UserTxBuffer + UserTxBufPtrIn), 1) != HAL_OK)
+  if(HAL_UART_Receive_IT(&UartHandle, (uint8_t *)UserTxBuffer, 1) != HAL_OK)
   {
     /* Transfer error in reception process */
     Error_Handler();
@@ -226,7 +233,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
     if(UserTxBufPtrOut > UserTxBufPtrIn) /* Rollback */
     {
-      buffsize = APP_TX_DATA_SIZE - UserTxBufPtrOut;
+      buffsize = APP_RX_DATA_SIZE - UserTxBufPtrOut;
     }
     else 
     {
@@ -283,23 +290,6 @@ static int8_t CDC_Itf_Receive(uint8_t* Buf, uint32_t *Len)
 }
 
 /**
-  * @brief  CDC_Itf_TransmitCplt
-  *         Data transmitted callback
-  *
-  * @note
-  *         This function is IN transfer complete callback used to inform user that
-  *         the submitted Data is successfully sent over USB.
-  *
-  * @param  Buf: Buffer of data to be received
-  * @param  Len: Number of data received (in bytes)
-  * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
-  */
-static int8_t CDC_Itf_TransmitCplt(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
-{
-  return (0);
-}
-
-/**
   * @brief  Tx Transfer completed callback
   * @param  huart: UART handle
   * @retval None
@@ -314,7 +304,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
   * @brief  ComPort_Config
   *         Configure the COM Port with the parameters received from host.
   * @param  None.
-  * @retval None
+  * @retval None.
   * @note   When a configuration is not supported, a default value is used.
   */
 static void ComPort_Config(void)
@@ -379,10 +369,9 @@ static void ComPort_Config(void)
     break;
   }
   
-  UartHandle.Init.BaudRate     = LineCoding.bitrate;
-  UartHandle.Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-  UartHandle.Init.Mode         = UART_MODE_TX_RX;
-  UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
+  UartHandle.Init.BaudRate = LineCoding.bitrate;
+  UartHandle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+  UartHandle.Init.Mode       = UART_MODE_TX_RX;
   
   if(HAL_UART_Init(&UartHandle) != HAL_OK)
   {
@@ -397,7 +386,7 @@ static void ComPort_Config(void)
 /**
   * @brief  TIM_Config: Configure TIMx timer
   * @param  None.
-  * @retval None
+  * @retval None.
   */
 static void TIM_Config(void)
 {  
@@ -414,7 +403,6 @@ static void TIM_Config(void)
   TimHandle.Init.Prescaler = 84-1;
   TimHandle.Init.ClockDivision = 0;
   TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-  TimHandle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if(HAL_TIM_Base_Init(&TimHandle) != HAL_OK)
   {
     /* Initialization Error */
@@ -429,7 +417,7 @@ static void TIM_Config(void)
   */
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *UartHandle)
 {
-  /* Transfer error occurred in reception and/or transmission process */
+  /* Transfer error occured in reception and/or transmission process */
   Error_Handler();
 }
 
@@ -442,3 +430,5 @@ static void Error_Handler(void)
 {
   /* Add your own code here */
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

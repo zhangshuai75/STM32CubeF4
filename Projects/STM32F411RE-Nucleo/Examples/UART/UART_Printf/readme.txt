@@ -2,35 +2,49 @@
   @page UART_Printf UART Printf example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    UART/UART_Printf/readme.txt 
   * @author  MCD Application Team
+  * @version V1.0.0
+  * @date    26-June-2014
   * @brief   Description of the UART Printf example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Example Description       
-
-This example shows how to re-route the C library printf function to the UART.
-The UART outputs a message on the HyperTerminal.          
+@par Example Description                  
 
 The STM32 Nucleo boards integrate the ST-LINK/V2.1 interfacing with the PC and 
 offering the following capabilities:
-  â€“ Debug and programming port
-  â€“ Virtual com port interface
-  â€“ Mass storage interface
-  â€“ USB power management request for more than 100 mA power
+  – Debug and programming port
+  – Virtual com port interface
+  – Mass storage interface
+  – USB power management request for more than 100 mA power
 
+This example shows how to use the STM32 Nucleo boards Virtual Com port feature.
 
 Once connected to your PC via the ST-LINK port, the STM32 Nucleo board is enumerated 
 as a serial communication port USART2 and listed under Ports (COM & LPT) of Windows
@@ -48,7 +62,7 @@ The communication port USART2 is configured as follows:
     - Hardware flow control disabled (RTS and CTS signals)
     - Receive and transmit enabled
 
-To identify the Nucleo board VCP, you have just to perform the following actions on
+To identify the Nucleo board VCP, you have just to perform the follwing actions on
 your Windows PC: 
     - Click Start, and enter Device Manager into the Search field. Click Device Manager .
     - Double-click Ports (COM & LPT).
@@ -70,15 +84,11 @@ on your serial terminal:
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
 
 @note The clock setting is configured to have the max product performance (max clock frequency) 
       so not optimized in term of power consumption.
-
-@par Keywords
-
-Connectivity, UART, Printf, Baud rate, RS-232, HyperTerminal, full-duplex
 
 @par Directory contents 
 
@@ -112,5 +122,5 @@ In order to make the program work, you must do the following :
  - Rebuild all files and load your image into target memory
  - Run the example
 
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

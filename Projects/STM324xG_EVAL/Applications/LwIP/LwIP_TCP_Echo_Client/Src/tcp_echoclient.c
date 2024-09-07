@@ -1,20 +1,30 @@
-	/**
+/**
   ******************************************************************************
   * @file    LwIP/LwIP_TCP_Echo_Client/Src/tcp_echoclient.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014 
   * @brief   tcp echoclient application using LwIP RAW API
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "lwip/debug.h"
@@ -75,7 +85,7 @@ static err_t tcp_echoclient_connected(void *arg, struct tcp_pcb *tpcb, err_t err
 */
 void tcp_echoclient_connect(void)
 {
-  ip_addr_t DestIPaddr;
+  struct ip_addr DestIPaddr;
   
   /* create new tcp pcb */
   echoclient_pcb = tcp_new();
@@ -87,11 +97,19 @@ void tcp_echoclient_connect(void)
     /* connect to destination address/port */
     tcp_connect(echoclient_pcb,&DestIPaddr,DEST_PORT,tcp_echoclient_connected);
   }
+  else
+  {
+    /* deallocate the pcb */
+    memp_free(MEMP_TCP_PCB, echoclient_pcb);
+#ifdef SERIAL_DEBUG
+    printf("\n\r can not create tcp pcb");
+#endif 
+  }
 }
 
 /**
   * @brief Function called when TCP connection established
-  * @param tpcb: pointer on the connection control block
+  * @param tpcb: pointer on the connection contol block
   * @param err: when connection correctly established err should be ERR_OK 
   * @retval err_t: returned error 
   */
@@ -101,7 +119,7 @@ static err_t tcp_echoclient_connected(void *arg, struct tcp_pcb *tpcb, err_t err
   
   if (err == ERR_OK)   
   {
-    /* allocate structure es to maintain tcp connection information */
+    /* allocate structure es to maintain tcp connection informations */
     es = (struct echoclient *)mem_malloc(sizeof(struct echoclient));
   
     if (es != NULL)
@@ -159,7 +177,7 @@ static err_t tcp_echoclient_connected(void *arg, struct tcp_pcb *tpcb, err_t err
   * @param arg: argument to be passed to receive callback 
   * @param tpcb: tcp connection control block 
   * @param err: receive error code 
-  * @retval err_t: returned error  
+  * @retval err_t: retuned error  
   */
 static err_t tcp_echoclient_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
 { 
@@ -361,3 +379,5 @@ static void tcp_echoclient_connection_close(struct tcp_pcb *tpcb, struct echocli
 }
 
 #endif /* LWIP_TCP */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -1,27 +1,33 @@
 /**
-  @page LwIP_HTTP_Server_Raw LwIP HTTP Server Raw Application
+  @page LwIP HTTP Server Raw Application
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
-  * @file    LwIP/LwIP_HTTP_Server_Raw/readme.txt 
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
+  * @file    LwIP/LwIP_HTTP_Server_Socket_RTOS/readme.txt 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Description of the LwIP http server Raw API.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Application Description 
+@par Example Description 
 
-This application guides STM32Cube HAL API users to run a http server application 
+This example guides STM32Cube HAL API users to run a http server application 
 based on Raw API of LwIP TCP/IP stack
 The communication is done with a web browser application in a remote PC.
 
@@ -40,15 +46,12 @@ will be ensured by LEDs:
   + LED2: ethernet cable is not connected.
 
 If a DHCP server is available, a dynamic IP address can be allocated by enabling 
-the DHCP process (#define LWIP_DHCP in lwipopts.h).
+the DHCP process (#define USE_DHCP in main.h)
 
-If a DHCP server is not available, after timeout connection, the device only gets a static 
-IP address(the switch from static to dynamic IP address is not available in this application).
-
-Note: In this application the Ethernet Link ISR need the HAL time base to configure 
-the Ethernet MAC, so the Ethernet Link interrupt priority must be set lower (numerically greater) 
-than the HAL tick interrupt priority to ensure that the System tick increments while executing 
-the Ethernet Link ISR.
+Note: In this application the Ethernet Link ISR need the System tick interrupt 
+to configure the Ethernet MAC, so the Ethernet Link interrupt priority must be 
+set lower (numerically greater) than the Systick interrupt priority to ensure 
+that the System tick increments while executing the Ethernet Link ISR.
 
 Note: By default, the Ethernet Half duplex mode is not supported in the 
 STM324x9I-EVAL board, for more information refer to the HAL_ETH_MspInit() 
@@ -60,38 +63,41 @@ function in the ethernetif.c file
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
       
-For more details about this application, refer to UM1713 "STM32Cube interfacing with LwIP and applications"
+For more details about this application, refer to UM1713 "STM32Cube interfacing with LwIP and examples"
 
-@par Keywords
-
-Connectivity, LwIP, Ethernet, HTTP Server, Raw API, TCP/IP, DHCP
 
 @par Directory contents
 
   - LwIP/LwIP_HTTP_Server_Raw/Inc/app_ethernet.h          header of app_ethernet.c file
   - LwIP/LwIP_HTTP_Server_Raw/Inc/ethernetif.h            header for ethernetif.c file
-  - LwIP/LwIP_HTTP_Server_Raw/Inc/lcd_log_conf.h          LCD Log configuration file
+  - LwIP/LwIP_HTTP_Server_Raw/Inc/lcd_log_conf.h          lcd_log configuration file
   - LwIP/LwIP_HTTP_Server_Raw/Inc/stm32f4xx_hal_conf.h    HAL configuration file
   - LwIP/LwIP_HTTP_Server_Raw/Inc/stm32f4xx_it.h          STM32 interrupt handlers header file
   - LwIP/LwIP_HTTP_Server_Raw/Inc/main.h                  Main program header file
   - LwIP/LwIP_HTTP_Server_Raw/Inc/lwipopts.h              LwIP stack configuration options
-  - LwIP/LwIP_HTTP_Server_Raw/Src/app_ethernet.c          Ethernet specific module
+  - LwIP/LwIP_HTTP_Server_Raw/Inc/httpd_structs.h         HTTP headers
+  - LwIP/LwIP_HTTP_Server_Raw/Inc/httpd.h                 header for httpd.c
+  - LwIP/LwIP_HTTP_Server_Raw/Inc/fs.h                    header for fs.c
+  - LwIP/LwIP_HTTP_Server_Raw/Inc/fsdata.h                header for fsdata.c
+  - LwIP/LwIP_HTTP_Server_Raw/Src/app_ethernet.c          Ethernet specefic module
   - LwIP/LwIP_HTTP_Server_Raw/Src/stm32f4xx_it.c          STM32 interrupt handlers
   - LwIP/LwIP_HTTP_Server_Raw/Src/main.c                  Main program
   - LwIP/LwIP_HTTP_Server_Raw/Src/system_stm32f4xx.c      STM32F4xx system clock configuration file
   - LwIP/LwIP_HTTP_Server_Raw/Src/ethernetif.c            Interfacing LwIP to ETH driver
+  - LwIP/LwIP_HTTP_Server_Raw/Src/httpd.c                 httpd server supports
   - LwIP/LwIP_HTTP_Server_Raw/Src/httpd_cgi_ssi.c         Webserver SSI and CGI handlers
-  - LwIP/LwIP_HTTP_Server_Raw/Src/fsdata_custom.c         ROM filesystem data (html pages)
+  - LwIP/LwIP_HTTP_Server_Raw/Src/fs.c                    file system functions
+  - LwIP/LwIP_HTTP_Server_Raw/Src/fsdata.c                ROM filesystem data (html pages)
   
                      
 @par Hardware and Software environment
 
-  - This application runs on STM32F429x/STM32F439x Devices.
+  - This example runs on STM32F429x/STM32F439x Devices.
     
-  - This application has been tested with the following environments:
+  - This example has been tested with the following environments:
      - STM324x9I-EVAL board
      - Http clients: Firefox Mozilla (v24) or Microsoft Internet Explorer (v8 and later)
      - DHCP server:  PC utility TFTPD32 (http://tftpd32.jounin.net/) is used as a DHCP server   
@@ -110,7 +116,7 @@ Connectivity, LwIP, Ethernet, HTTP Server, Raw API, TCP/IP, DHCP
 In order to make the program work, you must do the following :
  - Open your preferred toolchain 
  - Rebuild all files and load your image into target memory
- - Run the application
+ - Run the example
 
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

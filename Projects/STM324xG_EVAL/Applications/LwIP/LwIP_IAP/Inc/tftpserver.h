@@ -1,20 +1,3 @@
-﻿/**
-  ******************************************************************************
-  * @file    LwIP/LwIP_TFTP_Server/Inc/tftpserver.h 
-  * @author  MCD Application Team
-  * @brief   This file is the header of tftpserver file.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
 
 #ifndef __TFTPSERVER_H_
 #define __TFTPSERVER_H_
@@ -42,7 +25,7 @@ typedef struct
   char data[TFTP_DATA_PKT_LEN_MAX];
   int  data_len;
   /* destination ip:port */
-  ip_addr_t to_ip;
+  struct ip_addr to_ip;
   int to_port;
   /* next block number */
   int block;
@@ -82,3 +65,4 @@ void IAP_tftpd_init(void);
 
 
 #endif
+

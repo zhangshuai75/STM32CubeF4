@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    FLASH/FLASH_WriteProtection/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example provides a description of how to erase and program the 
-  *			     STM32F4xx FLASH.
+  *			 STM32F4xx FLASH.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -30,26 +49,24 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define MESSAGE1     "STM32F429X" 
-#define MESSAGE2     "Device running on" 
+#define MESSAGE1     "        STM32F429X         " 
+#define MESSAGE2     "      Device running on    " 
 
 #ifdef FLASH_BANK1
- #define MESSAGE3    "FLASH BANK1"
- #define MESSAGE7    "Swap BFB2"
+ #define MESSAGE3    "        FLASH BANK1        "
 #else
- #define MESSAGE3    "FLASH BANK2"
- #define MESSAGE7    "Swap BFB1"
+ #define MESSAGE3    "        FLASH BANK2        "
 #endif
- 
-#define MESSAGE5     "PUSH Key button"
 
+#define MESSAGE5     "      PUSH Key button      "
+
+#define MESSAGE7     "         Swap BFB2         "
 
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 FLASH_OBProgramInitTypeDef    OBInit; 
 FLASH_AdvOBProgramInitTypeDef AdvOBInit;
-
 uint8_t Message[24];
 uint32_t VAR = 0;
 __IO uint32_t tmp = 0;
@@ -74,15 +91,15 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock to 180 Mhz */
   SystemClock_Config();
   
-  /* Configure TAMPER Button */
+  /* Configure TAMPER/KEY button */
   BSP_PB_Init(BUTTON_TAMPER, BUTTON_MODE_GPIO);
   
-  /* Configure LED3 and LED4 */
+  /* Initialize LEDs and LCD available on EVAL board **************************/
   BSP_LED_Init(LED3);
-  BSP_LED_Init(LED4);
+  BSP_LED_Init(LED4);   
 
   /*##-1- Initialize the LCD #################################################*/
   /* Initialize the LCD */
@@ -91,7 +108,7 @@ int main(void)
   /* Set LCD font */
   BSP_LCD_SetFont(&Font20);
    
-  /* LCD Layer Initialization */
+  /* LCD Layer Initialisation */
   BSP_LCD_LayerDefaultInit(1, 0xC0130000); 
   
   BSP_LCD_SelectLayer(1);
@@ -105,25 +122,25 @@ int main(void)
   
 #ifdef FLASH_BANK1
   BSP_LCD_SetBackColor(LCD_COLOR_BLUE);
-  BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
 #else
   BSP_LCD_SetBackColor(LCD_COLOR_RED);
-  BSP_LCD_SetTextColor(LCD_COLOR_RED);
 #endif /* BOOT_FROM_BANK1 */
   
-  BSP_LCD_FillRect(0, 0, BSP_LCD_GetXSize(), 100);
   /* Set the LCD Text Color */
   BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
   
-  /* Display LCD messages */  
-  BSP_LCD_DisplayStringAt(0, 0, (uint8_t *)MESSAGE1, CENTER_MODE);
-  BSP_LCD_DisplayStringAt(0, 20, (uint8_t *)MESSAGE3, CENTER_MODE);
-  BSP_LCD_DisplayStringAt(0, 40, (uint8_t *)MESSAGE5, CENTER_MODE);
-  BSP_LCD_DisplayStringAt(0, 60, (uint8_t *)MESSAGE7, CENTER_MODE);
-    
+  /* Display LCD messages */
+  BSP_LCD_DisplayStringAtLine(0, (uint8_t *)MESSAGE1);
+  BSP_LCD_DisplayStringAtLine(1, (uint8_t *)MESSAGE3);
+  BSP_LCD_DisplayStringAtLine(2, (uint8_t *)MESSAGE5);
+  BSP_LCD_DisplayStringAtLine(3, (uint8_t *)MESSAGE7);
+  
   /* Turn on LEDs */
   BSP_LED_On(LED3);
   BSP_LED_On(LED4);
+
+  /*## Add your application code here ########################################*/  
+
   
   /* Infinite loop */
   while (1)
@@ -131,35 +148,22 @@ int main(void)
     /*--- If Wake-up button is pushed, Set BFB2 bit to enable boot from Bank2
     (active after next reset, w/ Boot pins set in Boot from Flash memory position ---*/
     
-    /* Wait for TAMPER push-button is released */
+    /* Wait for User push-button is released */
     while (BSP_PB_GetState(BUTTON_TAMPER) != RESET)
     {
-      #ifdef FLASH_BANK1        
-    /* Toggle LED3 */
-    BSP_LED_Toggle(LED3);
-    
-    /* Insert 50 ms delay */
-    HAL_Delay(50);
-#else
-    /* Toggle LED4 */    
-    BSP_LED_Toggle(LED4);
-    
-    /* Insert 50 ms delay */
-    HAL_Delay(50);
-#endif    
     }
-    
+      
     /* Set BFB2 bit to enable boot from Flash Bank2 */
-    /* Allow Access to Flash control registers and user Flash */
+    /* Allow Access to Flash control registers and user Falsh */
     HAL_FLASH_Unlock();
   
     /* Allow Access to option bytes sector */ 
     HAL_FLASH_OB_Unlock();
     
     /* Get the Dual boot configuration status */
-    AdvOBInit.OptionType = OPTIONBYTE_BOOTCONFIG;
+    AdvOBInit.OptionType = OBEX_BOOTCONFIG;
     HAL_FLASHEx_AdvOBGetConfig(&AdvOBInit);
-
+    
     /* Enable/Disable dual boot feature */
     if (((AdvOBInit.BootConfig) & (FLASH_OPTCR_BFB2)) == FLASH_OPTCR_BFB2)
     {
@@ -189,7 +193,21 @@ int main(void)
     HAL_FLASH_Lock();    
     
     /* Initiates a system reset request to reset the MCU */
-    HAL_NVIC_SystemReset();  
+    HAL_NVIC_SystemReset();     
+      
+#ifdef FLASH_BANK1        
+    /* Toggle LD3 */
+    BSP_LED_Toggle(LED3);
+    
+    /* Insert 50 ms delay */
+    HAL_Delay(50);
+#else
+    /* Toggle LD4 */    
+    BSP_LED_Toggle(LED4);
+    
+    /* Insert 50 ms delay */
+    HAL_Delay(50);
+#endif    
   }
 }
 
@@ -219,7 +237,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -238,7 +256,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
   
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -269,7 +287,6 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
-
 /**
   * @}
   */ 
@@ -277,3 +294,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */ 
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    FLASH/FLASH_EraseProgram/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example provides a description of how to erase and program the 
   *          STM32F4xx FLASH.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -24,14 +43,14 @@
   * @{
   */
 
-/** @addtogroup FLASH_EraseProgram
+/** @addtogroup FLASH_Program
   * @{
   */ 
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define FLASH_USER_START_ADDR   ADDR_FLASH_SECTOR_2   /* Start @ of user Flash area */
-#define FLASH_USER_END_ADDR     ADDR_FLASH_SECTOR_11  +  GetSectorSize(ADDR_FLASH_SECTOR_11) -1 /* End @ of user Flash area : sector start address + sector size -1 */
+#define FLASH_USER_END_ADDR     ADDR_FLASH_SECTOR_5   /* End @ of user Flash area */
 
 #define DATA_32                 ((uint32_t)0x12345678)
 
@@ -48,7 +67,6 @@ static FLASH_EraseInitTypeDef EraseInitStruct;
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 static uint32_t GetSector(uint32_t Address);
-static uint32_t GetSectorSize(uint32_t Sector);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -67,13 +85,13 @@ int main(void)
      */
   HAL_Init();
 
-  /* Configure LED3, LED4, LED5 and LED6 */
+  /* Initialize LED3, LED4, LED5 &LED6*/
   BSP_LED_Init(LED3);
   BSP_LED_Init(LED4);
   BSP_LED_Init(LED5);
   BSP_LED_Init(LED6);
 
-  /* Configure the system clock to 168 MHz */
+  /* Configure the system clock to 168 Mhz */
   SystemClock_Config();
 
   /* Unlock the Flash to enable the flash control register access *************/ 
@@ -88,11 +106,12 @@ int main(void)
   NbOfSectors = GetSector(FLASH_USER_END_ADDR) - FirstSector + 1;
 
   /* Fill EraseInit structure*/
-  EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
-  EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+  EraseInitStruct.TypeErase = TYPEERASE_SECTORS;
+  EraseInitStruct.VoltageRange = VOLTAGE_RANGE_3;
   EraseInitStruct.Sector = FirstSector;
   EraseInitStruct.NbSectors = NbOfSectors;
-  if(HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK)
+  
+  if (HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK)
   { 
     /* 
       Error occurred while sector erase. 
@@ -106,19 +125,6 @@ int main(void)
     Error_Handler();
   }
 
-  /* Note: If an erase operation in Flash memory also concerns data in the data or instruction cache,
-     you have to make sure that these data are rewritten before they are accessed during code
-     execution. If this cannot be done safely, it is recommended to flush the caches by setting the
-     DCRST and ICRST bits in the FLASH_CR register. */
-  __HAL_FLASH_DATA_CACHE_DISABLE();
-  __HAL_FLASH_INSTRUCTION_CACHE_DISABLE();
-
-  __HAL_FLASH_DATA_CACHE_RESET();
-  __HAL_FLASH_INSTRUCTION_CACHE_RESET();
-
-  __HAL_FLASH_INSTRUCTION_CACHE_ENABLE();
-  __HAL_FLASH_DATA_CACHE_ENABLE();
-
   /* Program the user Flash area word by word
     (area defined by FLASH_USER_START_ADDR and FLASH_USER_END_ADDR) ***********/
 
@@ -126,7 +132,7 @@ int main(void)
 
   while (Address < FLASH_USER_END_ADDR)
   {
-    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, DATA_32) == HAL_OK)
+    if (HAL_FLASH_Program(TYPEPROGRAM_WORD, Address, DATA_32) == HAL_OK)
     {
       Address = Address + 4;
     }
@@ -163,15 +169,15 @@ int main(void)
     Address = Address + 4;
   }  
 
-  /* Check if there is an issue to program data */
+  /*Check if there is an issue to program data*/
   if (MemoryProgramStatus == 0)
   {
-    /* No error detected. Switch on LED4 */
+    /* No error detected. Switch on LED4*/
     BSP_LED_On(LED4);
   }
   else
   {
-    /* Error detected. Switch on LED5 */
+    /* Error detected. Switch on LED5*/
     Error_Handler();
   }
   
@@ -243,37 +249,13 @@ static uint32_t GetSector(uint32_t Address)
 }
 
 /**
-  * @brief  Gets sector Size
-  * @param  None
-  * @retval The size of a given sector
-  */
-static uint32_t GetSectorSize(uint32_t Sector)
-{
-  uint32_t sectorsize = 0x00;
-
-  if((Sector == FLASH_SECTOR_0) || (Sector == FLASH_SECTOR_1) || (Sector == FLASH_SECTOR_2) || (Sector == FLASH_SECTOR_3))
-  {
-    sectorsize = 16 * 1024;
-  }
-  else if(Sector == FLASH_SECTOR_4)
-  {
-    sectorsize = 64 * 1024;
-  }
-  else
-  {
-    sectorsize = 128 * 1024;
-  }  
-  return sectorsize;
-}
-
-/**
   * @brief  This function is executed in case of error occurrence.
   * @param  None
   * @retval None
   */
 static void Error_Handler(void)
 {
-  /* Turn LED5 on */
+  /* Turn LED5 (RED) on */
   BSP_LED_On(LED5);
   while(1)
   {
@@ -306,7 +288,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -332,17 +314,9 @@ static void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
-
-  /* STM32F405x/407x/415x/417x Revision Z and upper devices: prefetch is supported  */
-  if (HAL_GetREVID() >= 0x1001)
-  {
-    /* Enable the Flash prefetch */
-    __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
-  }
 }
 
 #ifdef  USE_FULL_ASSERT
-
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -361,7 +335,6 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
-
 /**
   * @}
   */
@@ -369,3 +342,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

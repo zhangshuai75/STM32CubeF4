@@ -2,19 +2,28 @@
   ******************************************************************************
   * @file    USB_Device/CustomHID_Standalone/Inc/usbd_customhid_if.h
   * @author  MCD Application Team
+  * @version $VERSION$
+  * @date    $DATE$
   * @brief   Header for usbd_customhid_if.c file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __USBD_CUSTOMHID_IF_H
@@ -44,12 +53,12 @@
    resources */
 /* Definition for ADCx clock resources */
 #define ADCx                            ADC3
-#define ADCx_CLK_ENABLE()               __HAL_RCC_ADC3_CLK_ENABLE()
-#define DMAx_CLK_ENABLE()               __HAL_RCC_DMA2_CLK_ENABLE()     
-#define ADCx_CHANNEL_GPIO_CLK_ENABLE()  __HAL_RCC_GPIOF_CLK_ENABLE()
+#define ADCx_CLK_ENABLE()               __ADC3_CLK_ENABLE()
+#define DMAx_CLK_ENABLE()               __DMA2_CLK_ENABLE()     
+#define ADCx_CHANNEL_GPIO_CLK_ENABLE()  __GPIOF_CLK_ENABLE()
      
-#define ADCx_FORCE_RESET()              __HAL_RCC_ADC_FORCE_RESET()
-#define ADCx_RELEASE_RESET()            __HAL_RCC_ADC_RELEASE_RESET()
+#define ADCx_FORCE_RESET()              __ADC_FORCE_RESET()
+#define ADCx_RELEASE_RESET()            __ADC_RELEASE_RESET()
 
 /* Definition for ADCx Channel Pin */
 #define ADCx_CHANNEL_PIN                GPIO_PIN_10
@@ -71,3 +80,5 @@
 extern USBD_CUSTOM_HID_ItfTypeDef USBD_CustomHID_fops;
 
 #endif /* __USBD_CUSTOMHID_IF_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

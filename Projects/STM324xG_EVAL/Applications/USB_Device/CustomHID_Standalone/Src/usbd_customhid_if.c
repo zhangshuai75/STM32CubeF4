@@ -2,30 +2,38 @@
   ******************************************************************************
   * @file    USB_Device/CustomHID_Standalone/Src/usbd_customhid_if.c
   * @author  MCD Application Team
+  * @version $VERSION$
+  * @date    $DATE$
   * @brief   USB Device Custom HID interface file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_customhid_if.h"
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
-static int8_t CustomHID_Init(void);
-static int8_t CustomHID_DeInit(void);
-static int8_t CustomHID_OutEvent(uint8_t event_idx, uint8_t state);
-
+static int8_t CustomHID_Init     (void);
+static int8_t CustomHID_DeInit   (void);
+static int8_t CustomHID_OutEvent (uint8_t event_idx, uint8_t state);
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef  AdcHandle;
 uint32_t ADCConvertedValue = 0;
@@ -40,7 +48,7 @@ __ALIGN_BEGIN static uint8_t CustomHID_ReportDesc[USBD_CUSTOM_HID_REPORT_DESC_SI
   0xa1, 0x01,            /* COLLECTION (Application)       */            
   /* 6 */
   
-  /* LED1 */        
+  /* Led 1 */        
   0x85, LED1_REPORT_ID,  /*     REPORT_ID (1)		     */
   0x09, 0x01,            /*     USAGE (LED 1)	             */
   0x15, 0x00,            /*     LOGICAL_MINIMUM (0)        */          
@@ -54,7 +62,7 @@ __ALIGN_BEGIN static uint8_t CustomHID_ReportDesc[USBD_CUSTOM_HID_REPORT_DESC_SI
   0x91, 0x82,            /*     OUTPUT (Data,Var,Abs,Vol)  */
   /* 26 */
   
-  /* LED2 */
+  /* Led 2 */
   0x85, LED2_REPORT_ID,  /*     REPORT_ID 2		     */
   0x09, 0x02,            /*     USAGE (LED 2)	             */
   0x15, 0x00,            /*     LOGICAL_MINIMUM (0)        */          
@@ -68,7 +76,7 @@ __ALIGN_BEGIN static uint8_t CustomHID_ReportDesc[USBD_CUSTOM_HID_REPORT_DESC_SI
   0x91, 0x82,            /*     OUTPUT (Data,Var,Abs,Vol)  */
   /* 46 */
   
-  /* LED3 */        
+  /* Led 3 */        
   0x85, LED3_REPORT_ID,  /*     REPORT_ID (3)		     */
   0x09, 0x03,            /*     USAGE (LED 3)	             */
   0x15, 0x00,            /*     LOGICAL_MINIMUM (0)        */          
@@ -82,7 +90,7 @@ __ALIGN_BEGIN static uint8_t CustomHID_ReportDesc[USBD_CUSTOM_HID_REPORT_DESC_SI
   0x91, 0x82,            /*     OUTPUT (Data,Var,Abs,Vol)  */
   /* 66 */
   
-  /* LED4 */
+  /* Led 4 */
   0x85, LED4_REPORT_ID,  /*     REPORT_ID 4)		     */
   0x09, 0x04,            /*     USAGE (LED 4)	             */
   0x15, 0x00,            /*     LOGICAL_MINIMUM (0)        */          
@@ -165,7 +173,7 @@ USBD_CUSTOM_HID_ItfTypeDef USBD_CustomHID_fops =
   * @brief  CustomHID_Init
   *         Initializes the CUSTOM HID media low layer
   * @param  None
-  * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
+  * @retval Result of the opeartion: USBD_OK if all operations are OK else USBD_FAIL
   */
 static int8_t CustomHID_Init(void)
 {
@@ -176,7 +184,7 @@ static int8_t CustomHID_Init(void)
   AdcHandle.Instance = ADCx;
   
   AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
-  AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;
+  AdcHandle.Init.Resolution = ADC_RESOLUTION12b;
   AdcHandle.Init.ScanConvMode = DISABLE;
   AdcHandle.Init.ContinuousConvMode = ENABLE;
   AdcHandle.Init.DiscontinuousConvMode = DISABLE;
@@ -206,7 +214,7 @@ static int8_t CustomHID_Init(void)
   BSP_LED_Init(LED4);
   
   /* Enable GPIOC clock */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
   
   /* Configure PG15 pin as input floating */
   GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING_FALLING;
@@ -225,7 +233,7 @@ static int8_t CustomHID_Init(void)
   * @brief  CustomHID_DeInit
   *         DeInitializes the CUSTOM HID media low layer
   * @param  None
-  * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
+  * @retval Result of the opeartion: USBD_OK if all operations are OK else USBD_FAIL
   */
 static int8_t CustomHID_DeInit(void)
 {
@@ -267,10 +275,6 @@ static int8_t CustomHID_OutEvent  (uint8_t event_idx, uint8_t state)
     BSP_LED_Off(LED4); 
     break;
   }
-
-  /* Start next USB packet transfer once data processing is completed */
-  USBD_CUSTOM_HID_ReceivePacket(&USBD_Device);
-
   return (0);
 }
 
@@ -296,3 +300,4 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     USBD_CUSTOM_HID_SendReport(&USBD_Device, SendBuffer, 2);
   }
 }
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -43,7 +43,7 @@
 
 static struct netconn *conn;
 static struct netbuf *buf;
-static ip_addr_t *addr;
+static struct ip_addr *addr;
 static unsigned short port;
 /*-----------------------------------------------------------------------------------*/
 static void udpecho_thread(void *arg)

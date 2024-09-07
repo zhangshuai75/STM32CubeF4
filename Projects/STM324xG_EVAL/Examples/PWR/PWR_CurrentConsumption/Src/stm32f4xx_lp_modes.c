@@ -2,6 +2,8 @@
   ******************************************************************************
   * @file    PWR/PWR_CurrentConsumption/stm32f4xx_lp_modes.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file provides firmware functions to manage the following 
   *          functionalities of the STM32F4xx Low Power Modes:
   *           - Sleep Mode
@@ -12,12 +14,29 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -66,15 +85,15 @@ void SleepMode_Measure(void)
 
   /* Configure all GPIO as analog to reduce current consumption on non used IOs */
   /* Enable GPIOs clock */
-   __HAL_RCC_GPIOA_CLK_ENABLE();
-   __HAL_RCC_GPIOB_CLK_ENABLE();
-   __HAL_RCC_GPIOC_CLK_ENABLE();
-   __HAL_RCC_GPIOD_CLK_ENABLE();
-   __HAL_RCC_GPIOE_CLK_ENABLE();
-   __HAL_RCC_GPIOF_CLK_ENABLE();
-   __HAL_RCC_GPIOG_CLK_ENABLE();
-   __HAL_RCC_GPIOH_CLK_ENABLE();
-   __HAL_RCC_GPIOI_CLK_ENABLE();
+   __GPIOA_CLK_ENABLE();
+   __GPIOB_CLK_ENABLE();
+   __GPIOC_CLK_ENABLE();
+   __GPIOD_CLK_ENABLE();
+   __GPIOE_CLK_ENABLE();
+   __GPIOF_CLK_ENABLE();
+   __GPIOG_CLK_ENABLE();
+   __GPIOH_CLK_ENABLE();
+   __GPIOI_CLK_ENABLE();
 
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
@@ -91,15 +110,15 @@ void SleepMode_Measure(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* Disable GPIOs clock */
-   __HAL_RCC_GPIOA_CLK_DISABLE();
-   __HAL_RCC_GPIOB_CLK_DISABLE();
-   __HAL_RCC_GPIOC_CLK_DISABLE();
-   __HAL_RCC_GPIOD_CLK_DISABLE();
-   __HAL_RCC_GPIOE_CLK_DISABLE();
-   __HAL_RCC_GPIOF_CLK_DISABLE();
-   __HAL_RCC_GPIOG_CLK_DISABLE();
-   __HAL_RCC_GPIOH_CLK_DISABLE();
-   __HAL_RCC_GPIOI_CLK_DISABLE();
+   __GPIOA_CLK_DISABLE();
+   __GPIOB_CLK_DISABLE();
+   __GPIOC_CLK_DISABLE();
+   __GPIOD_CLK_DISABLE();
+   __GPIOE_CLK_DISABLE();
+   __GPIOF_CLK_DISABLE();
+   __GPIOG_CLK_DISABLE();
+   __GPIOH_CLK_DISABLE();
+   __GPIOI_CLK_DISABLE();
    
   /* Configure Key Button */
   BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
@@ -144,15 +163,15 @@ void StopMode_Measure(void)
   
   /* Configure all GPIO as analog to reduce current consumption on non used IOs */
   /* Enable GPIOs clock */
-   __HAL_RCC_GPIOA_CLK_ENABLE();
-   __HAL_RCC_GPIOB_CLK_ENABLE();
-   __HAL_RCC_GPIOC_CLK_ENABLE();
-   __HAL_RCC_GPIOD_CLK_ENABLE();
-   __HAL_RCC_GPIOE_CLK_ENABLE();
-   __HAL_RCC_GPIOF_CLK_ENABLE();
-   __HAL_RCC_GPIOG_CLK_ENABLE();
-   __HAL_RCC_GPIOH_CLK_ENABLE();
-   __HAL_RCC_GPIOI_CLK_ENABLE();
+   __GPIOA_CLK_ENABLE();
+   __GPIOB_CLK_ENABLE();
+   __GPIOC_CLK_ENABLE();
+   __GPIOD_CLK_ENABLE();
+   __GPIOE_CLK_ENABLE();
+   __GPIOF_CLK_ENABLE();
+   __GPIOG_CLK_ENABLE();
+   __GPIOH_CLK_ENABLE();
+   __GPIOI_CLK_ENABLE();
 
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
@@ -169,15 +188,15 @@ void StopMode_Measure(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* Disable GPIOs clock */
-  __HAL_RCC_GPIOA_CLK_DISABLE();
-  __HAL_RCC_GPIOB_CLK_DISABLE();
-  __HAL_RCC_GPIOC_CLK_DISABLE();
-  __HAL_RCC_GPIOD_CLK_DISABLE();
-  __HAL_RCC_GPIOE_CLK_DISABLE();
-  __HAL_RCC_GPIOF_CLK_DISABLE();
-  __HAL_RCC_GPIOG_CLK_DISABLE();
-  __HAL_RCC_GPIOH_CLK_DISABLE();
-  __HAL_RCC_GPIOI_CLK_DISABLE();
+  __GPIOA_CLK_DISABLE();
+  __GPIOB_CLK_DISABLE();
+  __GPIOC_CLK_DISABLE();
+  __GPIOD_CLK_DISABLE();
+  __GPIOE_CLK_DISABLE();
+  __GPIOF_CLK_DISABLE();
+  __GPIOG_CLK_DISABLE();
+  __GPIOH_CLK_DISABLE();
+  __GPIOI_CLK_DISABLE();
  
   RTCHandle.Instance = RTC;
     
@@ -252,7 +271,7 @@ void StopMode_Measure(void)
 void StandbyMode_Measure(void)
 {
   /* Enable Power Clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* Allow access to Backup */
   HAL_PWR_EnableBkUpAccess();
@@ -324,17 +343,17 @@ void StandbyRTCMode_Measure(void)
   /* Disable Wake-up timer */
   HAL_RTCEx_DeactivateWakeUpTimer(&RTCHandle);
 
-  /*## Clear all related wakeup flags ########################################*/
+  /*#### Clear all related wakeup flags ######################################*/
   /* Clear PWR wake up Flag */
   __HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
   
   /* Clear RTC Wake Up timer Flag */
   __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&RTCHandle, RTC_FLAG_WUTF);
   
-  /*## Setting the Wake up time ##############################################*/
+  /*#### Setting the Wake up time ############################################*/
   HAL_RTCEx_SetWakeUpTimer_IT(&RTCHandle, 0xA017, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
   
-  /*## Enter the Standby mode ################################################*/
+  /*#### Enter the Standby mode ##############################################*/
   /* Request to enter STANDBY mode  */
   HAL_PWR_EnterSTANDBYMode(); 
 }
@@ -390,23 +409,23 @@ void StandbyRTCBKPSRAMMode_Measure(void)
   /* Disable Wake-up timer */
   HAL_RTCEx_DeactivateWakeUpTimer(&RTCHandle);
   
-  /*## Clear all related wakeup flags ########################################*/
+  /*#### Clear all related wakeup flags ######################################*/
   /* Clear PWR wake up Flag */
   __HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
   
   /* Clear RTC Wake Up timer Flag */
   __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&RTCHandle, RTC_FLAG_WUTF);
   
-  /*## Setting the Wake up time ##############################################*/
+  /*#### Setting the Wake up time ############################################*/
   HAL_RTCEx_SetWakeUpTimer_IT(&RTCHandle, 0xA017, RTC_WAKEUPCLOCK_RTCCLK_DIV16);
 
   /* Enable BKPRAM Clock */
-  __HAL_RCC_BKPSRAM_CLK_ENABLE();
+  __BKPSRAM_CLK_ENABLE();
 
   /* Enable the Backup SRAM low power Regulator */
   HAL_PWREx_EnableBkUpReg();
 
-  /*## Enter the Standby mode ################################################*/
+  /*#### Enter the Standby mode ##############################################*/
   /* Request to enter STANDBY mode  */
   HAL_PWR_EnterSTANDBYMode();
 }
@@ -455,3 +474,5 @@ static void SYSCLKConfig_STOP(void)
 /**
   * @}
   */ 
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

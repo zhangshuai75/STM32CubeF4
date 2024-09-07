@@ -2,30 +2,41 @@
   ******************************************************************************
   * @file    LwIP/LwIP_HTTP_Server_Netconn_RTOS/Src/httpser-netconn.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Basic http server implementation using LwIP netconn API  
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
-#include "lwip/apps/fs.h"
+#include "lwip/opt.h"
+#include "lwip/arch.h"
+#include "lwip/api.h"
+#include "fs.h"
 #include "string.h"
 #include "httpserver-netconn.h"
 #include "cmsis_os.h"
 
-#include <stdio.h>
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define WEBSERVER_THREAD_PRIO    ( osPriorityAboveNormal )
+#define WEBSERVER_THREAD_PRIO    ( tskIDLE_PRIORITY + 4 )
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -142,13 +153,13 @@ static const unsigned char PAGE_START[] = {
   * @param conn: pointer on connection structure 
   * @retval None
   */
-static void http_server_serve(struct netconn *conn) 
+void http_server_serve(struct netconn *conn) 
 {
   struct netbuf *inbuf;
   err_t recv_err;
   char* buf;
   u16_t buflen;
-  struct fs_file file;
+  struct fs_file * file;
   
   /* Read the data from the port, blocking if nothing yet there. 
    We assume the request (the part we care about) is in one netbuf */
@@ -167,23 +178,23 @@ static void http_server_serve(struct netconn *conn)
         /* Check if request to get ST.gif */ 
         if (strncmp((char const *)buf,"GET /STM32F4xx_files/ST.gif",27)==0)
         {
-          fs_open(&file, "/STM32F4xx_files/ST.gif"); 
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
-          fs_close(&file);
+          file = fs_open("/STM32F4xx_files/ST.gif"); 
+          netconn_write(conn, (const unsigned char*)(file->data), (size_t)file->len, NETCONN_NOCOPY);
+          fs_close(file);
         }   
         /* Check if request to get stm32.jpeg */
         else if (strncmp((char const *)buf,"GET /STM32F4xx_files/stm32.jpg",30)==0)
         {
-          fs_open(&file, "/STM32F4xx_files/stm32.jpg"); 
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
-          fs_close(&file);
+          file = fs_open("/STM32F4xx_files/stm32.jpg"); 
+          netconn_write(conn, (const unsigned char*)(file->data), (size_t)file->len, NETCONN_NOCOPY);
+          fs_close(file);
         }
         else if (strncmp((char const *)buf,"GET /STM32F4xx_files/logo.jpg", 29) == 0)                                           
         {
           /* Check if request to get ST logo.jpg */
-          fs_open(&file, "/STM32F4xx_files/logo.jpg"); 
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
-          fs_close(&file);
+          file = fs_open("/STM32F4xx_files/logo.jpg"); 
+          netconn_write(conn, (const unsigned char*)(file->data), (size_t)file->len, NETCONN_NOCOPY);
+          fs_close(file);
         }
         else if(strncmp(buf, "GET /STM32F4xxTASKS.html", 24) == 0)
         {
@@ -192,17 +203,17 @@ static void http_server_serve(struct netconn *conn)
         }
         else if((strncmp(buf, "GET /STM32F4xx.html", 19) == 0)||(strncmp(buf, "GET / ", 6) == 0)) 
         {
-          /* Load STM32F4xx page */
-          fs_open(&file, "/STM32F4xx.html"); 
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
-          fs_close(&file);
+          /* Load STM32F4x7 page */
+          file = fs_open("/STM32F4xx.html"); 
+          netconn_write(conn, (const unsigned char*)(file->data), (size_t)file->len, NETCONN_NOCOPY);
+          fs_close(file);
         }
         else 
         {
           /* Load Error page */
-          fs_open(&file, "/404.html"); 
-          netconn_write(conn, (const unsigned char*)(file.data), (size_t)file.len, NETCONN_NOCOPY);
-          fs_close(&file);
+          file = fs_open("/404.html"); 
+          netconn_write(conn, (const unsigned char*)(file->data), (size_t)file->len, NETCONN_NOCOPY);
+          fs_close(file);
         }
       }      
     }
@@ -287,7 +298,7 @@ void DynWebPage(struct netconn *conn)
   strcat((char *)PAGE_BODY, "<br>---------------------------------------------<br>");
     
   /* The list of tasks and their status */
-  osThreadList((unsigned char *)(PAGE_BODY + strlen(PAGE_BODY)));
+  osThreadList((signed char *)(PAGE_BODY + strlen(PAGE_BODY)));
   strcat((char *)PAGE_BODY, "<br><br>---------------------------------------------");
   strcat((char *)PAGE_BODY, "<br>B : Blocked, R : Ready, D : Deleted, S : Suspended<br>");
 

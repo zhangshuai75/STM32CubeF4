@@ -2,25 +2,44 @@
   ******************************************************************************
   * @file    DMA2D/DMA2D_MemToMemWithPFC/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example provides a description of how to configure DMA2D periph in 
   *          Memory to Memory with pixel format conversion transfer mode and display the 
   *          result on LCD.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "RGB565_300x120.h"
+#include "ARGB8888_300x120.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -37,7 +56,7 @@
 DMA2D_HandleTypeDef     Dma2dHandle;
 
 /* DMA2D output address and input for LCD */
-uint32_t aBufferResult[36000];
+uint32_t aBufferResult[18000];
 
 /* Private function prototypes -----------------------------------------------*/
 static void DMA2D_Config(void);
@@ -63,7 +82,7 @@ int main(void)
   result on LCD.
   In this case two images will be displayed on the LCD, original image before 
   the pixel format conversion and the transferred data after pixel format conversion
-  In this example the pixel format conversion is done from RGB565 to ARGB8888 
+  In this example the pixel format conversion is done from ARGB8888 to ARGB4444 
   and you can see on LCD the difference between the two images
    */  
 
@@ -75,10 +94,10 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock */
   SystemClock_Config();
 
-  /* Configure LED1, LED2 and LED3 */
+  /* Configure LED3 */
   BSP_LED_Init(LED1);
   BSP_LED_Init(LED2);
   BSP_LED_Init(LED3);
@@ -90,13 +109,12 @@ int main(void)
   DMA2D_Config(); 
   
   /*##-3- Start DMA2D transfer ###############################################*/  
-  if(HAL_DMA2D_Start_IT(&Dma2dHandle, (uint32_t)&RGB565_300x120, (uint32_t)&aBufferResult, 300, 120) != HAL_OK)
+  if(HAL_DMA2D_Start_IT(&Dma2dHandle, (uint32_t)&ARGB8888_300x120, (uint32_t)&aBufferResult, 300, 120) != HAL_OK)
   {
     /* Initialization Error */
     Error_Handler(); 
   }
 
-  /* Infinite loop */
   while (1)
   {
   }
@@ -104,12 +122,12 @@ int main(void)
 
 /**
   * @brief DMA2D configuration.
-  * @note  This function Configure the DMA2D peripheral :
+  * @note  This function Configure tha DMA2D peripheral :
   *        1) Configure the transfer mode : memory to memory W/ pixel format conversion
-  *        2) Configure the output color mode as ARGB8888
+  *        2) Configure the output color mode as ARGB4444
   *        3) Configure the output memory address at SRAM memory  
   *        4) Configure the data size : 320x120 (pixels)  
-  *        5) Configure the input color mode as RGB565
+  *        5) Configure the input color mode as ARGB8888
   *        6) Configure the input memory address at FLASH memory 
   * @retval
   *  None
@@ -119,7 +137,7 @@ static void DMA2D_Config(void)
 {    
   /* Configure the DMA2D Mode, Color Mode and output offset */
   Dma2dHandle.Init.Mode         = DMA2D_M2M_PFC;
-  Dma2dHandle.Init.ColorMode    = DMA2D_ARGB8888;
+  Dma2dHandle.Init.ColorMode    = DMA2D_ARGB4444;
   Dma2dHandle.Init.OutputOffset = 0x0;     
 
   /* DMA2D Callbacks Configuration */
@@ -129,12 +147,12 @@ static void DMA2D_Config(void)
   /* Foreground Configuration */
   Dma2dHandle.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
   Dma2dHandle.LayerCfg[1].InputAlpha = 0xFF;
-  Dma2dHandle.LayerCfg[1].InputColorMode = DMA2D_INPUT_RGB565;
+  Dma2dHandle.LayerCfg[1].InputColorMode = CM_ARGB8888;
   Dma2dHandle.LayerCfg[1].InputOffset = 0x0;
 
   Dma2dHandle.Instance          = DMA2D; 
   
-  /* DMA2D Initialization */
+  /* DMA2D Initialisation */
   if(HAL_DMA2D_Init(&Dma2dHandle) != HAL_OK)
   {
     /* Initialization Error */
@@ -150,15 +168,15 @@ static void DMA2D_Config(void)
 
 /**
   * @brief LCD Configuration.
-  * @note  This function Configure the LTDC peripheral :
+  * @note  This function Configure tha LTDC peripheral :
   *        1) Configure the Pixel Clock for the LCD
   *        2) Configure the LTDC Timing and Polarity
   *        3) Configure the LTDC Layer 1 :
-  *           - RGB565 as pixel format  
+  *           - ARGB8888 as pixel format  
   *           - The frame buffer is located at internal RAM : The output of DMA2D transfer
   *           - The Layer size configuration : 300x120
   *        4) Configure the LTDC Layer 2 :
-  *           - ARGB8888 as pixel format  
+  *           - ARGB4444 as pixel format  
   *           - The frame buffer is located at internal RAM : The output of DMA2D transfer
   *           - The Layer size configuration : 300x120                        
   * @retval
@@ -194,18 +212,18 @@ static void LCD_Config(void)
   LtdcHandle.Init.AccumulatedVBP = 11; 
   /* Accumulated active width = Hsync + HBP + Active Width - 1 */ 
   LtdcHandle.Init.AccumulatedActiveH = 283;
-  /* Accumulated active height = Vsync + VBP + Active Height - 1 */
+  /* Accumulated active height = Vsync + VBP + Active Heigh - 1 */
   LtdcHandle.Init.AccumulatedActiveW = 522;
-  /* Total height = Vsync + VBP + Active Height + VFP - 1 */
+  /* Total height = Vsync + VBP + Active Heigh + VFP - 1 */
   LtdcHandle.Init.TotalHeigh = 285;
   /* Total width = Hsync + HBP + Active Width + HFP - 1 */
   LtdcHandle.Init.TotalWidth = 524;
 
   /* LCD clock configuration */
-  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 MHz */
-  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 MHz */
-  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/5 = 38.4 MHz */
-  /* LTDC clock frequency = PLLLCDCLK / LTDC_PLLSAI_DIVR_4 = 38.4/4 = 9.6MHz */
+  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 Mhz */
+  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 Mhz */
+  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/5 = 38.4 Mhz */
+  /* LTDC clock frequency = PLLLCDCLK / LTDC_PLLSAI_DIVR_4 = 38.4/4 = 9.6Mhz */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
   PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
   PeriphClkInitStruct.PLLSAI.PLLSAIR = 3;
@@ -234,10 +252,10 @@ static void LCD_Config(void)
   pLayerCfg.WindowY1 = 135;
   
   /* Pixel Format configuration*/ 
-  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_RGB565;
+  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
   
   /* Start Address configuration : frame buffer is located at FLASH memory */
-  pLayerCfg.FBStartAdress = (uint32_t)&RGB565_300x120;
+  pLayerCfg.FBStartAdress = (uint32_t)&ARGB8888_300x120;
   
   /* Alpha constant (255 totally opaque) */
   pLayerCfg.Alpha = 255;
@@ -266,7 +284,7 @@ static void LCD_Config(void)
   pLayerCfg1.WindowY1 = 257;
   
   /* Pixel Format configuration*/ 
-  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
+  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB4444;
   
   /* Start Address configuration : frame buffer is located at FLASH memory */
   pLayerCfg1.FBStartAdress = (uint32_t)&aBufferResult;
@@ -295,14 +313,14 @@ static void LCD_Config(void)
     Error_Handler(); 
   }
 
-  /* Configure the Background Layer */
+  /* Configure the Background Layer*/
   if(HAL_LTDC_ConfigLayer(&LtdcHandle, &pLayerCfg, 0) != HAL_OK)
   {
     /* Initialization Error */
     Error_Handler(); 
   }
   
-  /* Configure the Foreground Layer */
+  /* Configure the Foreground Layer*/
   if(HAL_LTDC_ConfigLayer(&LtdcHandle, &pLayerCfg1, 1) != HAL_OK)
   {
     /* Initialization Error */
@@ -336,7 +354,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -355,7 +373,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -374,11 +392,11 @@ static void SystemClock_Config(void)
   */
 static void Error_Handler(void)
 {
-  /* Turn LED3 on */
-  BSP_LED_On(LED3);
-  while(1)
-  {
-  }
+    /* Turn LED3 on */
+    BSP_LED_On(LED3);
+    while(1)
+    {
+    }
 }
 
 /**
@@ -408,6 +426,7 @@ static void TransferError(DMA2D_HandleTypeDef *hdma2d)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -434,3 +453,6 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

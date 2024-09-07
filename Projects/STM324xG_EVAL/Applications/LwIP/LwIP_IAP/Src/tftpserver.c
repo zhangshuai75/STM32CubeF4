@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    LwIP/LwIP_IAP/Src/tftpserver.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014   
   * @brief   basic tftp server implementation for IAP (only Write Req supported)
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "tftpserver.h"
 #include "flash_if.h"
@@ -34,19 +44,19 @@ static __IO uint32_t total_count=0;
 /* Private function prototypes -----------------------------------------------*/
 
 static void IAP_wrq_recv_callback(void *_args, struct udp_pcb *upcb, struct pbuf *pkt_buf, 
-                        const ip_addr_t *addr, u16_t port);
+                        struct ip_addr *addr, u16_t port);
 
-static int IAP_tftp_process_write(struct udp_pcb *upcb, const ip_addr_t *to, int to_port);
+static int IAP_tftp_process_write(struct udp_pcb *upcb, struct ip_addr *to, int to_port);
 
 static void IAP_tftp_recv_callback(void *arg, struct udp_pcb *Upcb, struct pbuf *pkt_buf,
-                        const ip_addr_t *addr, u16_t port);
+                        struct ip_addr *addr, u16_t port);
 
 static void IAP_tftp_cleanup_wr(struct udp_pcb *upcb, tftp_connection_args *args);
 static tftp_opcode IAP_tftp_decode_op(char *buf);
 static u16_t IAP_tftp_extract_block(char *buf);
 static void IAP_tftp_set_opcode(char *buffer, tftp_opcode opcode);
 static void IAP_tftp_set_block(char* packet, u16_t block);
-static err_t IAP_tftp_send_ack_packet(struct udp_pcb *upcb, const ip_addr_t *to, int to_port, int block);
+static err_t IAP_tftp_send_ack_packet(struct udp_pcb *upcb, struct ip_addr *to, int to_port, int block);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -54,7 +64,7 @@ static err_t IAP_tftp_send_ack_packet(struct udp_pcb *upcb, const ip_addr_t *to,
 /**
   * @brief Returns the TFTP opcode 
   * @param buf: pointer on the TFTP packet 
-  * @retval None
+  * @retval none
   */
 static tftp_opcode IAP_tftp_decode_op(char *buf)
 {
@@ -76,7 +86,7 @@ static u16_t IAP_tftp_extract_block(char *buf)
   * @brief Sets the TFTP opcode 
   * @param  buffer: pointer on the TFTP packet
   * @param  opcode: TFTP opcode
-  * @retval None
+  * @retval none
   */
 static void IAP_tftp_set_opcode(char *buffer, tftp_opcode opcode)
 {
@@ -88,7 +98,7 @@ static void IAP_tftp_set_opcode(char *buffer, tftp_opcode opcode)
   * @brief Sets the TFTP block number 
   * @param packet: pointer on the TFTP packet 
   * @param  block: block number
-  * @retval None
+  * @retval none
   */
 static void IAP_tftp_set_block(char* packet, u16_t block)
 {
@@ -104,7 +114,7 @@ static void IAP_tftp_set_block(char* packet, u16_t block)
   * @param block: block number
   * @retval: err_t: error code 
   */
-static err_t IAP_tftp_send_ack_packet(struct udp_pcb *upcb, const ip_addr_t *to, int to_port, int block)
+static err_t IAP_tftp_send_ack_packet(struct udp_pcb *upcb, struct ip_addr *to, int to_port, int block)
 {
   err_t err;
   struct pbuf *pkt_buf; /* Chain of pbuf's to be sent */
@@ -152,12 +162,12 @@ static err_t IAP_tftp_send_ack_packet(struct udp_pcb *upcb, const ip_addr_t *to,
   * @brief  Processes data transfers after a TFTP write request
   * @param  _args: used as pointer on TFTP connection args
   * @param  upcb: pointer on udp_pcb structure
-  * @param  pkt_buf: pointer on a pbuf structure
-  * @param  ip_addr: pointer on the receive IP_address structure
-  * @param  port: receive port address
-  * @retval None
+  * @param pkt_buf: pointer on a pbuf stucture
+  * @param ip_addr: pointer on the receive IP_address structure
+  * @param port: receive port address
+  * @retval none
   */
-static void IAP_wrq_recv_callback(void *_args, struct udp_pcb *upcb, struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t port)
+static void IAP_wrq_recv_callback(void *_args, struct udp_pcb *upcb, struct pbuf *pkt_buf, struct ip_addr *addr, u16_t port)
 {
   tftp_connection_args *args = (tftp_connection_args *)_args;
   uint32_t data_buffer[128];
@@ -238,9 +248,9 @@ static void IAP_wrq_recv_callback(void *_args, struct udp_pcb *upcb, struct pbuf
   * @brief  Processes TFTP write request
   * @param  to: pointer on the receive IP address
   * @param  to_port: receive port number
-  * @retval None
+  * @retval none
   */
-static int IAP_tftp_process_write(struct udp_pcb *upcb, const ip_addr_t *to, int to_port)
+static int IAP_tftp_process_write(struct udp_pcb *upcb, struct ip_addr *to, int to_port)
 {
   tftp_connection_args *args = NULL;
   /* This function is called from a callback,
@@ -291,10 +301,10 @@ static int IAP_tftp_process_write(struct udp_pcb *upcb, const ip_addr_t *to, int
   * @param  pbuf: pointer on packet buffer
   * @param  addr: pointer on the receive IP address
   * @param  port: receive port number
-  * @retval None
+  * @retval none
   */
 static void IAP_tftp_recv_callback(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf,
-                        const ip_addr_t *addr, u16_t port)
+                        struct ip_addr *addr, u16_t port)
 {
   tftp_opcode op;
   struct udp_pcb *upcb_tftp_data;
@@ -302,7 +312,7 @@ static void IAP_tftp_recv_callback(void *arg, struct udp_pcb *upcb, struct pbuf 
 
 #ifdef USE_LCD
   uint32_t i;
-  char filename[40],message[46], *ptr;
+  char filename[40],message[40], *ptr;
 #endif
 
   /* create new UDP PCB structure */
@@ -370,7 +380,7 @@ static void IAP_tftp_recv_callback(void *arg, struct udp_pcb *upcb, struct pbuf 
   * @brief  disconnect and close the connection 
   * @param  upcb: pointer on udp_pcb structure
   * @param  args: pointer on tftp_connection arguments
-  * @retval None
+  * @retval none
   */
 static void IAP_tftp_cleanup_wr(struct udp_pcb *upcb, tftp_connection_args *args)
 {
@@ -392,8 +402,8 @@ static void IAP_tftp_cleanup_wr(struct udp_pcb *upcb, tftp_connection_args *args
 
 /**
   * @brief  Creates and initializes a UDP PCB for TFTP receive operation  
-  * @param  None  
-  * @retval None
+  * @param  none  
+  * @retval none
   */
 void IAP_tftpd_init(void)
 {
@@ -408,7 +418,7 @@ void IAP_tftpd_init(void)
 #ifdef USE_LCD
     LCD_ErrLog("Can not create pcb \n");
 #endif
-    return;
+    return ;
   }
 
   /* Bind this PCB to port 69  */
@@ -427,3 +437,5 @@ void IAP_tftpd_init(void)
 }
 
 #endif /* USE_IAP_TFTP */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

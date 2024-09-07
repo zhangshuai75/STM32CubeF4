@@ -1,31 +1,41 @@
 /**
   ******************************************************************************
-  * @file    Display/LCD_Paint/Src/fatfs_storage.c
+  * @file    fatfs_storage.c
   * @author  MCD Application Team
-  * @brief   This file includes the Storage (FatFs) driver for the STM324xG-EVAL
-  *          application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   This file includes the Storage (FatFs) driver for the STM324x9I-EVAL
+  *          example.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "fatfs_storage.h"
 
-/** @addtogroup STM324xG_EVAL_FAT_FS
+/** @addtogroup STM324x9I_EVAL_FAT_FS
   * @{
   */
 
 /** @defgroup FATFS_STORAGE
-  * @brief This file includes the Storage (FatFs) driver for the STM324xG-EVAL
-  *        application.
+  * @brief This file includes the Storage (FatFs) driver for the STM324x9I-EVAL
+  *        example.
   * @{
   */
 
@@ -81,7 +91,7 @@ uint32_t BytesRead = 0;
   */
 
 /**
-  * @brief  SDCARD Initialization for FatFs
+  * @brief  SDCARD Initialisation for FatFs
   * @param  None
   * @retval err : Error status (0=> success, 1=> fail)
   */
@@ -89,7 +99,7 @@ uint32_t Storage_Init(void)
 {
   BSP_SD_Init();
   
-  /****************** FatFs Volume Access ******************************/
+  /****************** FatFs Volume Acess ******************************/
   if (f_mount(0, &fs))
   {
     return 1;
@@ -102,7 +112,7 @@ uint32_t Storage_Init(void)
   * @param  DirName: the Directory name to open
   * @param  FileName: the file name to open
   * @param  BufferAddress: A pointer to a buffer to copy the file to
-  * @param  FileLen: the File length
+  * @param  FileLen: the File lenght
   * @retval err: Error status (0=> success, 1=> fail)
   */
 uint32_t Storage_OpenReadFile(uint32_t Address, const char* BmpName)
@@ -173,7 +183,7 @@ uint32_t Storage_OpenReadFile(uint32_t Address, const char* BmpName)
   * @param  DirName: the Directory name to open
   * @param  FileName: the file name to open
   * @param  BufferAddress: A pointer to a buffer to copy the file to
-  * @param  FileLen: the File length
+  * @param  FileLen: the File lenght
   * @retval err: Error status (0=> success, 1=> fail)
   */
 uint32_t Storage_CheckBitmapFile(const char* BmpName, uint32_t *FileLen)
@@ -292,3 +302,5 @@ uint8_t Buffercmp(uint8_t* pBuffer1, uint8_t* pBuffer2, uint16_t BufferLength)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

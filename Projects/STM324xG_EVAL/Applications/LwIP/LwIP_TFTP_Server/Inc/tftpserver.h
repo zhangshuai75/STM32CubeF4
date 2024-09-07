@@ -1,20 +1,3 @@
-/**
-  ******************************************************************************
-  * @file    LwIP/LwIP_TFTP_Server/Inc/tftpserver.h 
-  * @author  MCD Application Team
-  * @brief   This file is the header of tftpserver file.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
 
 #ifndef __TFTPSERVER_H_
 #define __TFTPSERVER_H_
@@ -57,7 +40,8 @@ typedef enum {
 
 
 void tftpd_init(void);
-int tftp_process_write(struct udp_pcb *upcb2, const ip_addr_t *to, unsigned short to_port, char* FileName);
-int tftp_process_read(struct udp_pcb *upcb2, const ip_addr_t *to, unsigned short to_port, char* FileName);
+int tftp_process_write(struct udp_pcb *upcb2, struct ip_addr *to, unsigned short to_port, char* FileName);
+int tftp_process_read(struct udp_pcb *upcb2, struct ip_addr *to, unsigned short to_port, char* FileName);
 
 #endif
+

@@ -2,23 +2,33 @@
   ******************************************************************************
   * @file    Display/LTDC_AnimatedPictureFromUSB/Src/main.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main program body
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/** @addtogroup STM32F4xx_HAL_Applications
+/** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
 
@@ -44,7 +54,7 @@ MSC_ApplicationTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-USBH_HandleTypeDef  hUSBHost;
+USBH_HandleTypeDef  hUSB_Host;
 FATFS USBDISK_FatFs;
 uint8_t USBDISK_Driver_Num;  /* USB Host logical drive number */
 FIL file;
@@ -58,10 +68,10 @@ __IO uint8_t line_idx = 0;
 /* Private function prototypes -----------------------------------------------*/
 static void LCD_Config(void);
 static void MSC_Application(void);
-static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id);
-static uint8_t Explore_Disk(char *path , uint8_t recu_level);
-static uint8_t Image_Browser(char *path);
-static void Show_Image(void);
+static void USBH_UserProcess (USBH_HandleTypeDef *phost, uint8_t id );
+static uint8_t Explore_Disk (char* path , uint8_t recu_level);
+static uint8_t Image_Browser (char* path);
+static void     Show_Image(void);
 static uint32_t Storage_OpenReadFile(uint32_t Address);
 static void Toggle_Leds(void);
 static void SystemClock_Config(void);
@@ -70,7 +80,7 @@ static void Error_Handler(void);
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  Main program
+  * @brief  Main program.
   * @param  None
   * @retval None
   */
@@ -84,40 +94,38 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 168 MHz */
+  /* Configure the system clock */
   SystemClock_Config();
 
-  /* Configure LED3 and LED4 */
+  /* Configure the LEDs */
   BSP_LED_Init(LED3); 
   BSP_LED_Init(LED4); 
   
-  /* Configure USER Button */
   BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_GPIO);
   
-  /* Initialize LCD driver */
+  /* Initialize LCD driver*/
   LCD_Config();
   
   /* Link the USB Host disk I/O driver */
   USBDISK_Driver_Num = FATFS_LinkDriver(&USBH_Driver, "");
   
   /* Init Host Library */
-  if (USBH_Init(&hUSBHost, USBH_UserProcess, 0) != USBH_OK)
+  if (USBH_Init(&hUSB_Host, USBH_UserProcess, 0) != USBH_OK)
   {
     /* USB Initialization Error */
     Error_Handler();
   }
 
   /* Add Supported Class */
-  USBH_RegisterClass(&hUSBHost, USBH_MSC_CLASS);
+  USBH_RegisterClass(&hUSB_Host, USBH_MSC_CLASS);
   
   /* Start Host Process */
-  if (USBH_Start(&hUSBHost) != USBH_OK)
+  if (USBH_Start(&hUSB_Host) != USBH_OK)
   {
     /* USB Initialization Error */
     Error_Handler();
   }
 
-  /* Infinite loop */
   while (1)
   {
     if (Appli_state == APPLICATION_START)
@@ -125,7 +133,7 @@ int main(void)
       MSC_Application();
     }
     Toggle_Leds();
-    USBH_Process(&hUSBHost);
+    USBH_Process(&hUSB_Host);
   }
 }
 
@@ -142,23 +150,27 @@ static void LCD_Config(void)
   /* LCD Layers Initialization */ 
   BSP_LCD_LayerDefaultInit(LCD_FOREGROUND_LAYER, (LCD_FRAME_BUFFER + BUFFER_OFFSET));
   
-  /* Configure the transparency for foreground : Increase the transparency */
+  /* Configure the transparency for foreground : Increase the transprency */
   BSP_LCD_SetTransparency(LCD_BACKGROUND_LAYER, 0);
   BSP_LCD_SelectLayer(LCD_FOREGROUND_LAYER);
 
   /* LCD Log initialization */
   LCD_LOG_Init(); 
 
-  LCD_LOG_SetHeader((uint8_t *)"LTDC Application");
+#ifdef USE_USB_OTG_HS 
+  LCD_LOG_SetHeader((uint8_t *)"USB HS Host");
+#else
+  LCD_LOG_SetHeader(" USB OTG FS MSC Host");
+#endif
   LCD_UsrLog("> USB Host library started.\n"); 
-  LCD_LOG_SetFooter ((uint8_t *)"     USB Host Library V3.2.0" );
+  LCD_LOG_SetFooter ((uint8_t *)"     USB Host Library V0.8.0" );
 }
 
 /**
-  * @brief  User Process
-  * @param  None
-  * @retval None
-  */
+* @brief  User Process
+* @param  None
+* @retval None
+*/
 static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
 {  
   switch (id)
@@ -213,7 +225,7 @@ static void MSC_Application(void)
       line_idx = 0;   
       USBH_USR_ApplicationState = USH_USR_FS_DRAW; 
       
-      LCD_UsrLog("To start Image Slideshow\n");
+      LCD_UsrLog("To start Image slide show\n");
       LCD_UsrLog("Press Key\n");
       while(BSP_PB_GetState (BUTTON_KEY) != SET)
       {
@@ -223,7 +235,7 @@ static void MSC_Application(void)
     break;
     
   case USH_USR_FS_DRAW:
-    /* USER Button in polling */
+    /* Key B3 in polling */
     while(BSP_PB_GetState (BUTTON_KEY) != RESET)
     {
       Toggle_Leds();
@@ -248,7 +260,7 @@ static void MSC_Application(void)
   * @param  recu_level: explorer level
   * @retval None
   */
-static uint8_t Explore_Disk(char* path , uint8_t recu_level)
+static uint8_t Explore_Disk (char* path , uint8_t recu_level)
 {
   FRESULT res;
   FILINFO fno;
@@ -258,9 +270,8 @@ static uint8_t Explore_Disk(char* path , uint8_t recu_level)
   
   res = f_opendir(&dir, path);
   
-  if (res == FR_OK) 
-  {
-    /* USER Button in polling */
+  if (res == FR_OK) {
+    /* Key B3 in polling */
     LCD_UsrLog("To see the disk root content:\n" );
     LCD_UsrLog("Press Key...\n");
     while((BSP_PB_GetState (BUTTON_KEY) != SET))          
@@ -292,7 +303,7 @@ static uint8_t Explore_Disk(char* path , uint8_t recu_level)
         line_idx = 0;
         LCD_UsrLog("Press Key to continue...\n");
         
-        /* USER Button in polling */
+        /* Key B3 in polling */
         while((Appli_state == APPLICATION_START) && \
           (BSP_PB_GetState (BUTTON_KEY) != SET))
         {
@@ -307,7 +318,7 @@ static uint8_t Explore_Disk(char* path , uint8_t recu_level)
       {
         LCD_DbgLog("   |   |__");
       }
-      if((fno.fattrib & AM_DIR) == AM_DIR)
+      if((fno.fattrib & AM_MASK) == AM_DIR)
       {
         strcat(tmp, "\n"); 
         LCD_UsrLog((void *)tmp);
@@ -318,13 +329,12 @@ static uint8_t Explore_Disk(char* path , uint8_t recu_level)
         LCD_DbgLog((void *)tmp);
       }
       
-      if(((fno.fattrib & AM_DIR) == AM_DIR)&&(recu_level == 1))
+      if(((fno.fattrib & AM_MASK) == AM_DIR)&&(recu_level == 1))
       {
         Explore_Disk(fn, 2);
       }
     }
   }
-  f_closedir(&dir);
   return res;
 }
 
@@ -333,7 +343,7 @@ static uint8_t Explore_Disk(char* path , uint8_t recu_level)
   * @param  path: pointer to root path
   * @retval None
   */
-static uint8_t Image_Browser(char *path)
+static uint8_t Image_Browser (char* path)
 {
   FRESULT res;
   uint8_t ret = 1;
@@ -342,19 +352,15 @@ static uint8_t Image_Browser(char *path)
   char *fn;
   
   res = f_opendir(&dir, path);
-  if (res != FR_OK) 
-  {
-    Error_Handler();
-  }
-  else
-  {    
+  if (res == FR_OK) {
+    
     for (;;) {
       res = f_readdir(&dir, &fno);
       if (res != FR_OK || fno.fname[0] == 0) break;
       if (fno.fname[0] == '.') continue;
-      
+
       fn = fno.fname;
-      
+ 
       if (fno.fattrib & AM_DIR) 
       {
         continue;
@@ -378,15 +384,14 @@ static uint8_t Image_Browser(char *path)
       }
     }  
   }
-  
-    /* LCD Log initialization */
-  LCD_LOG_Init(); 
-
-  LCD_LOG_SetHeader((uint8_t *)"LTDC Application"); 
-  LCD_LOG_SetFooter ((uint8_t *)"     USB Host Library V3.2.0" );
+  LCD_LOG_Init();
+  #ifdef USE_USB_OTG_HS  
+  LCD_LOG_SetHeader((uint8_t *)"USB HS Host");
+#else
+  LCD_LOG_SetHeader(" USB OTG FS MSC Host");
+#endif
+  LCD_LOG_SetFooter ((uint8_t *)"     USB Host Library V0.8.0" );
   USBH_USR_ApplicationState = USH_USR_FS_READLIST;
-  
-  f_closedir(&dir);
   return ret;
 }
 
@@ -494,7 +499,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -529,8 +534,8 @@ static void SystemClock_Config(void)
   */
 static void Error_Handler(void)
 {
-  /* Turn LED4 on */
-  BSP_LED_On(LED4);
+  /* Turn LED3 on */
+  BSP_LED_On(LED3);
   while(1)
   {
   }
@@ -564,3 +569,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */ 
+  
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

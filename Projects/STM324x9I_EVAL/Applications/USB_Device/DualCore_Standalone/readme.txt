@@ -1,31 +1,37 @@
 /**
-  @page DualCore_Standalone USB Device Dual Core application
+  @page DualCore_Standalone USB Device Dual Core example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    USB_Device/DualCore_Standalone/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the USB Device Dual Core application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the USB Device Dual Core example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Application Description 
+@par Example Description 
 
-This application is a part of the USB Device Library package using STM32Cube firmware. It describes how to use
-USB device application based on the STM32F4xx multi core support feature integrating communication class (CDC) 
-and Human Interface (HID) in the same project.
+This example is a part of the USB Device Library package using STM32Cube firmware. It describes how to use
+USB device application based on the STM32F4xx multi core support feature integrating Device Communication Class (CDC) 
+and Humain Interface (HID) in the same project.
 
-This is a typical application on how to use the STM32F4xx USB OTG Device peripheral, where STM32 is 
+This is a typical example on how to use the STM32F4xx USB OTG Device peripheral, where STM32 is 
 enumerated as a CDC device in the High Speed mode, and also as a HID device in the Full Speed mode,
 using the native PC Host HID/CDC drivers to which the STM324x9I-EVAL board is connected.
 
@@ -53,7 +59,7 @@ to user to emulate the Mouse directions.
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
       
 For more details about the STM32Cube USB Device library, please refer to UM1734 
@@ -63,12 +69,9 @@ For more details about the STM32Cube USB Device library, please refer to UM1734
 @par USB Library Configuration
 
 To select the appropriate USB Core to work with, user must add the following macro defines within the
-compiler preprocessor (already done in the preconfigured projects provided with this application):
+compiler preprocessor (already done in the preconfigured projects provided with this example):
       - "USE_USB_HS" and "USE_USB_FS" when using USB Dual Core Mode
 
-@par Keywords
-
-Connectivity, USB_Device, USB, HID, MSC, Full Speed, High Speed, OTG, enumeration, mass storage, mouse, USB Stick
 
 @par Directory contents
 
@@ -91,9 +94,9 @@ Connectivity, USB_Device, USB, HID, MSC, Full Speed, High Speed, OTG, enumeratio
 	
 @par Hardware and Software environment
 
-  - This application runs on STM32F429xx/STM32F439xx devices.
+  - This example runs on STM32F429xx/STM32F439xx devices.
     
-  - This application has been tested with STMicroelectronics STM324x9I-EVAL RevB 
+  - This example has been tested with STMicroelectronics STM324x9I-EVAL RevB 
     evaluation boards and can be easily tailored to any other supported device 
     and development board.
 
@@ -110,7 +113,7 @@ Connectivity, USB_Device, USB, HID, MSC, Full Speed, High Speed, OTG, enumeratio
 In order to make the program work, you must do the following :
  - Open your preferred toolchain 
  - Rebuild all files and load your image into target memory
- - Run the application
+ - Run the example
  
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

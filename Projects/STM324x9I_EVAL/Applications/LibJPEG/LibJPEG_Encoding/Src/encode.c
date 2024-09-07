@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    LibJPEG/LibJPEG_Encoding/Src/encode.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file contain the compress method.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "encode.h"
 
@@ -40,13 +50,12 @@
   * @param  buff:          pointer to the image line
   * @retval None
   */
-void jpeg_encode(JFILE *file, JFILE *file1, uint32_t width, uint32_t height, uint32_t image_quality, uint8_t * buff)
+void jpeg_encode(FIL *file, FIL *file1, uint32_t width, uint32_t height, uint32_t image_quality, uint8_t * buff)
 { 
     
   /* Encode BMP Image to JPEG */  
   JSAMPROW row_pointer;    /* Pointer to a single row */
   uint32_t bytesread;
-  uint32_t index;
             
   /* Step 1: allocate and initialize JPEG compression object */
   /* Set up the error handler */
@@ -74,17 +83,11 @@ void jpeg_encode(JFILE *file, JFILE *file1, uint32_t width, uint32_t height, uin
   /* Step 4: start compressor */
   jpeg_start_compress(&cinfo, TRUE);
   
-  /* Get bitmap data address offset */
-  f_read(file, buff, 14, (UINT*)&bytesread);
-  index = *(__IO uint16_t *) (buff + 10);
-  index |= (*(__IO uint16_t *) (buff + 12)) << 16;
+  f_read(file, buff, 54, (UINT*)&bytesread);
   
   while (cinfo.next_scanline < cinfo.image_height)
   {          
-    /* In this application, the input file is a BMP, which first encodes the bottom of the picture */
-    /* JPEG encodes the highest part of the picture first. We need to read the lines upside down   */
-    /* Move the read pointer to 'last line of the picture - next_scanline'    */
-    f_lseek(file, ((cinfo.image_height-1-cinfo.next_scanline)*width*3)+index);
+    
     if(f_read(file, buff, width*3, (UINT*)&bytesread) == FR_OK)
     {
       row_pointer = (JSAMPROW)buff;
@@ -98,3 +101,5 @@ void jpeg_encode(JFILE *file, JFILE *file1, uint32_t width, uint32_t height, uin
   jpeg_destroy_compress(&cinfo);
     
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

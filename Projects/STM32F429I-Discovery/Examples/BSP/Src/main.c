@@ -2,16 +2,35 @@
   ******************************************************************************
   * @file    BSP/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example code shows how to use the STM32429I-Discovery BSP Drivers
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -32,11 +51,15 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-static uint8_t DemoIndex = 0;
+static uint8_t  DemoIndex       = 0;
 #ifdef EE_M24LR64
-uint8_t NbLoop = 1;
+uint8_t         NbLoop          = 1;
 #endif /* EE_M24LR64 */
-__IO uint8_t ubKeyPressed = RESET; 
+__IO uint8_t    ubKeyPressed    = RESET; 
+
+/* Private function prototypes -----------------------------------------------*/
+static void SystemClock_Config(void);
+static void Display_DemoDescription(void);
 
 BSP_DemoTypedef BSP_examples[]=
 {
@@ -48,11 +71,6 @@ BSP_DemoTypedef BSP_examples[]=
   {EEPROM_demo, "EEPROM", 0}, 
 #endif /* EE_M24LR64 */
 };
-
-/* Private function prototypes -----------------------------------------------*/
-static void SystemClock_Config(void);
-static void Display_DemoDescription(void);
-
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -74,19 +92,19 @@ int main(void)
   BSP_LED_Init(LED3);
   BSP_LED_Init(LED4); 
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock to 180 Mhz */
   SystemClock_Config();
   
-  /* Configure USER Button */
+  /* Configure the User Button in EXTI Mode */
   BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
-  
+
   /*##-1- Initialize the LCD #################################################*/
   /* Initialize the LCD */
   BSP_LCD_Init();
-  
-  /* Initialize the LCD Layers */
+
+  /* Initialise the LCD Layers */
   BSP_LCD_LayerDefaultInit(1, LCD_FRAME_BUFFER);
-  
+
   Display_DemoDescription();
   
   /* Wait For User inputs */
@@ -137,7 +155,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -156,7 +174,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
     
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -175,7 +193,7 @@ static void SystemClock_Config(void)
   */
 static void Display_DemoDescription(void)
 {
-  uint8_t desc[58];
+  uint8_t desc[50];
   
   /* Set LCD Foreground Layer  */
   BSP_LCD_SelectLayer(1);
@@ -198,14 +216,14 @@ static void Display_DemoDescription(void)
   BSP_LCD_DrawBitmap((BSP_LCD_GetXSize() - 80)/2, 65, (uint8_t *)stlogo);
   
   BSP_LCD_SetFont(&Font8);
-  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()- 20, (uint8_t*)"Copyright (c) STMicroelectronics 2017", CENTER_MODE);
+  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()- 20, (uint8_t*)"Copyright (c) STMicroelectronics 2014", CENTER_MODE);
   
   BSP_LCD_SetFont(&Font12);
   BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
   BSP_LCD_FillRect(0, BSP_LCD_GetYSize()/2 + 15, BSP_LCD_GetXSize(), 60);
   BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
   BSP_LCD_SetBackColor(LCD_COLOR_BLUE); 
-  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 30, (uint8_t*)"Press USER Button to start:", CENTER_MODE);
+  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 30, (uint8_t*)"Press User Button to start:", CENTER_MODE);
   sprintf((char *)desc,"%s example", BSP_examples[DemoIndex].DemoName);
   BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 45, (uint8_t *)desc, CENTER_MODE);   
 }
@@ -220,7 +238,7 @@ uint8_t CheckForUserInput(void)
   if(BSP_PB_GetState(BUTTON_KEY) == RESET)
   {
     while (BSP_PB_GetState(BUTTON_KEY) == RESET);
-    return 1;
+    return 1 ;
   }
   return 0;
 }
@@ -246,7 +264,7 @@ void Toggle_Leds(void)
   * @brief  EXTI line detection callbacks.
   * @param  GPIO_Pin: Specifies the pins connected EXTI line
   * @retval None
-  */
+*/
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
  if (GPIO_Pin == KEY_BUTTON_PIN)
@@ -255,7 +273,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  }
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -273,7 +292,7 @@ void assert_failed(uint8_t* file, uint32_t line)
   {
   }
 }
-#endif
+#endif /* USE_FULL_ASSERT */ 
 
 /**
   * @}
@@ -282,3 +301,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+  
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

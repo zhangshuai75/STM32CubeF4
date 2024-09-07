@@ -2,20 +2,30 @@
   ******************************************************************************
   * @file    Camera/Camera_To_USBDisk/Src/main.c 
   * @author  MCD Application Team
-  * @brief   This application describes how to configure the camera in continuous mode
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   This example describes how to configure the camera in continuous mode
              and save picture under USBDisk.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -38,7 +48,7 @@ uint8_t ubPressedButton = PRESSED_FIRST;
 FATFS MSC_FatFs;  /* File system object for USB disk logical drive */
 FIL MyFile;       /* File object */
 char MSC_Path[4]; /* USB Host logical drive path */
-USBH_HandleTypeDef  hUSBHost;
+USBH_HandleTypeDef  hUSB_Host;
 
 /* Image header */  
 const uint32_t aBMPHeader[14]=
@@ -81,7 +91,7 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 168 MHz */
+  /* Configure the system clock to 168 Mhz */
   SystemClock_Config();
   
   /* Configure LED1 and LED3 */
@@ -89,15 +99,15 @@ int main(void)
   BSP_LED_Init(LED3);
   
   /*##-1- Init Host Library ##################################################*/
-  USBH_Init(&hUSBHost, USBH_UserProcess, 0);
+  USBH_Init(&hUSB_Host, USBH_UserProcess, 0);
   
   /* Add Supported Class */
-  USBH_RegisterClass(&hUSBHost, USBH_MSC_CLASS);
+  USBH_RegisterClass(&hUSB_Host, USBH_MSC_CLASS);
   
   /* Start Host Process */
-  USBH_Start(&hUSBHost);
+  USBH_Start(&hUSB_Host);
   
-  /*##-2- Configure Tamper button ############################################*/
+  /*##-2- TAMPER button will be used #########################################*/
   BSP_PB_Init(BUTTON_TAMPER, BUTTON_MODE_GPIO);
   
   /*##-3- Link the USB Host disk I/O driver ##################################*/
@@ -118,7 +128,7 @@ int main(void)
   while (1)
   { 
     /* USB Host Background task */
-    USBH_Process(&hUSBHost);
+    USBH_Process(&hUSB_Host);
 
     switch(Appli_state)
     {
@@ -225,7 +235,7 @@ static void CAMERA_Capture(void)
   */
 static void PicturePrepare(void) 
 {
-  uint32_t address = SRAM_DEVICE_ADDR;
+  uint32_t address = SRAM_DEVICE_ADDR ;
   uint16_t x = 0;
   uint16_t y = 0;
   uint16_t tmp = 0;
@@ -333,7 +343,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -358,13 +368,6 @@ static void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
-
-  /* STM32F405x/407x/415x/417x Revision Z and upper devices: prefetch is supported  */
-  if (HAL_GetREVID() >= 0x1001)
-  {
-    /* Enable the Flash prefetch */
-    __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
-  }
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -394,3 +397,6 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

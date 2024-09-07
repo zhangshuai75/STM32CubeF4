@@ -2,16 +2,35 @@
   ******************************************************************************
   * @file    BSP/Src/sram.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example code shows how to use the SRAM Driver
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -31,18 +50,15 @@
 /* Private define ------------------------------------------------------------*/
 #define BUFFER_SIZE         ((uint32_t)0x0100)
 #define WRITE_READ_ADDR     ((uint32_t)0x0800)
-    
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 uint16_t sram_aTxBuffer[BUFFER_SIZE];
 uint16_t sram_aRxBuffer[BUFFER_SIZE];
 uint8_t ubSramWrite = 0, ubSramRead = 0, ubSramInit = 0;
-
 /* Private function prototypes -----------------------------------------------*/
 static void SRAM_SetHint(void);
 static void Fill_Buffer(uint16_t *pBuffer, uint32_t uwBufferLenght, uint32_t uwOffset);
 static uint8_t Buffercmp(uint16_t* pBuffer1, uint16_t* pBuffer2, uint16_t BufferLength);
-
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -50,19 +66,13 @@ static uint8_t Buffercmp(uint16_t* pBuffer1, uint16_t* pBuffer2, uint16_t Buffer
   * @param  None
   * @retval None
   */
-void SRAM_demo(void)
+void SRAM_demo (void)
 { 
   SRAM_SetHint();
+     
+  /* Disable the LCD to avoid the refrech from the SDRAM */
+  BSP_LCD_DisplayOff();
   
-  /* STM32F427x/437x/429x/439x "Revision 3" devices: FMC dynamic and static 
-     bank switching is allowed  */
-  if (HAL_GetREVID() >= 0x2000) {}
-  else
-  {
-    /* Disable the LCD to avoid the refresh from the SDRAM */
-    BSP_LCD_DisplayOff();
-  }
-
   /*##-1- Configure the SRAM device ##########################################*/
   /* SRAM device configuration */ 
   if(BSP_SRAM_Init() != SRAM_OK)
@@ -87,18 +97,10 @@ void SRAM_demo(void)
   }  
   
   /*##-3- Checking data integrity ############################################*/
-  /* STM32F427x/437x/429x/439x "Revision 3" devices: FMC dynamic and static 
-     bank switching is allowed  */
-  if (HAL_GetREVID() >= 0x2000) {}
-  else
-  {
-    /* Enable the LCD */
-    BSP_LCD_DisplayOn();  
-    
-    /* SDRAM initialization */
-    BSP_SDRAM_Init();
-  }
-
+  /* Enable the LCD */
+  BSP_LCD_DisplayOn();  
+  /* SDRAM initialization */
+  BSP_SDRAM_Init();
   if(ubSramInit != 0)
   {
     BSP_LCD_DisplayStringAt(20, 100, (uint8_t *)"SRAM Initialization : FAILED.", LEFT_MODE);
@@ -166,15 +168,15 @@ static void SRAM_SetHint(void)
   BSP_LCD_SetFont(&Font12);
   BSP_LCD_DisplayStringAt(0, 30, (uint8_t *)"This example shows how to write", CENTER_MODE);
   BSP_LCD_DisplayStringAt(0, 45, (uint8_t *)"and read data on the SRAM", CENTER_MODE);
-  
-  /* Set the LCD Text Color */
+ 
+   /* Set the LCD Text Color */
   BSP_LCD_SetTextColor(LCD_COLOR_BLUE);  
   BSP_LCD_DrawRect(10, 90, BSP_LCD_GetXSize() - 20, BSP_LCD_GetYSize()- 100);
   BSP_LCD_DrawRect(11, 91, BSP_LCD_GetXSize() - 22, BSP_LCD_GetYSize()- 102);
   
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
   BSP_LCD_SetBackColor(LCD_COLOR_WHITE); 
-}
+ }
 
 /**
   * @brief  Fills buffer with user predefined data.
@@ -186,7 +188,7 @@ static void SRAM_SetHint(void)
 static void Fill_Buffer(uint16_t *pBuffer, uint32_t uwBufferLenght, uint32_t uwOffset)
 {
   uint32_t tmpIndex = 0;
-  
+
   /* Put in global buffer different values */
   for (tmpIndex = 0; tmpIndex < uwBufferLenght; tmpIndex++ )
   {
@@ -209,10 +211,11 @@ static uint8_t Buffercmp(uint16_t* pBuffer1, uint16_t* pBuffer2, uint16_t Buffer
     {
       return 1;
     }
-    
+
     pBuffer1++;
     pBuffer2++;
   }
+
   return 0;
 }
 
@@ -222,4 +225,5 @@ static uint8_t Buffercmp(uint16_t* pBuffer1, uint16_t* pBuffer2, uint16_t Buffer
 
 /**
   * @}
-  */
+  */ 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

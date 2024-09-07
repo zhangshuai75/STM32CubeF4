@@ -2,20 +2,40 @@
   ******************************************************************************
   * @file    Demonstrations/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This demo describes how to use accelerometer to control mouse on 
   *          PC.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -61,7 +81,7 @@ uint16_t PrescalerValue = 0;
 TIM_HandleTypeDef htim4;
 TIM_OC_InitTypeDef sConfigTim4;
 
-/* Variables used during Systick ISR */
+/* Variables used during Systick ISR*/
 uint8_t Counter  = 0x00;
 __IO uint16_t MaxAcceleration = 0;
 
@@ -69,14 +89,14 @@ __IO uint16_t MaxAcceleration = 0;
 static uint32_t Demo_USBConfig(void);
 static void TIM4_Config(void);
 static void Demo_Exec(void);
-static uint8_t *USBD_HID_GetPos(void);
+static uint8_t *USBD_HID_GetPos (void);
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  Main program
+  * @brief  Main program.
   * @param  None
   * @retval None
   */
@@ -96,10 +116,10 @@ int main(void)
   BSP_LED_Init(LED5);
   BSP_LED_Init(LED6);
 
-  /* Configure the system clock to 84 MHz */
+  /* Configure the system clock to 84 Mhz */
   SystemClock_Config();
 
-  /* Initialize User_Button */
+  /* Initialize LEDs and User_Button on STM32F401-Discovery ------------------*/
   BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI); 
 
   /* Execute Demo application */
@@ -134,9 +154,9 @@ static void Demo_Exec(void)
     /* Reset UserButton_Pressed variable */
     UserButtonPressed = 0x00;
     
-    /* Configure LEDs to be managed by GPIO */
-    BSP_LED_Init(LED3);
+    /* Initialize LEDs to be managed by GPIO */
     BSP_LED_Init(LED4);
+    BSP_LED_Init(LED3);
     BSP_LED_Init(LED5);
     BSP_LED_Init(LED6);
     
@@ -206,11 +226,6 @@ static void Demo_Exec(void)
     /* Disconnect the USB device */
     USBD_Stop(&hUSBDDevice);
     USBD_DeInit(&hUSBDDevice);
-    if(HAL_TIM_PWM_DeInit(&htim4) != HAL_OK)
-    {
-      /* Initialization Error */
-      Error_Handler();
-    }
   }
 }
 
@@ -250,7 +265,7 @@ static void TIM4_Config(void)
   => TIM4CLK = 2*(HCLK / 4) = HCLK/2 = SystemCoreClock/2
   
   To get TIM4 counter clock at 2 KHz, the prescaler is computed as follows:
-  Prescaler = (TIM4CLK / TIM4 counter clock) - 1
+  Prescaler = (TIM4CLK / TIM1 counter clock) - 1
   Prescaler = (84 MHz/(2 * 2 KHz)) - 1 = 41999
   
   To get TIM4 output clock at 1 Hz, the period (ARR)) is computed as follows:
@@ -283,7 +298,7 @@ static void TIM4_Config(void)
   /* TIM PWM1 Mode configuration: Channel */
   /* Output Compare Timing Mode configuration: Channel1 */
   sConfigTim4.OCMode = TIM_OCMODE_PWM1;
-  sConfigTim4.OCIdleState = TIM_CCx_ENABLE;
+  sConfigTim4.OCIdleState = TIM_OUTPUTSTATE_ENABLE;
   sConfigTim4.Pulse = TIM_CCR;
   sConfigTim4.OCPolarity = TIM_OCPOLARITY_HIGH;
   
@@ -356,7 +371,7 @@ void HAL_SYSTICK_Callback(void)
       Y_Offset = Buffer[1];
       
       /* Update New autoreload value in case of X or Y acceleration*/
-      /* Basic acceleration X_Offset and Y_Offset are divide by 40 to fir with ARR range */
+      /* Basic accelration X_Offset and Y_Offset are divide by 40 to fir with ARR range */
       NewARR_X = TIM_ARR - ABS(X_Offset/40);
       NewARR_Y = TIM_ARR - ABS(Y_Offset/40);
       
@@ -369,17 +384,17 @@ void HAL_SYSTICK_Callback(void)
       {
         
         /* Reset CNT to a lowest value (equal to min CCRx of all Channels) */
-        __HAL_TIM_SET_COUNTER(&htim4,(TIM_ARR-MaxAcceleration)/2);
+        __HAL_TIM_SetCounter(&htim4,(TIM_ARR-MaxAcceleration)/2);
         
         if (X_Offset < ThreadholdAcceleroLow)
         {
           
           /* Sets the TIM4 Capture Compare for Channel1 Register value */
           /* Equal to NewARR_X/2 to have duty cycle equal to 50% */
-          __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, NewARR_X/2);  
+          __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_1, NewARR_X/2);  
           
           /* Time base configuration */      
-          __HAL_TIM_SET_AUTORELOAD(&htim4, NewARR_X);
+          __HAL_TIM_SetAutoreload(&htim4, NewARR_X);
           
           /* Enable TIM4 Capture Compare Channel1 */
           HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);  
@@ -390,10 +405,10 @@ void HAL_SYSTICK_Callback(void)
           
           /* Sets the TIM4 Capture Compare for Channel3 Register value */
           /* Equal to NewARR_X/2 to have duty cycle equal to 50% */
-          __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, NewARR_X/2);                  
+          __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_3, NewARR_X/2);                  
           
           /* Time base configuration */      
-          __HAL_TIM_SET_AUTORELOAD(&htim4, NewARR_X);
+          __HAL_TIM_SetAutoreload(&htim4, NewARR_X);
           
           /* Enable TIM4 Capture Compare Channel3 */
           HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);  
@@ -404,10 +419,10 @@ void HAL_SYSTICK_Callback(void)
           
           /* Sets the TIM4 Capture Compare for Channel2 Register value */
           /* Equal to NewARR_Y/2 to have duty cycle equal to 50% */
-          __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2,NewARR_Y/2);    
+          __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_2,NewARR_Y/2);    
     
           /* Time base configuration */      
-          __HAL_TIM_SET_AUTORELOAD(&htim4, NewARR_Y);
+          __HAL_TIM_SetAutoreload(&htim4, NewARR_Y);
 
           /* Enable TIM4 Capture Compare Channel2 */
           HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);    
@@ -418,10 +433,10 @@ void HAL_SYSTICK_Callback(void)
           
           /* Sets the TIM4 Capture Compare for Channel4 Register value */
           /* Equal to NewARR_Y/2 to have duty cycle equal to 50% */
-          __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, NewARR_Y/2);   
+          __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_4, NewARR_Y/2);   
           
           /* Time base configuration */      
-          __HAL_TIM_SET_AUTORELOAD(&htim4, NewARR_Y);
+          __HAL_TIM_SetAutoreload(&htim4, NewARR_Y);
           
           /* Enable TIM4 Capture Compare Channel4 */
           HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);    
@@ -447,11 +462,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 
 /**
-  * @brief  USBD_HID_GetPos
-  * @param  None
-  * @retval Pointer to report
-  */
-static uint8_t *USBD_HID_GetPos(void)
+* @brief  USBD_HID_GetPos
+* @param  None
+* @retval Pointer to report
+*/
+static uint8_t *USBD_HID_GetPos (void)
 {
   static uint8_t HID_Buffer[4] = {0};
   
@@ -488,7 +503,7 @@ static uint8_t *USBD_HID_GetPos(void)
   */
 static void Error_Handler(void)
 {
-  /* Turn LED4 on */
+  /* Turn LED4 (RED) on */
   BSP_LED_On(LED4);
   while(1)
   {
@@ -521,7 +536,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -550,6 +565,7 @@ static void SystemClock_Config(void)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -576,3 +592,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

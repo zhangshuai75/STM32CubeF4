@@ -2,20 +2,30 @@
   ******************************************************************************
   * @file    LibJPEG/LibJPEG_Decoding/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main program body
   *          This sample code shows how to decompress JPEG file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -35,8 +45,7 @@ char SDPath[4]; /* SD card logical drive path */
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
 static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength);
-static void LCD_Config(void);
-static void Error_Handler(void);
+static void LCD_Config(void); 
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -55,11 +64,8 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock to 180 Mhz */
   SystemClock_Config();
-  
-  /* Configure LED3 */
-  BSP_LED_Init(LED3);
   
   /*##-1- LCD Configuration ##################################################*/   
   LCD_Config();   
@@ -71,26 +77,14 @@ int main(void)
     if(f_mount(&SDFatFs, (TCHAR const*)SDPath, 0) == FR_OK)
     {
       /*##-4- Open the JPG image with read access ############################*/
-       if(f_open(&MyFile, "image.jpg", FA_READ) != FR_OK)
+       if(f_open(&MyFile, "image.jpg", FA_READ) == FR_OK)
        {
-         Error_Handler();
        }
      }
-     else
-     {
-       Error_Handler();
-     }
-   }
-   else
-   {
-     Error_Handler();
    }
   
   /*##-5- Decode the jpg image file ##########################################*/
   jpeg_decode(&MyFile, IMAGE_WIDTH, _aucLine, Jpeg_CallbackFunction);
-   
-  /*##-6- Close the JPG image ################################################*/
-  f_close(&MyFile);   
     
   /* Infinite loop */
   while (1)
@@ -164,7 +158,7 @@ static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
   /* Foreground Configuration */
   hdma2d_eval.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
   hdma2d_eval.LayerCfg[1].InputAlpha = 0xFF;
-  hdma2d_eval.LayerCfg[1].InputColorMode = DMA2D_INPUT_RGB888;
+  hdma2d_eval.LayerCfg[1].InputColorMode = CM_RGB888;
   hdma2d_eval.LayerCfg[1].InputOffset = 0;
   
   hdma2d_eval.Instance = DMA2D; 
@@ -202,24 +196,6 @@ static uint8_t Jpeg_CallbackFunction(uint8_t* Row, uint32_t DataLength)
 }
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
-static void Error_Handler(void)
-{
-  /* Stop the program with an infinite loop */
-  while(1)
-  {
-     /* Toggle LED3 */
-     BSP_LED_Toggle(LED3);
-     
-     /* Delay with 200ms */
-     HAL_Delay(200);
-  }
-}
-
-/**
   * @brief  System Clock Configuration
   *         The system Clock is configured as follow : 
   *            System Clock source            = PLL (HSE)
@@ -245,7 +221,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -263,7 +239,7 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
   
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -294,3 +270,5 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

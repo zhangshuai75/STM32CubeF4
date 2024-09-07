@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    CAN/CAN_LoopBack/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example provides a description of how to set a communication 
   *          with the CAN in loopback mode.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -20,24 +39,21 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
 
 /** @addtogroup CAN_LoopBack
   * @{
-  */
+  */ 
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-CAN_HandleTypeDef     CanHandle;
-CAN_TxHeaderTypeDef   TxHeader;
-CAN_RxHeaderTypeDef   RxHeader;
-uint8_t               TxData[8];
-uint8_t               RxData[8];
-uint32_t              TxMailbox;
+CAN_HandleTypeDef    CanHandle;
+
 
 /* Private function prototypes -----------------------------------------------*/
 static void SystemClock_Config(void);
@@ -47,13 +63,12 @@ static HAL_StatusTypeDef CAN_Polling(void);
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  Main program
+  * @brief  Main program.
   * @param  None
   * @retval None
   */
 int main(void)
 {
-
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, instruction and Data caches
        - Configure the Systick to generate an interrupt each 1 msec
@@ -61,26 +76,27 @@ int main(void)
        - Global MSP (MCU Support Package) initialization
      */
   HAL_Init();
-
-  /* Configure the system clock to 168 MHz */
+  /* Configure the system clock to 168 Mhz */
   SystemClock_Config();
   
   /* Configure LED1, LED2 and LED3 */
   BSP_LED_Init(LED1);
   BSP_LED_Init(LED2);
   BSP_LED_Init(LED3);
+  
+  if (CAN_Polling() ==  HAL_OK)
+  { /* OK */
 
-  if(CAN_Polling() == HAL_OK)
-  {
-    /* OK: Turn on LED1 */
+    /* Turn on LED1 */
     BSP_LED_On(LED1);
   }
   else
-  {
-    /* KO: Turn on LED2 */
+  { /* KO */
+
+    /* Turn on LED2 */
     BSP_LED_On(LED2);
   }
-  
+
   /* Infinite loop */
   while (1)
   {
@@ -94,22 +110,26 @@ int main(void)
   */
 HAL_StatusTypeDef CAN_Polling(void)
 {
-  CAN_FilterTypeDef  sFilterConfig;
+  CAN_FilterConfTypeDef  sFilterConfig;
+  static CanTxMsgTypeDef        TxMessage;
+  static CanRxMsgTypeDef        RxMessage;
   
   /*##-1- Configure the CAN peripheral #######################################*/
   CanHandle.Instance = CANx;
+  CanHandle.pTxMsg = &TxMessage;
+  CanHandle.pRxMsg = &RxMessage;
     
-  CanHandle.Init.TimeTriggeredMode = DISABLE;
-  CanHandle.Init.AutoBusOff = DISABLE;
-  CanHandle.Init.AutoWakeUp = DISABLE;
-  CanHandle.Init.AutoRetransmission = ENABLE;
-  CanHandle.Init.ReceiveFifoLocked = DISABLE;
-  CanHandle.Init.TransmitFifoPriority = DISABLE;
+  CanHandle.Init.TTCM = DISABLE;
+  CanHandle.Init.ABOM = DISABLE;
+  CanHandle.Init.AWUM = DISABLE;
+  CanHandle.Init.NART = DISABLE;
+  CanHandle.Init.RFLM = DISABLE;
+  CanHandle.Init.TXFP = DISABLE;
   CanHandle.Init.Mode = CAN_MODE_LOOPBACK;
-  CanHandle.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  CanHandle.Init.TimeSeg1 = CAN_BS1_4TQ;
-  CanHandle.Init.TimeSeg2 = CAN_BS2_2TQ;
-  CanHandle.Init.Prescaler = 6;
+  CanHandle.Init.SJW = CAN_SJW_1TQ;
+  CanHandle.Init.BS1 = CAN_BS1_6TQ;
+  CanHandle.Init.BS2 = CAN_BS2_8TQ;
+  CanHandle.Init.Prescaler = 2;
   
   if(HAL_CAN_Init(&CanHandle) != HAL_OK)
   {
@@ -118,75 +138,76 @@ HAL_StatusTypeDef CAN_Polling(void)
   }
 
   /*##-2- Configure the CAN Filter ###########################################*/
-  sFilterConfig.FilterBank = 0;
+  sFilterConfig.FilterNumber = 0;
   sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
   sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
   sFilterConfig.FilterIdHigh = 0x0000;
   sFilterConfig.FilterIdLow = 0x0000;
   sFilterConfig.FilterMaskIdHigh = 0x0000;
   sFilterConfig.FilterMaskIdLow = 0x0000;
-  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  sFilterConfig.FilterFIFOAssignment = 0;
   sFilterConfig.FilterActivation = ENABLE;
-  sFilterConfig.SlaveStartFilterBank = 14;
+  sFilterConfig.BankNumber = 14;
   
   if(HAL_CAN_ConfigFilter(&CanHandle, &sFilterConfig) != HAL_OK)
   {
     /* Filter configuration Error */
     Error_Handler();
   }
-
-  /*##-3- Start the CAN peripheral ###########################################*/
-  if (HAL_CAN_Start(&CanHandle) != HAL_OK)
-  {
-    /* Start Error */
-    Error_Handler();
-  }
-
-  /*##-4- Start the Transmission process #####################################*/
-  TxHeader.StdId = 0x11;
-  TxHeader.RTR = CAN_RTR_DATA;
-  TxHeader.IDE = CAN_ID_STD;
-  TxHeader.DLC = 2;
-  TxHeader.TransmitGlobalTime = DISABLE;
-  TxData[0] = 0xCA;
-  TxData[1] = 0xFE;
+    
+  /*##-3- Start the Transmission process #####################################*/
+  CanHandle.pTxMsg->StdId = 0x11;
+  CanHandle.pTxMsg->RTR = CAN_RTR_DATA;
+  CanHandle.pTxMsg->IDE = CAN_ID_STD;
+  CanHandle.pTxMsg->DLC = 2;
+  CanHandle.pTxMsg->Data[0] = 0xCA;
+  CanHandle.pTxMsg->Data[1] = 0xFE;
   
-  /* Request transmission */
-  if(HAL_CAN_AddTxMessage(&CanHandle, &TxHeader, TxData, &TxMailbox) != HAL_OK)
+  if(HAL_CAN_Transmit(&CanHandle, 10) != HAL_OK)
   {
-    /* Transmission request Error */
+    /* Transmition Error */
     Error_Handler();
   }
   
-  /* Wait transmission complete */
-  while(HAL_CAN_GetTxMailboxesFreeLevel(&CanHandle) != 3) {}
-
-  /*##-5- Start the Reception process ########################################*/
-  if(HAL_CAN_GetRxFifoFillLevel(&CanHandle, CAN_RX_FIFO0) != 1)
+  if(HAL_CAN_GetState(&CanHandle) != HAL_CAN_STATE_READY)
   {
-    /* Reception Missing */
-    Error_Handler();
+    return HAL_ERROR;
   }
-
-  if(HAL_CAN_GetRxMessage(&CanHandle, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
+  
+  /*##-4- Start the Reception process ########################################*/
+  if(HAL_CAN_Receive(&CanHandle, CAN_FIFO0,10) != HAL_OK)
   {
     /* Reception Error */
     Error_Handler();
   }
-
-  if((RxHeader.StdId != 0x11)                     ||
-     (RxHeader.RTR != CAN_RTR_DATA)               ||
-     (RxHeader.IDE != CAN_ID_STD)                 ||
-     (RxHeader.DLC != 2)                          ||
-     ((RxData[0]<<8 | RxData[1]) != 0xCAFE))
+  
+  if(HAL_CAN_GetState(&CanHandle) != HAL_CAN_STATE_READY)
   {
-    /* Rx message Error */
+    return HAL_ERROR;
+  }
+  
+  if (CanHandle.pRxMsg->StdId != 0x11)
+  {
+    return HAL_ERROR;  
+  }
+
+  if (CanHandle.pRxMsg->IDE != CAN_ID_STD)
+  {
     return HAL_ERROR;
   }
 
+  if (CanHandle.pRxMsg->DLC != 2)
+  {
+    return HAL_ERROR;  
+  }
+
+  if ((CanHandle.pRxMsg->Data[0]<<8|RxMessage.Data[1]) != 0xCAFE)
+  {
+    return HAL_ERROR;
+  }
+  
   return HAL_OK; /* Test Passed */
 }
-
 
 /**
   * @brief  System Clock Configuration
@@ -214,7 +235,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -240,15 +261,7 @@ static void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
-
-  /* STM32F405x/407x/415x/417x Revision Z and upper devices: prefetch is supported  */
-  if (HAL_GetREVID() >= 0x1001)
-  {
-    /* Enable the Flash prefetch */
-    __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
-  }
 }
-
 
 /**
   * @brief  This function is executed in case of error occurrence.
@@ -257,15 +270,15 @@ static void SystemClock_Config(void)
   */
 static void Error_Handler(void)
 {
-  /* User may add here some code to deal with this error */
-  /* Turn LED3 on */
-  BSP_LED_On(LED3);
-  while(1)
-  {
-  }
+    /* Turn LED3 on */
+    BSP_LED_On(LED3);
+    while(1)
+    {
+    }
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -273,8 +286,8 @@ static void Error_Handler(void)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(char *file, uint32_t line)
-{
+void assert_failed(uint8_t* file, uint32_t line)
+{ 
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 
@@ -283,6 +296,7 @@ void assert_failed(char *file, uint32_t line)
   {
   }
 }
+
 #endif
 
 /**
@@ -292,3 +306,5 @@ void assert_failed(char *file, uint32_t line)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

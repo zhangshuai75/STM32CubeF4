@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    RTC/RTC_Calendar/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.0.0
+  * @date    26-June-2014
   * @brief   This sample code shows how to use STM32F4xx RTC HAL API to configure 
   *          Time and Date.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -64,7 +83,7 @@ int main(void)
   /* Configure LED2 */
   BSP_LED_Init(LED2);
 
-  /* Configure the system clock to 100 MHz */
+  /* Configure the system clock to 100 Mhz */
   SystemClock_Config();
 
   /*##-1- Configure the RTC peripheral #######################################*/
@@ -83,7 +102,7 @@ int main(void)
   RtcHandle.Init.OutPut = RTC_OUTPUT_DISABLE;
   RtcHandle.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
   RtcHandle.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
-  __HAL_RTC_RESET_HANDLE_STATE(&RtcHandle);
+  
   if(HAL_RTC_Init(&RtcHandle) != HAL_OK)
   {
     /* Error */
@@ -121,7 +140,7 @@ int main(void)
   *            PLL_P                          = 4
   *            PLL_Q                          = 7
   *            VDD(V)                         = 3.3
-  *            Main regulator output voltage  = Scale1 mode
+  *            Main regulator output voltage  = Scale2 mode
   *            Flash Latency(WS)              = 3
   * @param  None
   * @retval None
@@ -132,7 +151,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -178,13 +197,13 @@ static void RTC_CalendarConfig(void)
   RTC_TimeTypeDef stimestructure;
 
   /*##-1- Configure the Date #################################################*/
-  /* Set Date: Friday March 13th 2015 */
-  sdatestructure.Year = 0x15;
-  sdatestructure.Month = RTC_MONTH_MARCH;
-  sdatestructure.Date = 0x13;
-  sdatestructure.WeekDay = RTC_WEEKDAY_FRIDAY;
+  /* Set Date: Monday April 14th 2014 */
+  sdatestructure.Year = 0x14;
+  sdatestructure.Month = RTC_MONTH_APRIL;
+  sdatestructure.Date = 0x14;
+  sdatestructure.WeekDay = RTC_WEEKDAY_MONDAY;
   
-  if(HAL_RTC_SetDate(&RtcHandle,&sdatestructure,RTC_FORMAT_BCD) != HAL_OK)
+  if(HAL_RTC_SetDate(&RtcHandle,&sdatestructure,FORMAT_BCD) != HAL_OK)
   {
     /* Error */
     Error_Handler(); 
@@ -196,10 +215,10 @@ static void RTC_CalendarConfig(void)
   stimestructure.Minutes = 0x00;
   stimestructure.Seconds = 0x00;
   stimestructure.TimeFormat = RTC_HOURFORMAT12_AM;
-  stimestructure.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  stimestructure.DayLightSaving = RTC_DAYLIGHTSAVING_NONE ;
   stimestructure.StoreOperation = RTC_STOREOPERATION_RESET;
   
-  if(HAL_RTC_SetTime(&RtcHandle,&stimestructure,RTC_FORMAT_BCD) != HAL_OK)
+  if(HAL_RTC_SetTime(&RtcHandle,&stimestructure,FORMAT_BCD) != HAL_OK)
   {
     /* Error */
     Error_Handler(); 
@@ -221,9 +240,9 @@ static void RTC_CalendarShow(uint8_t *showtime, uint8_t *showdate)
   RTC_TimeTypeDef stimestructureget;
   
   /* Get the RTC current Time */
-  HAL_RTC_GetTime(&RtcHandle, &stimestructureget, RTC_FORMAT_BIN);
+  HAL_RTC_GetTime(&RtcHandle, &stimestructureget, FORMAT_BIN);
   /* Get the RTC current Date */
-  HAL_RTC_GetDate(&RtcHandle, &sdatestructureget, RTC_FORMAT_BIN);
+  HAL_RTC_GetDate(&RtcHandle, &sdatestructureget, FORMAT_BIN);
   
 #ifdef DISPLAY_ON_DUBUGGER
   /* Display time Format: hh:mm:ss */
@@ -250,6 +269,7 @@ void Error_Handler(void)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -276,3 +296,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */ 
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

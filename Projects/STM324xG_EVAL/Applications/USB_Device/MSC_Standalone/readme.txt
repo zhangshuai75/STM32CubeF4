@@ -1,29 +1,36 @@
 /**
-  @page MSC_Standalone USB Device Mass Storage (MSC) application
+  @page MSC_Standalone USB Device Mass Storage (MSC) example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    USB_Device/MSC_Standalone/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the USB Device MSC application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the USB Device MSC example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Application Description
+@par Example Description
 
-This application shows how to use the USB device application based on the Mass Storage Class (MSC) on the STM32F4xx devices.
+This example is a part of the USB Device Library package using STM32Cube firmware. It describes how to 
+use USB device application based on the Mass Storage Class (MSC) on the STM32F4xx devices.
 
-This is a typical application on how to use the STM32F4xx USB OTG Device peripheral to communicate with a PC
+This is a typical example on how to use the STM32F4xx USB OTG Device peripheral to communicate with a PC
 Host using the Bulk Only Transfer (BOT) and Small Computer System Interface (SCSI) transparent commands, 
 while the microSD card is used as storage media. The STM32 MCU is enumerated as a MSC device using the 
 native PC Host MSC driver to which the STM324xG-EVAL board is connected.
@@ -49,7 +56,7 @@ operations can be performed as with any other removable drive.
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
       
 For more details about the STM32Cube USB Device library, please refer to UM1734 
@@ -59,14 +66,10 @@ For more details about the STM32Cube USB Device library, please refer to UM1734
 @par USB Library Configuration
 
 To select the appropriate USB Core to work with, user must add the following macro defines within the
-compiler preprocessor (already done in the preconfigured projects provided with this application):
+compiler preprocessor (already done in the preconfigured projects provided with this example):
       - "USE_USB_HS" when using USB High Speed (HS) Core
       - "USE_USB_FS" when using USB Full Speed (FS) Core 
 
-@par Keywords
-
-Connectivity, USB_Device, USB, MSC, Mass Storage, Full Speed, High Speed, BOT, SCSI, Removable drive, FatFs,
-File system, Write, Read, Format
 
 @par Directory contents
 
@@ -86,9 +89,9 @@ File system, Write, Read, Format
 	
 @par Hardware and Software environment
 
-  - This application runs on STM32F407xx/STM32F417xx devices.
+  - This example runs on STM32F407xx/STM32F417xx devices.
     
-  - This application has been tested with STMicroelectronics STM324xG-EVAL RevC 
+  - This example has been tested with STMicroelectronics STM324xG-EVAL RevC 
     evaluation boards and can be easily tailored to any other supported device 
     and development board.
 
@@ -96,9 +99,9 @@ File system, Write, Read, Format
     - Insert a microSD card into the STM324xG-EVAL uSD slot (CN6)
     - Connect the STM324xG-EVAL board to the PC through 'USB micro A-Male 
       to A-Male' cable to the connector:
-      - CN9: to use USB High Speed (HS) 
-      - CN8: to use USB Full Speed (FS)
-             Please ensure that jumpers JP16 and JP22 are in position 1-2.
+      - CN9 : to use USB High Speed (HS) 
+      - CN8 : to use USB Full Speed (FS)
+              Please ensure that jumpers JP16 and JP22 are in position 1-2.
 
     
 @par How to use it ?
@@ -109,7 +112,8 @@ In order to make the program work, you must do the following :
  - In the workspace toolbar select the project configuration:
    - STM324xG-EVAL_USBH-HS: to configure the project for STM32F4xx devices using USB OTG HS peripheral
    - STM324xG-EVAL_USBH-FS: to configure the project for STM32F4xx devices using USB OTG FS peripheral
- - Run the application
+ - Run the example
  
-
-  */
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
+ */
+ 

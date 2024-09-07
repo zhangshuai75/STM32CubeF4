@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    ADC/ADC_TripleModeInterleaved/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example provides a short description of how to use the ADC 
   *          peripheral to convert a regular channel in Triple interleaved mode.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -49,7 +68,7 @@ static void ADC_Config(void);
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  Main program
+  * @brief  Main program.
   * @param  None
   * @retval None
   */
@@ -62,7 +81,7 @@ int main(void)
        - Global MSP (MCU Support Package) initialization
      */
   HAL_Init();
-  /* Configure the system clock to 144 MHz */
+  /* Configure the system clock to 144 Mhz */
   SystemClock_Config();
   
   /* Configure LED1 and LED3 */
@@ -72,25 +91,21 @@ int main(void)
   /*##-1- Configure ADC1, ADC2 and ADC3 peripherals ##########################*/
   ADC_Config();
   
-  /*##-2- Start ADC3 conversion process ######################################*/
+  /*##-8- Start ADC3 conversion process ######################################*/
   if(HAL_ADC_Start(&AdcHandle3) != HAL_OK)
   {
     /* Start Error */
     Error_Handler();
   }
   
-  /*##-3- Start ADC2 conversion process ######################################*/
+  /*##-9- Start ADC2 conversion process ######################################*/
   if(HAL_ADC_Start(&AdcHandle2) != HAL_OK)
   {
     /* Start Error */
     Error_Handler();
   }
   
-  /*##-4- Start ADC1 conversion process and enable DMA #######################*/
-  /* Note: Considering IT occurring after each number of ADC conversions      */
-  /*       (IT by DMA end of transfer), select sampling time and ADC clock    */
-  /*       with sufficient duration to not create an overhead situation in    */
-  /*        IRQHandler. */
+  /*##-10- Start ADC1 conversion process and enable DMA #######################*/  
   if(HAL_ADCEx_MultiModeStart_DMA(&AdcHandle1, (uint32_t*)aADCTripleConvertedValue, 3) != HAL_OK)
   {
     /* Start Error */
@@ -129,7 +144,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -164,11 +179,11 @@ static void SystemClock_Config(void)
   */
 static void Error_Handler(void)
 {
-  /* Turn LED3 on */
-  BSP_LED_On(LED3);
-  while(1)
-  {
-  }
+    /* Turn LED3 on */
+    BSP_LED_On(LED3);
+    while(1)
+    {
+    }
 }
 
 /**
@@ -192,7 +207,7 @@ static void ADC_Config(void)
   AdcHandle3.Instance          = ADCz;
   
   AdcHandle3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-  AdcHandle3.Init.Resolution = ADC_RESOLUTION_12B;
+  AdcHandle3.Init.Resolution = ADC_RESOLUTION12b;
   AdcHandle3.Init.ScanConvMode = DISABLE;
   AdcHandle3.Init.ContinuousConvMode = ENABLE;
   AdcHandle3.Init.DiscontinuousConvMode = DISABLE;
@@ -222,11 +237,11 @@ static void ADC_Config(void)
     Error_Handler();
   }
   
-  /*##-3- Configure the ADC2 peripheral ######################################*/
+  /*##-3- Configure the ADC2 peripheral #######################################*/
   AdcHandle2.Instance          = ADCy;
   
   AdcHandle2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-  AdcHandle2.Init.Resolution = ADC_RESOLUTION_12B;
+  AdcHandle2.Init.Resolution = ADC_RESOLUTION12b;
   AdcHandle2.Init.ScanConvMode = DISABLE;
   AdcHandle2.Init.ContinuousConvMode = ENABLE;
   AdcHandle2.Init.DiscontinuousConvMode = DISABLE;
@@ -255,7 +270,7 @@ static void ADC_Config(void)
   AdcHandle1.Instance          = ADCx;
   
   AdcHandle1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-  AdcHandle1.Init.Resolution = ADC_RESOLUTION_12B;
+  AdcHandle1.Init.Resolution = ADC_RESOLUTION12b;
   AdcHandle1.Init.ScanConvMode = DISABLE;
   AdcHandle1.Init.ContinuousConvMode = ENABLE;
   AdcHandle1.Init.DiscontinuousConvMode = DISABLE;
@@ -281,7 +296,7 @@ static void ADC_Config(void)
   }
   
   /*##-7- Configure Multimode ################################################*/
-  mode.Mode = ADC_TRIPLEMODE_INTERL;
+  mode.Mode = ADC_DUALMODE_INTERL;
   mode.DMAAccessMode = ADC_DMAACCESSMODE_2;
   mode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES; 
   
@@ -294,7 +309,7 @@ static void ADC_Config(void)
 
 /**
   * @brief  Conversion complete callback in non blocking mode 
-  * @param  hadc: ADC handle
+  * @param  hadc : hadc handle
   * @note   This example shows a simple way to report end of conversion, and 
   *         you can add your own implementation.    
   * @retval None
@@ -306,6 +321,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -323,6 +339,7 @@ void assert_failed(uint8_t* file, uint32_t line)
   {
   }
 }
+
 #endif
 
 /**
@@ -332,3 +349,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

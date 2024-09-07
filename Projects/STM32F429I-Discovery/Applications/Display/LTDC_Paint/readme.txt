@@ -1,27 +1,36 @@
 /**
-  @page LTDC_Paint LTDC Paint application
+  @page LTDC_Paint LTDC Paint example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics  *******************
-  * @file    Display/LTDC_Paint/readme.txt 
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
+  * @file    TouchPanel/Paint/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the LTDC Paint application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the LTDC Paint example.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
    @endverbatim
 
-@par Application Description
+@par Example Description
 
- This application describes how to configure LCD touch screen and attribute 
+ This example describe how to configure LCD touch screen and attribute 
  an action related to configured touch zone.
  
  At the beginning of the main program the HAL_Init() function is called to reset 
@@ -44,41 +53,36 @@
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
 
-@par Keywords
-
-Graphic, Display, LTDC, Pictures, USB, BMP, Background, Foreground, Layers, Touchscreen, Calibration
 
 @par Directory contents
 
-    - Display/LTDC_Paint/Inc/main.h                 Main configuration file
-    - Display/LTDC_Paint/Inc/usbh_diskio_dma.h      FatFS usbh diskio driver header file
-    - Display/LTDC_Paint/Inc/stm32f4xx_it.h         Interrupt handlers header file
-    - Display/LTDC_Paint/Inc/stm32f4xx_hal_conf.h   HAL Configuration file 
-    - Display/LTDC_Paint/Inc/ffconf.h               FAT file system module configuration file
-    - Display/LTDC_Paint/Inc/usbh_conf.h            Configuration file for USB module
-    - Display/LTDC_Paint/Inc/color2.h               Image used to display colored pens
-    - Display/LTDC_Paint/Inc/save.h                 Image used to display save icon
-    - Display/LTDC_Paint/Src/main.c                 Main program 
-    - Display/LTDC_Paint/Src/usbh_diskio_dma.c      FatFS usbh diskio driver implementation
-    - Display/LTDC_Paint/Src/stm32f4xx_it.c         Interrupt handlers
-    - Display/LTDC_Paint/Src/usbh_conf.c            Main function to configure USB
-    - Display/LTDC_Paint/Src/ts_calibration.c       Main function used to calibrate TS
-    - Display/LTDC_Paint/Src/system_stm32f4xx.c     STM32F4xx system clock configuration file
+    - TouchPanel/Paint/Inc/main.h                 Main configuration file
+    - TouchPanel/Paint/Inc/stm32f4xx_it.h         Interrupt handlers header file
+    - TouchPanel/Paint/Inc/stm32f4xx_hal_conf.h   HAL Configuration file 
+    - TouchPanel/Paint/Inc/ffconf.h               Configuration file for FatFs module.
+    - TouchPanel/Paint/Inc/usbh_conf.h            Configuration file for USB module.
+    - TouchPanel/Paint/Inc/color2.h               Image used to display colored pens
+    - TouchPanel/Paint/Inc/save.h                 Image used to display save icon
+    - TouchPanel/Paint/Src/main.c                 Main program 
+    - TouchPanel/Paint/Src/stm32f4xx_it.c         Interrupt handlers
+    - TouchPanel/Paint/Src/usbh_conf.c            Main function to configure USB
+    - TouchPanel/Paint/Src/ts_calibration.c       Main function used to calibrate TS
+    - TouchPanel/Paint/Src/system_stm32f4xx.c     STM32F4xx system clock configuration file
 
 
 @par Hardware and Software environment
 
-  - This application runs on STM32F429xx Devices.
+  - This example runs on STM32F429xx Devices.
     
-  - This application has been tested with STM32F429I-Discovery RevC board and can be
+  - This example has been tested with STM32F429I-Discovery RevB board and can be
     easily tailored to any other supported device and development board.  
 
   - STM32F429I-DISCO RevB Set-up
     - Plug the USB key into the STM32F429I-DISCO board through 'USB micro A-Male 
-      to A-Female' cable(CN6).
+      to A-Female' cable.
 
 
 @par How to use it ? 
@@ -86,7 +90,8 @@ Graphic, Display, LTDC, Pictures, USB, BMP, Background, Foreground, Layers, Touc
 In order to make the program work, you must do the following :
  - Open your preferred toolchain 
  - Rebuild all files and load your image into target memory
- - Run the application
+ - Run the example
 
-
-                                    */
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
+ */
+                                   

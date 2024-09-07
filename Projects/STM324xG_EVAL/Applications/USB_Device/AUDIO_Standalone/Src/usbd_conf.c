@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Device/AUDIO_Standalone/Src/usbd_conf.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file implements the USB Device library callbacks and MSP
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "usbd_core.h"
@@ -43,7 +53,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
   if(hpcd->Instance == USB_OTG_FS)
   {
     /* Configure USB FS GPIOs */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __GPIOA_CLK_ENABLE();
     
      /* Configure DM DP Pins */
     GPIO_InitStruct.Pin = (GPIO_PIN_11 | GPIO_PIN_12);
@@ -67,7 +77,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* Enable USB FS Clocks */ 
-    __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
+    __USB_OTG_FS_CLK_ENABLE();
     
     /* Set USBFS Interrupt to the lowest priority */
     HAL_NVIC_SetPriority(OTG_FS_IRQn, 5, 0);
@@ -79,11 +89,11 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
   else if(hpcd->Instance == USB_OTG_HS)
   {
     /* Configure USB FS GPIOs */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-    __HAL_RCC_GPIOH_CLK_ENABLE();
-    __HAL_RCC_GPIOI_CLK_ENABLE();
+    __GPIOA_CLK_ENABLE();
+    __GPIOB_CLK_ENABLE();
+    __GPIOC_CLK_ENABLE();
+    __GPIOH_CLK_ENABLE();
+    __GPIOI_CLK_ENABLE();
     
     /* CLK */
     GPIO_InitStruct.Pin = GPIO_PIN_5;
@@ -131,8 +141,8 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
     HAL_GPIO_Init(GPIOI, &GPIO_InitStruct);
     
     /* Enable USB HS Clocks */
-    __HAL_RCC_USB_OTG_HS_CLK_ENABLE();
-    __HAL_RCC_USB_OTG_HS_ULPI_CLK_ENABLE();
+    __USB_OTG_HS_CLK_ENABLE();
+    __USB_OTG_HS_ULPI_CLK_ENABLE();
     
     /* Set USBHS Interrupt to the lowest priority */
     HAL_NVIC_SetPriority(OTG_HS_IRQn, 5, 0);
@@ -151,14 +161,14 @@ void HAL_PCD_MspDeInit(PCD_HandleTypeDef *hpcd)
   if(hpcd->Instance == USB_OTG_FS)
   {  
     /* Disable USB FS Clocks */ 
-    __HAL_RCC_USB_OTG_FS_CLK_DISABLE();
-    __HAL_RCC_SYSCFG_CLK_DISABLE(); 
+    __USB_OTG_FS_CLK_DISABLE();
+    __SYSCFG_CLK_DISABLE(); 
   }
   else if(hpcd->Instance == USB_OTG_HS)
   {  
     /* Disable USB FS Clocks */ 
-    __HAL_RCC_USB_OTG_HS_CLK_DISABLE();
-    __HAL_RCC_SYSCFG_CLK_DISABLE(); 
+    __USB_OTG_HS_CLK_DISABLE();
+    __SYSCFG_CLK_DISABLE(); 
   }  
 }
 
@@ -317,7 +327,8 @@ USBD_StatusTypeDef  USBD_LL_Init (USBD_HandleTypeDef *pdev)
   /*Set LL Driver parameters */
   hpcd.Instance = USB_OTG_FS;
   hpcd.Init.dev_endpoints = 4; 
-  hpcd.Init.use_dedicated_ep1 = 0;  
+  hpcd.Init.use_dedicated_ep1 = 0;
+  hpcd.Init.ep0_mps = 0x40;  
   hpcd.Init.dma_enable = 0;
   hpcd.Init.low_power_enable = 0;
   hpcd.Init.phy_itface = PCD_PHY_EMBEDDED; 
@@ -330,8 +341,8 @@ USBD_StatusTypeDef  USBD_LL_Init (USBD_HandleTypeDef *pdev)
   /*Initialize LL Driver */
   HAL_PCD_Init(&hpcd);
   
-  HAL_PCDEx_SetRxFiFo(&hpcd, 0x80);
-  HAL_PCDEx_SetTxFiFo(&hpcd, 0, 0x60);
+  HAL_PCD_SetRxFiFo(&hpcd, 0x80);
+  HAL_PCD_SetTxFiFo(&hpcd, 0, 0x60);
   
   return USBD_OK;
 }
@@ -477,8 +488,7 @@ USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_a
 USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev, 
                                     uint8_t  ep_addr,                                      
                                     uint8_t  *pbuf,
-                                    uint32_t  size)
-
+                                    uint16_t  size)
 {
   HAL_PCD_EP_Transmit(pdev->pData, ep_addr, pbuf, size);
   return USBD_OK;   
@@ -495,17 +505,17 @@ USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev,
 USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *pdev, 
                                           uint8_t  ep_addr,                                      
                                           uint8_t  *pbuf,
-                                          uint32_t  size)
+                                          uint16_t  size)
 {
   HAL_PCD_EP_Receive(pdev->pData, ep_addr, pbuf, size);
   return USBD_OK;   
 }
 
 /**
-  * @brief  Returns the last transferred packet size.    
+  * @brief  Returns the last transfered packet size.    
   * @param  pdev: Device handle
   * @param  ep_addr: Endpoint Number
-  * @retval Received Data Size
+  * @retval Recived Data Size
   */
 uint32_t USBD_LL_GetRxDataSize(USBD_HandleTypeDef *pdev, uint8_t  ep_addr)  
 {
@@ -521,3 +531,5 @@ void  USBD_LL_Delay(uint32_t Delay)
 {
   HAL_Delay(Delay);  
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

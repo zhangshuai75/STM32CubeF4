@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    GPIO/GPIO_EXTI/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example describes how to configure and use GPIOs through 
   *          the STM32F4xx HAL API.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -59,16 +78,16 @@ int main(void)
      */
   HAL_Init();
  
-  /* Configure LED3, LED4, LED5 and LED6 */
+  /* -1- Initialize LEDs mounted on Discovery board */
   BSP_LED_Init(LED3);
   BSP_LED_Init(LED4);
   BSP_LED_Init(LED5);
   BSP_LED_Init(LED6);
 
-  /* Configure the system clock to 168 MHz */
+  /* -2- Configure the system clock */
   SystemClock_Config();
   
-  /* Configure EXTI Line0 (connected to PA0 pin) in interrupt mode */
+  /* -3- Configure EXTI Line0 (connected to PA0 pin) in interrupt mode */
   EXTILine0_Config();
   
   /* Infinite loop */
@@ -103,7 +122,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -135,13 +154,6 @@ static void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
-  /* STM32F405x/407x/415x/417x Revision Z and upper devices: prefetch is supported  */
-  if (HAL_GetREVID() >= 0x1001)
-  {
-    /* Enable the Flash prefetch */
-    __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
-  }
 }
 
 /**
@@ -154,7 +166,7 @@ static void EXTILine0_Config(void)
   GPIO_InitTypeDef   GPIO_InitStructure;
 
   /* Enable GPIOA clock */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __GPIOA_CLK_ENABLE();
   
   /* Configure PA0 pin as input floating */
   GPIO_InitStructure.Mode = GPIO_MODE_IT_FALLING;
@@ -194,7 +206,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   */
 static void Error_Handler(void)
 {
-  /* Turn LED5 on */
+  /* Turn LED5 (RED) on */
   BSP_LED_On(LED5);
   while(1)
   {
@@ -229,3 +241,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

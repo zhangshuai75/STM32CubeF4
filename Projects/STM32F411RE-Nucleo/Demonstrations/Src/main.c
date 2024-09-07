@@ -2,21 +2,30 @@
   ******************************************************************************
   * @file    Demonstrations/Src/main.c 
   * @author  MCD Application Team
-
-  * @brief   This demo describes how to display bmp images from SD card on TFT 
-             using STM32NUCLEO board Adafruit 1.8" TFT shield.
+  * @version V1.0.0
+  * @date    26-June-2014
+  * @brief   This demo describes how display bmp images from SD card on TFT using
+             STM32NUCLEO board Adafruit 1.8" TFT shield.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -29,7 +38,8 @@
   */ 
 
 /* Private typedef -----------------------------------------------------------*/
-typedef enum {
+typedef enum 
+{
   SHIELD_NOT_DETECTED = 0, 
   SHIELD_DETECTED
 }ShieldStatus;
@@ -119,7 +129,7 @@ int main(void)
   *            PLL_P                          = 4
   *            PLL_Q                          = 7
   *            VDD(V)                         = 3.3
-  *            Main regulator output voltage  = Scale1 mode
+  *            Main regulator output voltage  = Scale2 mode
   *            Flash Latency(WS)              = 3
   * @param  None
   * @retval None
@@ -130,7 +140,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -198,8 +208,9 @@ static void TFT_DisplayMenu(void)
  
   /* Wait for JOY_DOWN is pressed */
   while (BSP_JOY_GetState() != JOY_DOWN)
-  {}
-
+  {
+  }
+  
   /* Set Text color */
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);  
   /* Display message */ 
@@ -213,10 +224,6 @@ static void TFT_DisplayMenu(void)
   BSP_LCD_DisplayStringAtLine(9,  (uint8_t*)"  Manual Mode      ");
   BSP_LCD_DisplayStringAtLine(11, (uint8_t*)"  DOWN for:        ");
   BSP_LCD_DisplayStringAtLine(12, (uint8_t*)"  Automatic Mode   ");
-
-  /* Wait until Joystick is released */
-  while (BSP_JOY_GetState() == JOY_DOWN)
-  {}
 
   /* Wait for JOY_DOWN or JOY_UP is pressed */
   tmp = JOY_RIGHT;
@@ -254,6 +261,7 @@ static void TFT_DisplayMenu(void)
     /* Display message */ 
     BSP_LCD_DisplayStringAtLine(3,  (uint8_t*)"  Automatic Mode  ");
     BSP_LCD_DisplayStringAtLine(5,  (uint8_t*)"     Selected     ");
+  
 
     JoystickValue = 1;  
     HAL_Delay(200);
@@ -287,7 +295,7 @@ static void TFT_DisplayImages(void)
   {
     if(res == FR_NO_FILESYSTEM)
     {
-      /* Display message: SD card not FAT formatted */
+      /* Display message: SD card not FAT formated */
       TFT_DisplayErrorMessage(SD_CARD_NOT_FORMATTED);    
     }
     else
@@ -301,8 +309,7 @@ static void TFT_DisplayImages(void)
   filesnumbers = Storage_GetDirectoryBitmapFiles ("/", pDirectoryFiles);    
   /* Set bitmap counter to display first image */
   bmpcounter = 1; 
-
-  /* Infinite loop */  
+  
   while (1)
   {     
     /* Get JoyStick status */    
@@ -410,8 +417,8 @@ static void SDCard_Config(void)
   
   if(FATFS_LinkDriver(&SD_Driver, SD_Path) == 0)
   {
-//    /* Initialize the SD mounted on adafruit 1.8" TFT shield */
-//    BSP_SD_Init();
+    /* Initialize the SD mounted on adafruit 1.8" TFT shield */
+    BSP_SD_Init();
     
     /* Check the mounted device */
     if(f_mount(&SD_FatFs, (TCHAR const*)"/", 0) != FR_OK)
@@ -502,10 +509,10 @@ static void TFT_DisplayErrorMessage(uint8_t message)
   */
 static void LED2_Blink(void)
 {
-  /* Configure LED2 */
+  /* Configure LED2 on Nucleo */
   BSP_LED_Init(LED2);
 
-  /* Configure USER Button */
+  /* Configure the User Button in EXTI Mode */
   BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
   
   /* Initiate BlinkSpeed variable */ 
@@ -567,7 +574,7 @@ static ShieldStatus TFT_ShieldDetect(void)
   GPIO_InitTypeDef  GPIO_InitStruct; 
 
   /* Enable GPIO clock */
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
   
   GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -623,3 +630,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

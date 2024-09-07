@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    FreeRTOS/FreeRTOS_Mutexes/Src/main.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main program body
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
@@ -44,7 +54,7 @@ static void SystemClock_Config(void);
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  Main program
+  * @brief  Main program.
   * @param  None
   * @retval None
   */
@@ -58,16 +68,16 @@ int main(void)
      */
   HAL_Init();  
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock to 180 Mhz */
   SystemClock_Config();
   
-  /* Configure LED1, LED2, LED3 and LED4 */
+  /* Initialize LEDs */
   BSP_LED_Init(LED1);
   BSP_LED_Init(LED2);
   BSP_LED_Init(LED3);
   BSP_LED_Init(LED4); 
   
-  /* Creates the mutex */
+  /* Creates the mutex  */
   osMutexDef(osMutex);
   osMutex = osMutexCreate(osMutex(osMutex));
   
@@ -87,8 +97,8 @@ int main(void)
   }
   
   /* Start scheduler */
-  osKernelStart();
-  
+  osKernelStart (NULL, NULL);
+
   /* We should never get here as control is now taken by the scheduler */
   for(;;);
 }
@@ -125,7 +135,7 @@ static void MutexHighPriorityThread(void const *argument)
     osDelay(mutexSHORT_DELAY);
     
     
-    /* We should now be able to release the mutex.  
+    /* We should now be able to release the mutex .  
     When the mutex is available again the medium priority thread
     should be unblocked but not run because it has a lower priority
     than this thread.  The low priority thread should also not run 
@@ -136,11 +146,11 @@ static void MutexHighPriorityThread(void const *argument)
       BSP_LED_Toggle(LED3);
     }
     
-    /* Keep count of the number of cycles this thread has performed */
+    /* Keep count of the number of cycles this thread has performed. */
     HighPriorityThreadCycles++;
     BSP_LED_Toggle(LED1);
     
-    /* Suspend ourselves to the medium priority thread can execute */
+    /* Suspend ourselves to the medium priority thread can execute. */
     osThreadSuspend(NULL);
   }
 }
@@ -152,7 +162,7 @@ static void MutexHighPriorityThread(void const *argument)
   */
 static void MutexMeduimPriorityThread(void const *argument)
 {
-  /* Just to remove compiler warning */
+  /* Just to remove compiler warning. */
   (void) argument;
   
   for(;;)
@@ -164,7 +174,7 @@ static void MutexMeduimPriorityThread(void const *argument)
     thread is suspended. */
     if(osMutexWait(osMutex, osWaitForever) == osOK)
     {
-      if(osThreadGetState(osHighPriorityThreadHandle) != osThreadSuspended)
+      if(osThreadIsSuspended(osHighPriorityThreadHandle) != osOK)
       {
         /* Did not expect to execute until the high priority thread was
         suspended.
@@ -223,7 +233,7 @@ static void MutexLowPriorityThread(void const *argument)
     if(osMutexWait(osMutex, mutexNO_DELAY) == osOK)
     {
       /* Is the haigh and medium-priority threads suspended? */
-      if((osThreadGetState(osHighPriorityThreadHandle) != osThreadSuspended) || (osThreadGetState(osMediumPriorityThreadHandle) != osThreadSuspended))
+      if((osThreadIsSuspended(osHighPriorityThreadHandle) != osOK) || (osThreadIsSuspended(osMediumPriorityThreadHandle) != osOK))
       {
         /* Toggle LED 3 to indicate error */
         BSP_LED_Toggle(LED3);
@@ -249,7 +259,7 @@ static void MutexLowPriorityThread(void const *argument)
         
         /* The other two tasks should now have executed and no longer
         be suspended. */
-        if((osThreadGetState(osHighPriorityThreadHandle) == osThreadSuspended) || (osThreadGetState(osMediumPriorityThreadHandle) == osThreadSuspended))
+        if((osThreadIsSuspended(osHighPriorityThreadHandle) == osOK) || (osThreadIsSuspended(osMediumPriorityThreadHandle) == osOK))
         {
           /* Toggle LED 3 to indicate error */
           BSP_LED_Toggle(LED3);
@@ -298,7 +308,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -317,7 +327,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();  
+  HAL_PWREx_ActivateOverDrive();  
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
   clocks dividers */
@@ -330,9 +340,10 @@ static void SystemClock_Config(void)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
+  *   where the assert_param error has occurred.
   * @param  file: pointer to the source file name
   * @param  line: assert_param error line source number
   * @retval None
@@ -344,7 +355,8 @@ void assert_failed(uint8_t* file, uint32_t line)
 
   /* Infinite loop */
   while (1)
-  {
-  }
+  {}
 }
 #endif
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

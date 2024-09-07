@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Device/CustomHID_Standalone/Src/usbd_desc.c
   * @author  MCD Application Team
-  * @brief   This file provides the USBD descriptors and string formatting method.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   This file provides the USBD descriptors and string formating method.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_core.h"
 #include "usbd_desc.h"
@@ -26,8 +36,8 @@
 #define USBD_PID                      0x5750
 #define USBD_LANGID_STRING            0x409
 #define USBD_MANUFACTURER_STRING      "STMicroelectronics"
-#define USBD_PRODUCT_HS_STRING        "Custom HID in HS Mode"
-#define USBD_PRODUCT_FS_STRING        "Custom HID in FS Mode"
+#define USBD_PRODUCT_HS_STRING        "Custome HID in HS Mode"
+#define USBD_PRODUCT_FS_STRING        "Custome HID in FS Mode"
 #define USBD_CONFIGURATION_HS_STRING  "HID Config"
 #define USBD_INTERFACE_HS_STRING      "HID Interface"
 #define USBD_CONFIGURATION_FS_STRING  "HID Config"
@@ -42,6 +52,9 @@ uint8_t *USBD_HID_ProductStrDescriptor (USBD_SpeedTypeDef speed, uint16_t *lengt
 uint8_t *USBD_HID_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
 uint8_t *USBD_HID_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
 uint8_t *USBD_HID_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
+#ifdef USB_SUPPORT_USER_STRING_DESC
+uint8_t *USBD_HID_USRStringDesc (USBD_SpeedTypeDef speed, uint8_t idx, uint16_t *length);  
+#endif /* USB_SUPPORT_USER_STRING_DESC */  
 
 /* Private variables ---------------------------------------------------------*/
 USBD_DescriptorsTypeDef HID_Desc = {
@@ -90,10 +103,7 @@ __ALIGN_BEGIN uint8_t USBD_LangIDDesc[USB_LEN_LANGID_STR_DESC] __ALIGN_END = {
   HIBYTE(USBD_LANGID_STRING), 
 };
 
-#if defined ( __ICCARM__ ) /*!< IAR Compiler */
-  #pragma data_alignment=4   
-#endif
-__ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END =
+uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] =
 {
   USB_SIZ_STRING_SERIAL,      
   USB_DESC_TYPE_STRING,    
@@ -116,9 +126,6 @@ static void Get_SerialNum(void);
   */
 uint8_t *USBD_HID_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(speed);
-
   *length = sizeof(USBD_DeviceDesc);
   return (uint8_t*)USBD_DeviceDesc;
 }
@@ -131,9 +138,6 @@ uint8_t *USBD_HID_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   */
 uint8_t *USBD_HID_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(speed);
-
   *length = sizeof(USBD_LangIDDesc);  
   return (uint8_t*)USBD_LangIDDesc;
 }
@@ -165,9 +169,6 @@ uint8_t *USBD_HID_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length
   */
 uint8_t *USBD_HID_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(speed);
-
   USBD_GetString((uint8_t *)(uint8_t *)USBD_MANUFACTURER_STRING, USBD_StrDesc, length);
   return USBD_StrDesc;
 }
@@ -180,9 +181,6 @@ uint8_t *USBD_HID_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *l
   */
 uint8_t *USBD_HID_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(speed);
-
   *length = USB_SIZ_STRING_SERIAL;
   
   /* Update the serial number string descriptor with the data from the unique ID*/
@@ -262,7 +260,7 @@ static void IntToUnicode (uint32_t value , uint8_t *pbuf , uint8_t len)
 {
   uint8_t idx = 0;
   
-  for( idx = 0; idx < len; idx ++)
+  for( idx = 0 ; idx < len ; idx ++)
   {
     if( ((value >> 28)) < 0xA )
     {
@@ -278,3 +276,5 @@ static void IntToUnicode (uint32_t value , uint8_t *pbuf , uint8_t len)
     pbuf[ 2* idx + 1] = 0;
   }
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

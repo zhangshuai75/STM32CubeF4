@@ -2,50 +2,63 @@
   @page PWR_STOP PWR Stop Mode example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    PWR/PWR_STOP/readme.txt 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Description of the PWR Stop Mode example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
 @par Example Description 
 
-How to enter the Stop mode and wake up from this mode by using the RTC wakeup 
-timer event or an interrupt.
-
 This example shows how to enters the system to STOP mode and wake-up from this
-mode using RTC Wake-up Timer Event connected to EXTI Line 22 or Key push button
+mode using RTC Wakeup Timer Event connected to EXTI Line 22 or Key push button
 EXTI Line 15.
 
 In the associated software
   - the system clock is set to 168 MHz
   - the EXTI_Line15 is configured to generate interrupt on falling edge
-  - the EXTI_Line22 connected internally to the RTC Wake-up event is configured
+  - the EXTI_Line22 connected internally to the RTC Wakeup event is configured
     to generate an interrupt on rising edge each 4s
   - the SysTick is programmed to generate an interrupt each 1 ms 
 In the SysTick interrupt handler, LED2 is toggled, this is used to indicate whether
 the MCU is in STOP or RUN mode.
 
-The system enters STOP mode and will wait for the RTC Wake-up event to be 
+The system enters STOP mode and will wait for the RTC Wakeup event to be 
 generated each 4s, or Key push button is pressed. 
- - If the RTC Wake-up event (EXTI_Line22) is the source of wake-up from STOP, LED1 is toggled.
- - If the Key button (EXTI_Line15) is the source of wake-up from STOP, LED4 is toggled.
+ - If the RTC WakeUp event (EXTI_Line22) is the source of wakeup from STOP, LED1 is toggled.
+ - If the Key button (EXTI_Line15) is the source of wakeup from STOP, LED4 is toggled.
 
 This behavior is repeated in an infinite loop.
 
 LEDs are used to monitor the system state as following:
- - LED1 toggled: system woken up from STOP using RTC Wake-up Interrupt
+ - LED1 toggled: system woken up from STOP using RTC WakeUp Interrupt
  - LED2 toggling: system in RUN mode
  - LED3 Initialization error (RTC, RCC,...)
  - LED4 toggled: system woken up from STOP using EXTI_Line15 (KEY push button)
@@ -55,7 +68,7 @@ LEDs are used to monitor the system state as following:
 
  @note This example can not be used in DEBUG mode, this is due to the fact 
        that the Cortex-M4 core is no longer clocked during low power mode 
-       so debugging features are disabled
+       so debugging features are disbaled
        
 @note Care must be taken when using HAL_Delay(), this function provides accurate delay (in milliseconds)
       based on variable incremented in SysTick ISR. This implies that if HAL_Delay() is called from
@@ -63,16 +76,13 @@ LEDs are used to monitor the system state as following:
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
       
 @note  Care must be taken when HAL_RCCEx_PeriphCLKConfig() is used to select the RTC clock source; in this 
        case the Backup domain will be reset in order to modify the RTC Clock source, as consequence RTC  
        registers (including the backup registers) and RCC_BDCR register are set to their reset values.
 
-@par Keywords
-
-Power, PWR, Stop mode, Interrupt, EXTI, Wakeup, Low Power, External reset,
 
 @par Directory contents 
 
@@ -105,5 +115,5 @@ In order to make the program work, you must do the following :
  - Rebuild all files and load your image into target memory
  - Run the example
 
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

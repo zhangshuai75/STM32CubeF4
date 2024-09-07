@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    PWR/PWR_CurrentConsumption/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This sample code shows how to use STM32F4xx PWR HAL API to enter
   * and exit the stop mode.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -53,103 +72,89 @@ int main(void)
      */
   HAL_Init();
 
-  /* Configure LED3 and LED4 */
+  /* Initialize LED3 and LED4 */
   BSP_LED_Init(LED3);
   BSP_LED_Init(LED4);
 
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock to 180 Mhz */
   SystemClock_Config();
 
   /* Enable Power Clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
-
+  __PWR_CLK_ENABLE();
+  
   /* Check and handle if the system was resumed from StandBy mode */ 
   if(__HAL_PWR_GET_FLAG(PWR_FLAG_SB) != RESET)
   {
     __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB);
   }
 
-  /* Configure USER Button */
-  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
-
   /* Infinite loop */
   while(1)
   {
     UserButtonStatus = 0;
-
-    /* Wait until USER button is pressed to enter the Low Power mode */
+    
+    /* Configure Key Button */
+    BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
+    
+    /* Wait until Key button is pressed to enter the Low Power mode */
     while(UserButtonStatus == 0x00)
     {
       /* Toggle LED3 */
       BSP_LED_Toggle(LED3);
-
+      
       /* Inserted Delay */
       HAL_Delay(100);
     }
-
-    /* Loop while User button is maintained pressed */
+    
+    /* Loop while Key button is maintained pressed */
     while(BSP_PB_GetState(BUTTON_KEY) != RESET)
     {
     }
-
+    
 #if defined (SLEEP_MODE)
     /* Sleep Mode Entry 
-        - System Running at PLL (180MHz)
-        - Flash 5 wait state
-        - Instruction and Data caches ON
-        - Prefetch ON
-        - Code running from Internal FLASH
-        - All peripherals disabled.
-        - Wake-up using EXTI Line (USER Button)
+    - System Running at PLL (168MHz)
+    - Flash 5 wait state
+    - Instruction and Data caches ON
+    - Prefetch ON
+    - Code running from Internal FLASH
+    - All peripherals disabled.
+    - Wakeup using EXTI Line (User Button)
     */
     SleepMode_Measure();
-
 #elif defined (STOP_MODE)
     /* STOP Mode Entry 
-        - RTC Clocked by LSI
-        - Regulator in LP mode
-        - HSI, HSE OFF and LSI OFF if not used as RTC Clock source  
-        - No IWDG
-        - FLASH in deep power down mode
-        - Automatic Wake-up using RTC clocked by LSI (after ~20s)
+    - RTC Clocked by LSI
+    - Regulator in LP mode
+    - HSI, HSE OFF and LSI OFF if not used as RTC Clock source  
+    - No IWDG
+    - FLASH in deep power down mode
+    - Automatic Wakeup using RTC clocked by LSI (after ~20s)
     */
     StopMode_Measure();
-
-#elif defined (STOP_UNDERDRIVE_MODE)
-    /* Under-Drive STOP Mode Entry 
-        - RTC Clocked by LSI
-        - Regulator in LP mode
-        - Under drive feature enabled
-        - HSI, HSE OFF and LSI OFF if not used as RTC Clock source  
-        - No IWDG
-        - FLASH in deep power down mode
-        - Automatic Wake-up using RTC clocked by LSI (after ~20s)
-    */
-    StopUnderDriveMode_Measure();
-
 #elif defined (STANDBY_MODE)
     /* STANDBY Mode Entry 
-        - Backup SRAM and RTC OFF
-        - IWDG and LSI OFF
-        - Wake-up using WakeUp Pin (PA.00)
+    - Backup SRAM and RTC OFF
+    - IWDG and LSI OFF
+    - Wakeup using WakeUp Pin (PA.00)
     */
     StandbyMode_Measure();
-
+    
 #elif defined (STANDBY_RTC_MODE)
     /* STANDBY Mode with RTC on LSI Entry 
-        - RTC Clocked by LSI
-        - IWDG OFF and LSI OFF if not used as RTC Clock source
-        - Backup SRAM OFF
-        - Automatic Wake-up using RTC clocked by LSI (after ~20s)
+    - RTC Clocked by LSI
+    - IWDG OFF and LSI OFF if not used as RTC Clock source
+    - Backup SRAM OFF
+    - Automatic Wakeup using RTC clocked by LSI (after ~20s)
     */
     StandbyRTCMode_Measure();
-
+    
 #elif defined (STANDBY_RTC_BKPSRAM_MODE)
     /* STANDBY Mode with RTC on LSI Entry 
-        - RTC Clocked by LSI
-        - Backup SRAM ON
-        - IWDG OFF
-        - Automatic Wake-up using RTC clocked by LSI (after ~20s)
+    - RTC Clocked by LSI
+    - Backup SRAM ON
+    - IWDG OFF
+    - Automatic Wakeup using RTC clocked by LSI (after ~20s)
     */
     StandbyRTCBKPSRAMMode_Measure();
 #endif
@@ -182,7 +187,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -205,7 +210,7 @@ static void SystemClock_Config(void)
   }
   
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive(); 
+  HAL_PWREx_ActivateOverDrive(); 
     
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -252,7 +257,7 @@ void HAL_SYSTICK_Callback(void)
 void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc)
 {
   /* NOTE : add the specific code to handle the RTC wake up interrupt */
-  /* Configure LED3 */
+  /* Initialize LED3 on the EVAL board */
   BSP_LED_Init(LED3);
 
   /* Turn LED3 On */
@@ -268,9 +273,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if(GPIO_Pin == KEY_BUTTON_PIN)
   {  
-    /* Configure LED3 */
+    /* Initialize LED3 on the EVAL board */
     BSP_LED_Init(LED3);
-
+    
     /* Turn LED3 On */
     BSP_LED_On(LED3);
   }
@@ -278,6 +283,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -304,3 +310,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */ 
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

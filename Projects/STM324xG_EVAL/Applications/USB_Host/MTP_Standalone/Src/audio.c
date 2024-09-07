@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Host/MTP_Standalone/Src/audio.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file provides the Audio Out (playback) interface API
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -109,7 +119,7 @@ AUDIO_ErrorTypeDef AUDIO_Process(void)
 {
   uint32_t bytesread, elapsed_time; 
   static uint32_t prev_elapsed_time = 0xFFFFFFFF;
-  uint8_t str[14];
+  uint8_t str[10];
   AUDIO_ErrorTypeDef error_state = AUDIO_ERROR_NONE;  
   
   switch(audio_state)
@@ -281,7 +291,7 @@ void AUDIO_PlaybackProbeKey(JOYState_TypeDef state)
   */
 static AUDIO_ErrorTypeDef AUDIO_GetFileInfo(uint16_t file_idx, WAV_InfoTypedef *info)
 {
-  uint8_t str [FILE_NAME_SIZE + 30];
+  uint8_t str [FILE_NAME_SIZE + 20];  
   uint8_t fname [FILE_NAME_SIZE];    
   uint32_t bytesread;
   uint32_t duration;
@@ -358,3 +368,5 @@ void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
 void BSP_AUDIO_OUT_Error_CallBack(void)
 {
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

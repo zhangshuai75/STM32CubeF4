@@ -4,19 +4,5 @@
   <project>
     <path>$WS_DIR$\Project.ewp</path>
   </project>
-  <batchBuild>
-    <batchDefinition>
-      <name>All</name>
-      <member>
-        <project>Project</project>
-        <configuration>STM324xG-EVAL_USBH-FS</configuration>
-      </member>
-      <member>
-        <project>Project</project>
-        <configuration>STM324xG-EVAL_USBH-HS</configuration>
-      </member>
-    </batchDefinition>
-  </batchBuild>
+  <batchBuild/>
 </workspace>
-
-

@@ -2,59 +2,65 @@
   ******************************************************************************
   * @file    USB_Host/HID_RTOS/Src/menu.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014 
   * @brief   This file implements Menu Functions
   ******************************************************************************
     * @attention
-    *
-    * Copyright (c) 2017 STMicroelectronics.
-    * All rights reserved.
-    *
-    * This software is licensed under terms that can be found in the LICENSE file
-    * in the root directory of this software component.
-    * If no LICENSE file comes with this software, it is provided AS-IS.
-    *
-    ******************************************************************************
-    */
+  *
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  *
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  *
+  ******************************************************************************
+  */
 
-/* Includes ------------------------------------------------------------------ */
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* Private typedef ----------------------------------------------------------- */
-/* Private define ------------------------------------------------------------ */
-/* Private macro ------------------------------------------------------------- */
-/* Private variables --------------------------------------------------------- */
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
 HID_DEMO_StateMachine hid_demo;
 uint8_t prev_select = 0;
 osSemaphoreId MenuEvent;
 
-uint8_t *DEMO_KEYBOARD_menu[] = {
-  (uint8_t *)
-    "      1 - Start Keyboard / Clear                                            ",
-  (uint8_t *)
-    "      2 - Return                                                            ",
+uint8_t *DEMO_KEYBOARD_menu[] = 
+{
+  (uint8_t *)"      1 - Start Keyboard / Clear                                            ",
+  (uint8_t *)"      2 - Return                                                            ",
+}; 
+
+uint8_t *DEMO_MOUSE_menu[] = 
+{
+  (uint8_t *)"      1 - Start Mouse / Re-Initialize                                       ",
+  (uint8_t *)"      2 - Return                                                            ",
 };
 
-uint8_t *DEMO_MOUSE_menu[] = {
-  (uint8_t *)
-    "      1 - Start Mouse / Re-Initialize                                       ",
-  (uint8_t *)
-    "      2 - Return                                                            ",
+uint8_t *DEMO_HID_menu[] = 
+{
+  (uint8_t *)"      1 - Start HID                                                         ",
+  (uint8_t *)"      2 - Re-Enumerate                                                       ",
 };
 
-uint8_t *DEMO_HID_menu[] = {
-  (uint8_t *)
-    "      1 - Start HID                                                         ",
-  (uint8_t *)
-    "      2 - Re-Enumerate                                                       ",
-};
-
-/* Private function prototypes ----------------------------------------------- */
+/* Private function prototypes -----------------------------------------------*/
 static void HID_DEMO_ProbeKey(JOYState_TypeDef state);
-static void USBH_MouseDemo(USBH_HandleTypeDef * phost);
-static void USBH_KeybdDemo(USBH_HandleTypeDef * phost);
+static void USBH_MouseDemo(USBH_HandleTypeDef *phost);
+static void USBH_KeybdDemo(USBH_HandleTypeDef *phost);
 static void HID_MenuThread(void const *argument);
 
-/* Private functions --------------------------------------------------------- */
+/* Private functions ---------------------------------------------------------*/
 
 /**
   * @brief  Demo state machine.
@@ -66,23 +72,18 @@ void HID_MenuInit(void)
   /* Create Menu Semaphore */
   osSemaphoreDef(osSem);
 
-  MenuEvent = osSemaphoreCreate(osSemaphore(osSem), 1);
-
+  MenuEvent = osSemaphoreCreate(osSemaphore(osSem), 1); 
+  
   /* Force menu to show Item 0 by default */
   osSemaphoreRelease(MenuEvent);
-
+  
   /* Menu task */
-  osThreadDef(Menu_Thread, HID_MenuThread, osPriorityHigh, 0,
-              8 * configMINIMAL_STACK_SIZE);
+  osThreadDef(Menu_Thread, HID_MenuThread, osPriorityHigh, 0, 8 * configMINIMAL_STACK_SIZE);
   osThreadCreate(osThread(Menu_Thread), NULL);
-
+  
   BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
-  BSP_LCD_DisplayStringAtLine(18,
-                              (uint8_t *)
-                              "Use [Joystick Left/Right] to scroll up/down");
-  BSP_LCD_DisplayStringAtLine(19,
-                              (uint8_t *)
-                              "Use [Joystick Up/Down] to scroll HID menu");
+  BSP_LCD_DisplayStringAtLine(18, (uint8_t *)"Use [Joystick Left/Right] to scroll up/down");
+  BSP_LCD_DisplayStringAtLine(19, (uint8_t *)"Use [Joystick Up/Down] to scroll HID menu");
 }
 
 /**
@@ -104,59 +105,59 @@ void HID_UpdateMenu(void)
   */
 void HID_MenuThread(void const *argument)
 {
-  for (;;)
+  for(;;)
   {
-    if (osSemaphoreWait(MenuEvent, osWaitForever) == osOK)
+    if(osSemaphoreWait(MenuEvent , osWaitForever) == osOK)
     {
-      switch (hid_demo.state)
+      switch(hid_demo.state)
       {
       case HID_DEMO_IDLE:
-        HID_SelectItem(DEMO_HID_menu, 0);
+        HID_SelectItem(DEMO_HID_menu, 0); 
         hid_demo.state = HID_DEMO_WAIT;
         hid_demo.select = 0;
         osSemaphoreRelease(MenuEvent);
-        break;
-
+        break;        
+        
       case HID_DEMO_WAIT:
-        if (hid_demo.select != prev_select)
+        if(hid_demo.select != prev_select)
         {
-          prev_select = hid_demo.select;
-
-          HID_SelectItem(DEMO_HID_menu, hid_demo.select & 0x7F);
+          prev_select = hid_demo.select;        
+          
+          HID_SelectItem(DEMO_HID_menu, hid_demo.select & 0x7F); 
           /* Handle select item */
-          if (hid_demo.select & 0x80)
+          if(hid_demo.select & 0x80)
           {
-            switch (hid_demo.select & 0x7F)
+            switch(hid_demo.select & 0x7F)
             {
             case 0:
-              hid_demo.state = HID_DEMO_START;
+              hid_demo.state = HID_DEMO_START; 
               osSemaphoreRelease(MenuEvent);
               break;
-
+              
             case 1:
               hid_demo.state = HID_DEMO_REENUMERATE;
               osSemaphoreRelease(MenuEvent);
               break;
-
+              
             default:
               break;
             }
           }
         }
-        break;
-
+        break; 
+        
       case HID_DEMO_START:
-        if (Appli_state == APPLICATION_READY)
+        if(Appli_state == APPLICATION_READY)
         {
-          if (USBH_HID_GetDeviceType(&hUSBHost) == HID_KEYBOARD)
+          if(USBH_HID_GetDeviceType(&hUSBHost) == HID_KEYBOARD)
           {
-            hid_demo.keyboard_state = HID_KEYBOARD_IDLE;
+            hid_demo.keyboard_state = HID_KEYBOARD_IDLE; 
             hid_demo.state = HID_DEMO_KEYBOARD;
           }
-          else if (USBH_HID_GetDeviceType(&hUSBHost) == HID_MOUSE)
+          else if(USBH_HID_GetDeviceType(&hUSBHost) == HID_MOUSE)
           {
-            hid_demo.mouse_state = HID_MOUSE_IDLE;
-            hid_demo.state = HID_DEMO_MOUSE;
+            hid_demo.mouse_state = HID_MOUSE_IDLE;  
+            hid_demo.state = HID_DEMO_MOUSE;        
           }
         }
         else
@@ -166,41 +167,41 @@ void HID_MenuThread(void const *argument)
         }
         osSemaphoreRelease(MenuEvent);
         break;
-
+        
       case HID_DEMO_REENUMERATE:
         /* Force MSC Device to re-enumerate */
-        USBH_ReEnumerate(&hUSBHost);
+        USBH_ReEnumerate(&hUSBHost); 
         hid_demo.state = HID_DEMO_WAIT;
         osSemaphoreRelease(MenuEvent);
         break;
-
+        
       case HID_DEMO_MOUSE:
-        if (Appli_state == APPLICATION_READY)
+        if(Appli_state == APPLICATION_READY)
         {
           HID_MouseMenuProcess();
           USBH_MouseDemo(&hUSBHost);
         }
-        break;
-
+        break; 
+        
       case HID_DEMO_KEYBOARD:
-        if (Appli_state == APPLICATION_READY)
-        {
+        if(Appli_state == APPLICATION_READY)  
+        {    
           HID_KeyboardMenuProcess();
           USBH_KeybdDemo(&hUSBHost);
-        }
+        }   
         break;
-
+        
       default:
         break;
       }
-
-      if (Appli_state == APPLICATION_DISCONNECT)
+      
+      if(Appli_state == APPLICATION_DISCONNECT)
       {
-        Appli_state = APPLICATION_IDLE;
+        Appli_state = APPLICATION_IDLE; 
         LCD_LOG_ClearTextZone();
         LCD_ErrLog("HID device disconnected!\n");
         hid_demo.state = HID_DEMO_IDLE;
-        hid_demo.select = 0;
+        hid_demo.select = 0;    
       }
       hid_demo.select &= 0x7F;
     }
@@ -212,7 +213,7 @@ void HID_MenuThread(void const *argument)
   * @param  phost: Selected device
   * @retval None
   */
-void USBH_HID_EventCallback(USBH_HandleTypeDef * phost)
+void USBH_HID_EventCallback(USBH_HandleTypeDef *phost)
 {
   osSemaphoreRelease(MenuEvent);
 }
@@ -223,28 +224,28 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef * phost)
   * @param  item: Selected item to be highlighted
   * @retval None
   */
-void HID_SelectItem(uint8_t ** menu, uint8_t item)
+void HID_SelectItem(uint8_t **menu, uint8_t item)
 {
   BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-
-  switch (item)
+  
+  switch(item)
   {
-  case 0:
+  case 0: 
     BSP_LCD_SetBackColor(LCD_COLOR_MAGENTA);
     BSP_LCD_DisplayStringAtLine(20, menu[0]);
-    BSP_LCD_SetBackColor(LCD_COLOR_BLUE);
+    BSP_LCD_SetBackColor(LCD_COLOR_BLUE);    
     BSP_LCD_DisplayStringAtLine(21, menu[1]);
     break;
-
-  case 1:
+    
+  case 1: 
     BSP_LCD_SetBackColor(LCD_COLOR_BLUE);
     BSP_LCD_DisplayStringAtLine(20, menu[0]);
-    BSP_LCD_SetBackColor(LCD_COLOR_MAGENTA);
+    BSP_LCD_SetBackColor(LCD_COLOR_MAGENTA);    
     BSP_LCD_DisplayStringAtLine(21, menu[1]);
-    BSP_LCD_SetBackColor(LCD_COLOR_BLUE);
-    break;
+    BSP_LCD_SetBackColor(LCD_COLOR_BLUE);   
+    break;   
   }
-  BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
+  BSP_LCD_SetBackColor(LCD_COLOR_BLACK); 
 }
 
 /**
@@ -255,18 +256,18 @@ void HID_SelectItem(uint8_t ** menu, uint8_t item)
 static void HID_DEMO_ProbeKey(JOYState_TypeDef state)
 {
   /* Handle Menu inputs */
-  if ((state == JOY_UP) && (hid_demo.select > 0))
+  if((state == JOY_UP) && (hid_demo.select > 0))
   {
     hid_demo.select--;
   }
-  else if ((state == JOY_DOWN) && (hid_demo.select < 1))
+  else if((state == JOY_DOWN) && (hid_demo.select < 1))
   {
     hid_demo.select++;
   }
-  else if (state == JOY_SEL)
+  else if(state == JOY_SEL)
   {
     hid_demo.select |= 0x80;
-  }
+  }  
 }
 
 /**
@@ -275,28 +276,28 @@ static void HID_DEMO_ProbeKey(JOYState_TypeDef state)
   * @retval None
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
+{  
   __IO JOYState_TypeDef JoyState = JOY_NONE;
-
-  if (GPIO_Pin == GPIO_PIN_8)
-  {
+  
+  if(GPIO_Pin == GPIO_PIN_8)
+  {    
     /* Get the Joystick State */
     JoyState = BSP_JOY_GetState();
-
-    HID_DEMO_ProbeKey(JoyState);
-
-    switch (JoyState)
+    
+    HID_DEMO_ProbeKey(JoyState); 
+    
+    switch(JoyState)
     {
     case JOY_LEFT:
       LCD_LOG_ScrollBack();
       break;
-
+           
     case JOY_RIGHT:
       LCD_LOG_ScrollForward();
-      break;
-
+      break;          
+      
     default:
-      break;
+      break;           
     }
     /* Clear joystick interrupt pending bits */
     BSP_IO_ITClear();
@@ -309,20 +310,20 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   * @param  phost: Host handle
   * @retval None
   */
-static void USBH_MouseDemo(USBH_HandleTypeDef * phost)
+static void USBH_MouseDemo(USBH_HandleTypeDef *phost)
 {
-  HID_MOUSE_Info_TypeDef *m_pinfo;
-
-  if (hid_demo.mouse_state != HID_MOUSE_START)
+  HID_MOUSE_Info_TypeDef *m_pinfo;  
+  
+  if(hid_demo.mouse_state != HID_MOUSE_START)
   {
     m_pinfo = USBH_HID_GetMouseInfo(phost);
-
-    if (m_pinfo != NULL)
+    
+    if(m_pinfo != NULL)
     {
       /* Handle Mouse data position */
       USR_MOUSE_ProcessData(&mouse_info);
-
-      if (m_pinfo->buttons[0])
+      
+      if(m_pinfo->buttons[0])
       {
         HID_MOUSE_ButtonPressed(0);
       }
@@ -330,8 +331,8 @@ static void USBH_MouseDemo(USBH_HandleTypeDef * phost)
       {
         HID_MOUSE_ButtonReleased(0);
       }
-
-      if (m_pinfo->buttons[1])
+      
+      if(m_pinfo->buttons[1])
       {
         HID_MOUSE_ButtonPressed(2);
       }
@@ -339,8 +340,8 @@ static void USBH_MouseDemo(USBH_HandleTypeDef * phost)
       {
         HID_MOUSE_ButtonReleased(2);
       }
-
-      if (m_pinfo->buttons[2])
+      
+      if(m_pinfo->buttons[2])
       {
         HID_MOUSE_ButtonPressed(1);
       }
@@ -357,23 +358,25 @@ static void USBH_MouseDemo(USBH_HandleTypeDef * phost)
   * @param  phost: Host handle
   * @retval None
   */
-static void USBH_KeybdDemo(USBH_HandleTypeDef * phost)
+static void USBH_KeybdDemo(USBH_HandleTypeDef *phost)
 {
-  HID_KEYBD_Info_TypeDef *k_pinfo;
+  HID_KEYBD_Info_TypeDef *k_pinfo; 
   char c;
-
-  if (hid_demo.keyboard_state != HID_KEYBOARD_START)
+  
+  if(hid_demo.keyboard_state != HID_KEYBOARD_START)
   {
-
+    
     k_pinfo = USBH_HID_GetKeybdInfo(phost);
-
-    if (k_pinfo != NULL)
+    
+    if(k_pinfo != NULL)
     {
       c = USBH_HID_GetASCIICode(k_pinfo);
-      if (c != 0)
+      if(c != 0)
       {
         USR_KEYBRD_ProcessData(c);
       }
     }
   }
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

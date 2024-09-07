@@ -1,20 +1,30 @@
 /**
   ******************************************************************************
-  * @file    USB_Host/DynamicSwitch_Standalone/Inc/main.h
+  * @file    USB_Host/DynamicSwitch_Standalone/Inc/main.h 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Header for main.c module
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+  
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H
 #define __MAIN_H
@@ -24,7 +34,7 @@
 #include "usbh_core.h"
 #include "stm324xg_eval_io.h"
 #include "lcd_log.h"
-#include "usbh_audio.h"
+#include "usbh_audio.h" 
 #include "stm324xg_eval_sd.h"
 #include "usbh_msc.h"
 #include "ff.h"
@@ -32,14 +42,14 @@
 #include "usbh_hid_parser.h"
 #include "ff_gen_drv.h"
 #include "sd_diskio.h"
-#include "usbh_diskio_dma.h"
+#include "usbh_diskio.h"
 
 /* Exported constants --------------------------------------------------------*/
 #define FILEMGR_LIST_DEPDTH                     24
 #define FILEMGR_FILE_NAME_SIZE                  40
 #define FILEMGR_FULL_PATH_SIZE                 256
-#define FILEMGR_MAX_LEVEL                        4
-
+#define FILEMGR_MAX_LEVEL                        4   
+   
 #define FILETYPE_DIR                             0
 #define FILETYPE_FILE                            1
 
@@ -48,46 +58,46 @@ typedef enum {
   APPLICATION_IDLE = 0,
   APPLICATION_DISCONNECT,
   APPLICATION_MSC,
-  APPLICATION_HID,
-  APPLICATION_AUDIO,
+  APPLICATION_HID,  
+  APPLICATION_AUDIO,    
   APPLICATION_RUNNING,
 }DS_ApplicationTypeDef;
 
 typedef enum {
   HID_DEMO_IDLE = 0,
-  HID_DEMO_WAIT,
+  HID_DEMO_WAIT,  
   HID_DEMO_START,
-  HID_DEMO_MOUSE,
-  HID_DEMO_KEYBOARD,
+  HID_DEMO_MOUSE,  
+  HID_DEMO_KEYBOARD,    
   HID_DEMO_REENUMERATE,
 }HID_Demo_State;
 
 typedef enum {
   HID_MOUSE_IDLE = 0,
-  HID_MOUSE_WAIT,
-  HID_MOUSE_START,
+  HID_MOUSE_WAIT, 
+  HID_MOUSE_START,       
 }HID_mouse_State;
 
 typedef enum {
   HID_KEYBOARD_IDLE = 0,
-  HID_KEYBOARD_WAIT,
-  HID_KEYBOARD_START,
+  HID_KEYBOARD_WAIT,  
+  HID_KEYBOARD_START,    
 }HID_keyboard_State;
 
 typedef struct _DemoStateMachine {
   __IO HID_Demo_State     state;
   __IO HID_mouse_State    mouse_state;
-  __IO HID_keyboard_State keyboard_state;
+  __IO HID_keyboard_State keyboard_state;   
   __IO uint8_t            select;
   __IO uint8_t            lock;
 }HID_DEMO_StateMachine;
 
 typedef enum {
   MSC_DEMO_IDLE = 0,
-  MSC_DEMO_WAIT,
+  MSC_DEMO_WAIT,  
   MSC_DEMO_FILE_OPERATIONS,
   MSC_DEMO_EXPLORER,
-  MSC_REENUMERATE,
+  MSC_REENUMERATE,  
 }MSC_Demo_State;
 
 typedef struct _MSC_DemoStateMachine {
@@ -96,19 +106,19 @@ typedef struct _MSC_DemoStateMachine {
 }MSC_DEMO_StateMachine;
 
 typedef struct AUDIO_Info_t {
-  uint32_t ChunkID;       /* 0  */
+  uint32_t ChunkID;       /* 0  */ 
   uint32_t FileSize;      /* 4  */
   uint32_t FileFormat;    /* 8  */
   uint32_t SubChunk1ID;   /* 12 */
-  uint32_t SubChunk1Size; /* 16 */
-  uint16_t AudioFormat;   /* 20 */
-  uint16_t NbrChannels;   /* 22 */
+  uint32_t SubChunk1Size; /* 16 */  
+  uint16_t AudioFormat;   /* 20 */ 
+  uint16_t NbrChannels;   /* 22 */   
   uint32_t SampleRate;    /* 24 */
   uint32_t ByteRate;      /* 28 */
-  uint16_t BlockAlign;    /* 32 */
-  uint16_t BitPerSample;  /* 34 */
-  uint32_t SubChunk2ID;   /* 36 */
-  uint32_t SubChunk2Size; /* 40 */
+  uint16_t BlockAlign;    /* 32 */  
+  uint16_t BitPerSample;  /* 34 */  
+  uint32_t SubChunk2ID;   /* 36 */   
+  uint32_t SubChunk2Size; /* 40 */    
 }WAV_InfoTypedef;
 
 typedef struct _FILELIST_LineTypeDef {
@@ -118,15 +128,15 @@ typedef struct _FILELIST_LineTypeDef {
 
 typedef struct _FILELIST_FileTypeDef {
   FILELIST_LineTypeDef  file[FILEMGR_LIST_DEPDTH] ;
-  uint16_t              ptr;
+  uint16_t              ptr; 
 }FILELIST_FileTypeDef;
 
 typedef enum {
   AUDIO_DEMO_IDLE = 0,
-  AUDIO_DEMO_WAIT,
+  AUDIO_DEMO_WAIT,  
   AUDIO_DEMO_EXPLORE,
   AUDIO_DEMO_PLAYBACK,
-  AUDIO_REENUMERATE
+  AUDIO_REENUMERATE  
 }AUDIO_Demo_State;
 
 typedef struct _AUDIO_DemoStateMachine {
@@ -137,28 +147,28 @@ typedef struct _AUDIO_DemoStateMachine {
 
 typedef enum {
   AUDIO_SELECT_MENU = 0,
-  AUDIO_PLAYBACK_CONTROL ,
+  AUDIO_PLAYBACK_CONTROL ,  
 }AUDIO_DEMO_SelectMode;
 
 typedef enum {
   AUDIO_STATE_IDLE = 0,
-  AUDIO_STATE_WAIT,
-  AUDIO_STATE_INIT,
-  AUDIO_STATE_CONFIG,
-  AUDIO_STATE_PLAY,
-  AUDIO_STATE_NEXT,
+  AUDIO_STATE_WAIT,    
+  AUDIO_STATE_INIT,    
+  AUDIO_STATE_CONFIG,    
+  AUDIO_STATE_PLAY,  
+  AUDIO_STATE_NEXT,  
   AUDIO_STATE_PREVIOUS,
-  AUDIO_STATE_FORWARD,
-  AUDIO_STATE_BACKWARD,
+  AUDIO_STATE_FORWARD,   
+  AUDIO_STATE_BACKWARD, 
   AUDIO_STATE_PAUSE,
   AUDIO_STATE_RESUME,
   AUDIO_STATE_VOLUME_UP,
-  AUDIO_STATE_VOLUME_DOWN,
+  AUDIO_STATE_VOLUME_DOWN,  
 }AUDIO_PLAYBACK_StateTypeDef;
 
 typedef enum {
-  AUDIO_ERROR_NONE = 0,
-  AUDIO_ERROR_IO,
+  AUDIO_ERROR_NONE = 0,  
+  AUDIO_ERROR_IO,   
   AUDIO_ERROR_EOF,
 }AUDIO_ErrorTypeDef;
 
@@ -204,3 +214,5 @@ void USR_MOUSE_ProcessData(HID_MOUSE_Info_TypeDef *data);
 void USR_KEYBRD_ProcessData(uint8_t data);
 void HID_DEMO_ProbeKey(JOYState_TypeDef state);
 #endif /* __MAIN_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

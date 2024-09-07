@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Host/FWupgrade_Standalone/Src/flash_if.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file provides all the flash layer functions.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -23,7 +33,7 @@
 /* Private macros ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 uint32_t FirstSector = 0;
-uint32_t NbOfSectors = 0;
+uint32_t NbOfSectors = 0 ;
 uint32_t SectorError = 0;
 uint32_t OB_RDP_LEVEL;
 
@@ -87,10 +97,10 @@ uint32_t FLASH_If_EraseSectors(uint32_t Address)
     /* Get the number of sector to erase from 1st sector */
     NbOfSectors = FLASH_If_GetSectorNumber(USER_FLASH_LAST_PAGE_ADDRESS) - FirstSector + 1;
     
-    FLASH_EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
+    FLASH_EraseInitStruct.TypeErase = TYPEERASE_SECTORS;
     FLASH_EraseInitStruct.Sector = FirstSector;
     FLASH_EraseInitStruct.NbSectors = NbOfSectors;
-    FLASH_EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+    FLASH_EraseInitStruct.VoltageRange = VOLTAGE_RANGE_3;
     
     if(HAL_FLASHEx_Erase(&FLASH_EraseInitStruct, &SectorError) != HAL_OK)
       return (1);
@@ -118,7 +128,7 @@ uint32_t FLASH_If_Write(uint32_t Address, uint32_t Data)
   
   if(Address <= (uint32_t) USER_FLASH_LAST_PAGE_ADDRESS)
   {
-    if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, Data)!= HAL_OK)
+    if(HAL_FLASH_Program(TYPEPROGRAM_WORD, Address, Data)!= HAL_OK)
       return (1);  
   }
   else
@@ -188,3 +198,5 @@ static uint32_t FLASH_If_GetSectorNumber(uint32_t Address)
   }
   return sector;
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

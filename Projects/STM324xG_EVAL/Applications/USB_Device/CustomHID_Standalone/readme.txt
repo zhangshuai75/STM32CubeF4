@@ -1,29 +1,36 @@
 /**
-  @page CustomHID_Standalone USB Device Custom HID application
+  @page CustomHID_Standalone USB Device Custom HID example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    USB_Device/CustomHID_Standalone/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the USB Custom HID application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the USB Custom HID example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
   
-@par Application Description
+@par Example Description
 
-This application shows how to use the USB device application based on the Human Interface (HID) on the STM32F4xx devices.
+This example is a part of the USB Device Library package using STM32Cube firmware. It describes how to 
+use USB device application based on the Custom HID Class on the STM32F4xx devices.
 
-This is a typical application on how to use the STM32F4xx USB OTG Device peripheral, where the STM32 MCU is 
+This is a typical example on how to use the STM32F4xx USB OTG Device peripheral, where the STM32 MCU is 
 enumerated as a HID compliant device using the native PC Host HID driver to which the STM324xG-EVAL
 board is connected.
 
@@ -39,8 +46,7 @@ It's worth noting that the system clock (SYSCLK) can be configured, depending on
  - SYSCLK is set to 180 MHz: for only HS Core, since no embedded PHY is used.
 
 To test the application, user must proceed as follows:
- - Start the "USB HID Demonstrator" PC applet, available for download from www.st.com, 
-   and connect STM32 USB to PC
+ - Start the "USB HID Demonstrator" PC applet and connect STM32 USB to PC
  - The device should be detected and shown in the USB HID target box
  - Press Graphic View button
  - Select "use SET_FEATURE" or "use SET_REPORT" in order to use SET_REPORT request to send HID Report
@@ -57,7 +63,7 @@ To test the application, user must proceed as follows:
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
       
 For more details about the STM32Cube USB Device library, please refer to UM1734 
@@ -67,13 +73,10 @@ For more details about the STM32Cube USB Device library, please refer to UM1734
 @par USB Library Configuration
 
 To select the appropriate USB Core to work with, user must add the following macro defines within the
-compiler preprocessor (already done in the preconfigured projects provided with this application):
+compiler preprocessor (already done in the preconfigured projects provided with this example):
       - "USE_USB_HS" when using USB High Speed (HS) Core
       - "USE_USB_FS" when using USB Full Speed (FS) Core 
 
-@par Keywords
-
-Connectivity, USB_Device, USB, HID, Full Speed, High Speed, Joystick, Mouse, OTG
 
 @par Directory contents
 
@@ -92,17 +95,17 @@ Connectivity, USB_Device, USB, HID, Full Speed, High Speed, Joystick, Mouse, OTG
 	
 @par Hardware and Software environment
 
-  - This application runs on STM32F407xx/STM32F417xx devices.
+  - This example runs on STM32F407xx/STM32F417xx devices.
     
-  - This application has been tested with STMicroelectronics STM324xG-EVAL RevC 
+  - This example has been tested with STMicroelectronics STM324xG-EVAL RevC 
     evaluation boards and can be easily tailored to any other supported device 
     and development board.
 
   - STM324xG-EVAL RevC Set-up
     - Connect the STM324xG-EVAL board to the PC through 'USB micro A-Male 
       to A-Male' cable to the connector:
-      - CN9: to use USB High Speed (HS) 
-      - CN8: to use USB Full Speed (FS)
+      - CN9 : to use USB High Speed (HS) 
+      - CN8 : to use USB Full Speed (FS)
 		  
     
 @par How to use it ?
@@ -113,7 +116,8 @@ In order to make the program work, you must do the following :
  - In the workspace toolbar select the project configuration:
    - STM324xG-EVAL_USBH-HS: to configure the project for STM32F4xx devices using USB OTG HS peripheral
    - STM324xG-EVAL_USBH-FS: to configure the project for STM32F4xx devices using USB OTG FS peripheral
- - Run the application
+ - Run the example
  
-
-  */
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
+ */
+ 

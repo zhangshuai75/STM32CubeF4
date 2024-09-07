@@ -2,31 +2,44 @@
   @page SMARTCARD_T0 Smart Card T0 protocol example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    SMARTCARD/T0/readme.txt 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Description of the Smart Card T0 protocol example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
 @par Example Description 
-
-
-This example describes a firmware Smartcard Interface based on the USART
+This example describes a firmware Smartcard Interface based on the STM32F4xx USART
 peripheral. The main purpose of this firmware example is to provide resources 
 facilitating the development of an application using the USART peripheral in 
 smartcard mode.
-
 
 The firmware interface is composed of library source files developed in order to
 support ISO7816-3/4 specification, an application example is also provided.
@@ -42,24 +55,21 @@ available on www.st.com
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
 
-@par Keywords
-
-Connectivity, SMARTCARD, USART 
 
 @par Directory contents 
 
-  - SMARTCARD/SMARTCARD_T0/Inc/stm32f4xx_hal_conf.h    HAL configuration file
-  - SMARTCARD/SMARTCARD_T0/Inc/stm32f4xx_it.h          Interrupt handlers header file
-  - SMARTCARD/SMARTCARD_T0/Inc/main.h                  Main program header file
-  - SMARTCARD/SMARTCARD_T0/Inc/smartcard.h             Header for smartcard.c module
-  - SMARTCARD/SMARTCARD_T0/Src/stm32f4xx_it.c          Interrupt handlers
-  - SMARTCARD/SMARTCARD_T0/Src/main.c                  Main program
-  - SMARTCARD/SMARTCARD_T0/Inc/smartcard.c             smartcard module
-  - SMARTCARD/SMARTCARD_T0/Src/stm32f4xx_hal_msp.c     HAL MSP module
-  - SMARTCARD/SMARTCARD_T0/Src/system_stm32f4xx.c      STM32F4xx system clock configuration file
+  - SMARTCARD/T0/Inc/stm32f4xx_hal_conf.h    HAL configuration file
+  - SMARTCARD/T0/Inc/stm32f4xx_it.h          Interrupt handlers header file
+  - SMARTCARD/T0/Inc/main.h                  Main program header file
+  - SMARTCARD/T0/Inc/smartcard.h             Header for smartcard.c module
+  - SMARTCARD/T0/Src/stm32f4xx_it.c          Interrupt handlers
+  - SMARTCARD/T0/Src/main.c                  Main program
+  - SMARTCARD/T0/Inc/smartcard.c             smartcard module
+  - SMARTCARD/T0/Src/stm32f4xx_hal_msp.c     HAL MSP module
+  - SMARTCARD/T0/Src/system_stm32f4xx.c      STM32F4xx system clock configuration file
 
 
 @par Hardware and Software environment
@@ -73,7 +83,7 @@ Connectivity, SMARTCARD, USART
   - STM324xG-EVAL RevC Set-up
     - Use LED1, LED2, LED3 and LED4 connected respectively to PG.06, PG.08, PI.09
       and PC.07 pins.
-    - Please ensure that jumper JP21 is fitted.
+    - Please ensure that jumper JP21 is not fitted.
 
 
 @par How to use it ? 
@@ -83,5 +93,5 @@ In order to make the program work, you must do the following :
  - Rebuild all files and load your image into target memory
  - Run the example
 
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

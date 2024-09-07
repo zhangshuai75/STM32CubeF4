@@ -2,28 +2,41 @@
   @page I2C_TwoBoards_AdvComIT I2C Two Boards Advanced Communication IT example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics  *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    I2C/I2C_TwoBoards_AdvComIT/readme.txt 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Description of the I2C Two Boards Advanced Communication with 
   *          Interrupt example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
 @par Example Description 
-
-How to handle I2C data buffer transmission/reception between two boards, 
-using an interrupt.
 
    _________________________                        _________________________
   |           ______________|                      |______________           |
@@ -60,7 +73,7 @@ the configuration of the needed I2C resources according to the used hardware (CL
 GPIO and NVIC). You may update this function to change I2C configuration.
 
 The I2C communication is then initiated.
-The project is split in two parts the Master Board and the Slave Board
+The project is splitted in two parts the Master Board and the Slave Board
 - Master Board
   The HAL_I2C_Master_Receive_IT() and the HAL_I2C_Master_Transmit_IT() functions 
   allow respectively the reception and the transmission of a predefined data buffer
@@ -118,13 +131,9 @@ by pushing the user button of the Master board.
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
 
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
 
-@par Keywords
-
-Connectivity, Communication, I2C, Interrupt, Master, Slave, Transmission, Reception, Fast mode,
-Command, Acknowledge
 
 @par Directory contents 
 
@@ -141,11 +150,11 @@ Command, Acknowledge
 
   - This example runs on STM32F429xx devices.
     
-  - This example has been tested with STMicroelectronics STM32F429I-Discovery RevC
+  - This example has been tested with STMicroelectronics STM32F429I-Discovery RevB
     boards and can be easily tailored to any other supported device 
     and development board.    
       
-  - STM32F429I-Discovery RevC Set-up
+  - STM32F429I-Discovery RevB Set-up
     - Connect Master board PA8 to Slave Board PA8
     - Connect Master board PC9 to Slave Board PC9
     - Connect Master board GND to Slave Board GND
@@ -160,5 +169,5 @@ In order to make the program work, you must do the following :
     o Comment "#define MASTER_BOARD" and load the project in Slave Board
  - Run the example
 
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

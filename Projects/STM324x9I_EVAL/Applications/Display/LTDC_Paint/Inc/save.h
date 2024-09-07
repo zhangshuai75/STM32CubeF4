@@ -2,25 +2,34 @@
   ******************************************************************************
   * @file    Display/LTDC_Paint/Inc/save.h 
   * @author  MCD Application Team
-  * @brief   This file contains image used for LTDC application.   
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   This file contains image used for LTDC example.   
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __SAVE_H
 #define __SAVE_H
 
-__ALIGN_BEGIN const unsigned char save[5054] __ALIGN_END =
+const unsigned char save[5054]=
 {
 0x42,0x4d,0xbe,0x13,0x00,0x00,0x00,0x00,0x00,0x00,0x36,0x00,0x00,0x00,0x28,0x00,
 0x00,0x00,0x32,0x00,0x00,0x00,0x32,0x00,0x00,0x00,0x01,0x00,0x10,0x00,0x03,0x00,
@@ -341,3 +350,5 @@ __ALIGN_BEGIN const unsigned char save[5054] __ALIGN_END =
 };
 
 #endif /* __SAVE_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

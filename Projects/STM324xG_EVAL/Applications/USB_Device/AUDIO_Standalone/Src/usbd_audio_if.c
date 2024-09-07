@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Device/AUDIO_Standalone/Src/usbd_audio_if.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   USB Device Audio interface file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_audio_if.h"
 #include "stm324xg_eval_audio.h"
@@ -28,7 +38,7 @@ static int8_t Audio_DeInit(uint32_t options);
 static int8_t Audio_PlaybackCmd(uint8_t* pbuf, uint32_t size, uint8_t cmd);
 static int8_t Audio_VolumeCtl(uint8_t vol);
 static int8_t Audio_MuteCtl(uint8_t cmd);
-static int8_t Audio_PeriodicTC(uint8_t *pbuf, uint32_t size, uint8_t cmd);
+static int8_t Audio_PeriodicTC(uint8_t cmd);
 static int8_t Audio_GetState(void);
 
 /* Private variables ---------------------------------------------------------*/
@@ -118,7 +128,7 @@ static int8_t Audio_MuteCtl(uint8_t cmd)
   * @param  cmd: Command opcode
   * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
   */
-static int8_t Audio_PeriodicTC(uint8_t *pbuf, uint32_t size, uint8_t cmd)
+static int8_t Audio_PeriodicTC(uint8_t cmd)
 {
   return 0;
 }
@@ -152,3 +162,5 @@ void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
 { 
   USBD_AUDIO_Sync(&USBD_Device, AUDIO_OFFSET_HALF);
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

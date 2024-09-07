@@ -1,30 +1,37 @@
 /**
-  @page FreeRTOS_Timers FreeRTOS Timers application
+  @page FreeRTOS_Timers FreeRTOS Timers example
  
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    FreeRTOS/FreeRTOS_Timers/readme.txt
   * @author  MCD Application Team
-  * @brief   Description of the FreeRTOS Timers application.
+  * @version V1.1.0
+  * @date    26-June-2014 
+  * @brief   Description of the FreeRTOS Timers example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Application Description
+@par Description
 
-How to use timers of CMSIS RTOS API.
+This directory contains a set of sources files that implement an example that
+uses timers of CMSIS RTOS API 
 
-This application creates a thread that toggles LED2 every 400 ms, and a periodic 
-timer that calls a callback function every 200 ms to toggle the LED1.  
+This example creates a thread that toggle LED1 every 400 ms, and a periodic 
+timer that calls a callback function every 200 ms to toggle the LED2  
 
 
 @note Care must be taken when using HAL_Delay(), this function provides accurate delay (in milliseconds)
@@ -33,17 +40,12 @@ timer that calls a callback function every 200 ms to toggle the LED1.
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
-	  
-@note The FreeRTOS heap size configTOTAL_HEAP_SIZE defined in FreeRTOSConfig.h is set according to the OS resources memory requirements of the application with +10% margin and rounded to the upper Kbyte boundary.
 
 For more details about FreeRTOS implementation on STM32Cube, please refer to UM1722 "Developing Applications 
 on STM32Cube with RTOS".
 
-@par Keywords
-
-RTOS, FreeRTOS, Threading, Timer
 
 @par Directory contents
 
@@ -57,9 +59,9 @@ RTOS, FreeRTOS, Threading, Timer
 
 @par Hardware and Software environment
 
-  - This application runs on STM32F42xxx/STM32F43xxx devices
+  - This example runs on STM32F42xxx/STM32F43xxx devices
     
-  - This application has been tested with STM324x9I-EVAL RevB evaluation board and can be
+  - This example has been tested with STM324x9I-EVAL RevB evaluation board and can be
     easily tailored to any other supported device and development board.
 
 
@@ -68,7 +70,7 @@ RTOS, FreeRTOS, Threading, Timer
 In order to make the program work, you must do the following :
  - Open your preferred toolchain 
  - Rebuild all files and load your image into target memory
- - Run the application
+ - Run the example
 
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

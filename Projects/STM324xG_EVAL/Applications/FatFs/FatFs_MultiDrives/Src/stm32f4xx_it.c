@@ -2,18 +2,27 @@
   ******************************************************************************
   * @file    FatFs/FatFs_MultiDrives/Src/stm32f4xx_it.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main Interrupt Service Routines.
   *          This file provides template for all exceptions handler and 
   *          peripherals interrupt service routine.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
@@ -26,7 +35,6 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern SD_HandleTypeDef uSdHandle;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -144,9 +152,19 @@ void SysTick_Handler(void)
   * @param  None
   * @retval None
   */
-void BSP_SD_DMA_Rx_IRQHandler(void)
+void DMA2_Stream3_IRQHandler(void)
 {
-  HAL_DMA_IRQHandler(uSdHandle.hdmarx);
+  BSP_SD_DMA_Rx_IRQHandler();
+}
+
+/**
+  * @brief  This function handles DMA2 Stream 6 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void DMA2_Stream6_IRQHandler(void)
+{
+  BSP_SD_DMA_Tx_IRQHandler(); 
 }
 
 /**
@@ -156,7 +174,7 @@ void BSP_SD_DMA_Rx_IRQHandler(void)
   */
 void SDIO_IRQHandler(void)
 {
-  HAL_SD_IRQHandler(&uSdHandle);
+  BSP_SD_IRQHandler();
 }
 
 /**
@@ -167,3 +185,5 @@ void SDIO_IRQHandler(void)
 /*void PPP_IRQHandler(void)
 {
 }*/
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

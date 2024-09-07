@@ -1,29 +1,36 @@
 /**
-  @page MSC_Standalone USB Host Mass Storage (MSC) application
+  @page MSC_Standalone USB Host Mass Storage (MSC) example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    USB_Host/MSC_Standalone/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the USB Host MSC application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the USB Host MSC example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Application Description
+@par Example Description
 
-This application shows how to use the USB host application based on the Mass Storage Class (MSC) on the STM32F4xx devices.
+This example is a part of the USB Host Library package using STM32Cube firmware. It describes how to use
+USB host application based on the Mass Storage Class (MSC) on the STM32F4xx devices.
 
-This is a typical application on how to use the STM32F4xx USB OTG Host peripheral to operate with an USB 
+This is a typical example on how to use the STM32F4xx USB OTG Host peripheral to operate with an USB 
 flash disk using the Bulk Only Transfer (BOT) and Small Computer System Interface (SCSI) transparent
 commands combined with a file system FatFs (Middleware component).
 
@@ -42,7 +49,7 @@ It's worth noting that the system clock (SYSCLK) can be configured, depending on
 When the application is started, the connected USB flash disk device is detected in MSC mode and gets 
 initialized. The STM32 MCU behaves as a MSC Host, it enumerates the device and extracts VID, PID, 
 manufacturer name, Serial no and product name information and displays it on the LCD screen. 
-This application is based on read/write file and explore the USB flash disk content through a MSC routine.
+This example is based on read/write file and explore the USB flash disk content trough a MSC routine.
 
 A menu is displayed and the user can select any operation from the menu using the Joystick buttons:
  - "File Operations" operation writes a small text file (less to 1 KB) on the USB flash disk.
@@ -66,15 +73,15 @@ For more details about the STM32Cube USB Host library, please refer to UM1720
 @par USB Library Configuration
 
 To select the appropriate USB Core to work with, user must add the following macro defines within the
-compiler preprocessor (already done in the preconfigured projects provided with this application):
+compiler preprocessor (already done in the preconfigured projects provided with this example):
       - "USE_USB_HS" when using USB High Speed (HS) Core
       - "USE_USB_FS" when using USB Full Speed (FS) Core 
       - "USE_USB_HS" and "USE_USB_HS_IN_FS" when using USB High Speed (HS) Core in FS mode
 
 It is possible to fine tune needed USB Host features by modifying defines values in USBH configuration
-file "usbh_conf.h" available under the project includes directory, in a way to fit the application
+file “usbh_conf.h” available under the project includes directory, in a way to fit the application
 requirements, such as:
-  - Level of debug: USBH_DEBUG_LEVEL
+- Level of debug: USBH_DEBUG_LEVEL
                   0: No debug messages
                   1: Only User messages are shown
                   2: User and Error messages are shown
@@ -82,15 +89,10 @@ requirements, such as:
    By default debug messages are displayed on the debugger IO terminal; to redirect the Library
    messages on the LCD screen, lcd_log.c driver need to be added to the application sources.
 
-@par Keywords
-
-Connectivity, USB_Host, MSC, Mass Storage, Full Speed, High Speed, BOT, SCSI, Removable drive, FatFs,
-File system, Write, Read, Format
 
 @par Directory contents
 
   - USB_Host/MSC_Standalone/Src/main.c                  Main program
-  - USB_Host/MSC_Standalone/Src/usbh_diskio_dma.c       FatFS usbh diskio driver implementation
   - USB_Host/MSC_Standalone/Src/system_stm32f4xx.c      STM32F4xx system clock configuration file
   - USB_Host/MSC_Standalone/Src/stm32f4xx_it.c          Interrupt handlers
   - USB_Host/MSC_Standalone/Src/menu.c                  MSC State Machine
@@ -99,27 +101,26 @@ File system, Write, Read, Format
   - USB_Host/MSC_Standalone/Src/file_operations.c       Write/read file on the disk
   - USB_Host/MSC_Standalone/Src/usbh_diskio.c           USB diskio interface for FatFs
   - USB_Host/MSC_Standalone/Inc/main.h                  Main program header file
-  - USB_Host/MSC_Standalone/Inc/usbh_diskio_dma.h       FatFS usbh diskio driver header file
   - USB_Host/MSC_Standalone/Inc/stm32f4xx_it.h          Interrupt handlers header file
   - USB_Host/MSC_Standalone/Inc/lcd_log_conf.h          LCD log configuration file
   - USB_Host/MSC_Standalone/Inc/stm32f4xx_hal_conf.h    HAL configuration file
   - USB_Host/MSC_Standalone/Inc/usbh_conf.h             USB Host driver Configuration file
-  - USB_Host/MSC_Standalone/Inc/ffconf.h                FAT file system module configuration file
+  - USB_Host/MSC_Standalone/Inc/ffconf.h                FatFs Module Configuration file
  
 
 @par Hardware and Software environment
 
-  - This application runs on STM32F429xx/STM32F439xx devices.
+  - This example runs on STM32F429xx/STM32F439xx devices.
     
-  - This application has been tested with STMicroelectronics STM324x9I-EVAL RevB 
+  - This example has been tested with STMicroelectronics STM324x9I-EVAL RevB 
     evaluation boards and can be easily tailored to any other supported device 
     and development board.
 
   - STM324x9I-EVAL RevB Set-up
     - Plug the USB key into the STM324x9I-EVAL board through 'USB micro A-Male 
       to A-Female' cable to the connector:
-      - CN9 : to use USB High Speed (HS)  with embedded PHY(U7)
-      - CN14: to use USB Full Speed (FS) 
+      - CN9 : to use USB High Speed (HS) 
+      - CN14: to use USB Full Speed (FS) with embedded PHY(U7)
               Please ensure that jumper JP16 is not fitted.
       - CN15: to use USB HS-IN-FS.
               Note that some FS signals are shared with the HS ULPI bus, so some PCB rework is needed.
@@ -136,7 +137,7 @@ In order to make the program work, you must do the following :
    - STM324x9I-EVAL_USBH-FS: to configure the project for STM32F4xx devices using USB OTG FS peripheral
    - STM324x9I-EVAL_USBH-HS-IN-FS: to configure the project for STM32F4xx devices and use USB OTG HS 
                                    peripheral In FS (using embedded PHY).
- - Run the application
+ - Run the example
  
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

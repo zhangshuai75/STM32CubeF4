@@ -2,19 +2,38 @@
   ******************************************************************************
   * @file    UART/UART_TwoBoards_ComDMA/Src/stm32f4xx_hal_msp.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   HAL MSP module.    
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
   *
-  ******************************************************************************
-  */
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  ******************************************************************************  
+  */ 
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -124,17 +143,13 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
   __HAL_LINKDMA(huart, hdmarx, hdma_rx);
     
   /*##-4- Configure the NVIC for DMA #########################################*/
-  /* NVIC configuration for DMA transfer complete interrupt (USARTx_TX) */
+  /* NVIC configuration for DMA transfer complete interrupt (USART1_TX) */
   HAL_NVIC_SetPriority(USARTx_DMA_TX_IRQn, 0, 1);
   HAL_NVIC_EnableIRQ(USARTx_DMA_TX_IRQn);
     
-  /* NVIC configuration for DMA transfer complete interrupt (USARTx_RX) */
+  /* NVIC configuration for DMA transfer complete interrupt (USART1_RX) */
   HAL_NVIC_SetPriority(USARTx_DMA_RX_IRQn, 0, 0);   
   HAL_NVIC_EnableIRQ(USARTx_DMA_RX_IRQn);
-  
-  /* NVIC configuration for USART TC interrupt */
-  HAL_NVIC_SetPriority(USARTx_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(USARTx_IRQn);
 }
 
 /**
@@ -147,6 +162,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
   */
 void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 {
+  
   static DMA_HandleTypeDef hdma_tx;
   static DMA_HandleTypeDef hdma_rx;
 
@@ -154,10 +170,10 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
   USARTx_FORCE_RESET();
   USARTx_RELEASE_RESET();
 
-  /*##-2- Disable peripherals and GPIO Clocks ################################*/
-  /* Configure UART Tx as alternate function */
+  /*##-2- Disable peripherals and GPIO Clocks #################################*/
+  /* Configure UART Tx as alternate function  */
   HAL_GPIO_DeInit(USARTx_TX_GPIO_PORT, USARTx_TX_PIN);
-  /* Configure UART Rx as alternate function */
+  /* Configure UART Rx as alternate function  */
   HAL_GPIO_DeInit(USARTx_RX_GPIO_PORT, USARTx_RX_PIN);
    
   /*##-3- Disable the DMA Streams ############################################*/
@@ -182,3 +198,5 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

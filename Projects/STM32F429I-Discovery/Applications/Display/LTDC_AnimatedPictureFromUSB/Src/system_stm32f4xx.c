@@ -2,6 +2,8 @@
   ******************************************************************************
   * @file    system_stm32f4xx.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   CMSIS Cortex-M4 Device Peripheral Access Layer System Source File.
   *
   *   This file provides two functions and one global variable to be called from 
@@ -22,12 +24,29 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -71,9 +90,6 @@
   */
 
 /************************* Miscellaneous Configuration ************************/
-/*!< Uncomment the following line if you need to use external SDRAM mounted
-     on DK as data memory  */
-/* #define DATA_IN_ExtSDRAM */
 
 /*!< Uncomment the following line if you need to relocate your vector Table in
      Internal SRAM. */
@@ -105,19 +121,12 @@
                is no need to call the 2 first functions listed above, since SystemCoreClock
                variable is updated automatically.
   */
-uint32_t SystemCoreClock = 16000000;
-const uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
-const uint8_t APBPrescTable[8]  = {0, 0, 0, 0, 1, 2, 3, 4};
+  uint32_t SystemCoreClock = 16000000;
+  __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
+
 /**
   * @}
   */
-  
-/** @addtogroup STM32F4xx_System_Private_FunctionPrototypes
-  * @{
-  */
-#if defined (DATA_IN_ExtSDRAM)
-  static void SystemInit_ExtMemCtl(void); 
-#endif /* DATA_IN_ExtSDRAM */
 
 /** @addtogroup STM32F4xx_System_Private_FunctionPrototypes
   * @{
@@ -162,10 +171,6 @@ void SystemInit(void)
 
   /* Disable all interrupts */
   RCC->CIR = 0x00000000;
-  
-#if defined (DATA_IN_ExtSDRAM)
-  SystemInit_ExtMemCtl(); 
-#endif /* DATA_IN_ExtSDRAM */
 
   /* Configure the Vector Table location add offset address ------------------*/
 #ifdef VECT_TAB_SRAM
@@ -259,155 +264,6 @@ void SystemCoreClockUpdate(void)
   SystemCoreClock >>= tmp;
 }
 
-#if defined (DATA_IN_ExtSDRAM)
-/**
-  * @brief  Setup the external memory controller.
-  *         Called in startup_stm32f4xx.s before jump to main.
-  *         This function configures the external memories (SDRAM)
-  *         This SDRAM will be used as program data memory (including heap and stack).
-  * @param  None
-  * @retval None
-  */
-void SystemInit_ExtMemCtl(void)
-{
-  register uint32_t tmpreg = 0, timeout = 0xFFFF;
-  register __IO uint32_t index;
-
-  /* Enable GPIOB, GPIOC, GPIOD, GPIOE, GPIOF and GPIOG interface 
-  clock */
-  RCC->AHB1ENR |= 0x0000007E;
-
-  /* Connect PBx pins to FMC Alternate function */
-  GPIOB->AFR[0]  = 0x0CC00000;
-  GPIOB->AFR[1]  = 0x00000000;
-  /* Configure PBx pins in Alternate function mode */ 
-  GPIOB->MODER   = 0x00002A80;
-  /* Configure PBx pins speed to 100 MHz */
-  GPIOB->OSPEEDR = 0x00003CC0;
-  /* Configure PBx pins Output type to push-pull */
-  GPIOB->OTYPER  = 0x00000000;
-  /* No pull-up, pull-down for PBx pins */ 
-  GPIOB->PUPDR   = 0x00000100;
-
-  /* Connect PCx pins to FMC Alternate function */
-  GPIOC->AFR[0]  = 0x0000000C;
-  GPIOC->AFR[1]  = 0x00000000;
-  /* Configure PCx pins in Alternate function mode */ 
-  GPIOC->MODER   = 0x00000002;
-  /* Configure PCx pins speed to 100 MHz */
-  GPIOC->OSPEEDR = 0x00000003;
-  /* Configure PCx pins Output type to push-pull */
-  GPIOC->OTYPER  = 0x00000000;
-  /* No pull-up, pull-down for PCx pins */ 
-  GPIOC->PUPDR   = 0x00000000;
-
-  /* Connect PDx pins to FMC Alternate function */
-  GPIOD->AFR[0]  = 0x000000CC;
-  GPIOD->AFR[1]  = 0xCC000CCC;
-  /* Configure PDx pins in Alternate function mode */ 
-  GPIOD->MODER   = 0xA02A000A;
-  /* Configure PDx pins speed to 100 MHz */
-  GPIOD->OSPEEDR = 0xF03F000F;
-  /* Configure PDx pins Output type to push-pull */
-  GPIOD->OTYPER  = 0x00000000;
-  /* No pull-up, pull-down for PDx pins */ 
-  GPIOD->PUPDR   = 0x00000000;
-
-  /* Connect PEx pins to FMC Alternate function */
-  GPIOE->AFR[0]  = 0xC00000CC;
-  GPIOE->AFR[1]  = 0xCCCCCCCC;
-  /* Configure PEx pins in Alternate function mode */ 
-  GPIOE->MODER   = 0xAAAA800A;
-  /* Configure PEx pins speed to 100 MHz */
-  GPIOE->OSPEEDR = 0xFFFFC00F;
-  /* Configure PEx pins Output type to push-pull */
-  GPIOE->OTYPER  = 0x00000000;
-  /* No pull-up, pull-down for PEx pins */ 
-  GPIOE->PUPDR   = 0x00000000;
-  
-  /* Connect PFx pins to FMC Alternate function */
-  GPIOF->AFR[0]  = 0x00CCCCCC;
-  GPIOF->AFR[1]  = 0xCCCCC000;
-  /* Configure PFx pins in Alternate function mode */ 
-  GPIOF->MODER   = 0xAA800AAA;
-  /* Configure PFx pins speed to 100 MHz */
-  GPIOF->OSPEEDR = 0xFFC00FFF;
-  /* Configure PFx pins Output type to push-pull */
-  GPIOF->OTYPER  = 0x00000000;
-  /* No pull-up, pull-down for PFx pins */ 
-  GPIOF->PUPDR   = 0x00000000;
-  
-  /* Connect PGx pins to FMC Alternate function */
-  GPIOG->AFR[0]  = 0x00CC00CC;
-  GPIOG->AFR[1]  = 0xC000000C;
-  /* Configure PGx pins in Alternate function mode */ 
-  GPIOG->MODER   = 0x80020A0A;
-  /* Configure PGx pins speed to 100 MHz */
-  GPIOG->OSPEEDR = 0xC0030F0F;
-  /* Configure PGx pins Output type to push-pull */
-  GPIOG->OTYPER  = 0x00000000;
-  /* No pull-up, pull-down for PGx pins */ 
-  GPIOG->PUPDR   = 0x00000000;
-
-  /* FMC Configuration */
-  /* Enable the FMC interface clock */
-  RCC->AHB3ENR |= 0x00000001;
-  
-  /* Configure and enable SDRAM bank2 */
-  FMC_Bank5_6->SDCR[0] = 0x00002ED0;
-  FMC_Bank5_6->SDCR[1] = 0x000001D4;
-  FMC_Bank5_6->SDTR[0] = 0x0F1F6FFF;
-  FMC_Bank5_6->SDTR[1] = 0x01010361;
-  
-  /* SDRAM initialization sequence */
-  /* Clock enable command */
-  FMC_Bank5_6->SDCMR = 0x00000009; 
-  tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
-  while((tmpreg != 0) && (timeout-- > 0))
-  {
-    tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
-  }
-
-  /* Delay */
-  for (index = 0; index<1000; index++);
-  
-  /* PALL command */
-  FMC_Bank5_6->SDCMR = 0x0000000A;     
-  tmpreg = FMC_Bank5_6->SDSR & 0x00000020;
-  timeout = 0xFFFF;
-  while((tmpreg != 0) && (timeout-- > 0))
-  {
-    tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
-  }
-  
-  /* Auto refresh command */
-  FMC_Bank5_6->SDCMR = 0x0000006B;
-  tmpreg = FMC_Bank5_6->SDSR & 0x00000020;
-  timeout = 0xFFFF;
-  while((tmpreg != 0) && (timeout-- > 0))
-  {
-    tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
-  }
- 
-  /* MRD register program */
-  FMC_Bank5_6->SDCMR = 0x0004620C;
-  tmpreg = FMC_Bank5_6->SDSR & 0x00000020;
-  timeout = 0xFFFF;
-  while((tmpreg != 0) && (timeout-- > 0))
-  {
-    tmpreg = FMC_Bank5_6->SDSR & 0x00000020; 
-  } 
-  
-  /* Set refresh count */
-  tmpreg = FMC_Bank5_6->SDRTR;
-  FMC_Bank5_6->SDRTR = (tmpreg | (0x0000056A<<1));
-  
-  /* Disable write protection */
-  tmpreg = FMC_Bank5_6->SDCR[1]; 
-  FMC_Bank5_6->SDCR[1] = (tmpreg & 0xFFFFFDFF);
-}
-#endif /* DATA_IN_ExtSDRAM */
-
 /**
   * @}
   */
@@ -419,3 +275,4 @@ void SystemInit_ExtMemCtl(void)
 /**
   * @}
   */    
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

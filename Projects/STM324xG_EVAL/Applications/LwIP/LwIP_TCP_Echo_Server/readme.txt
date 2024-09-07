@@ -1,27 +1,33 @@
 /**
-  @page LwIP_TCP_Echo_Server LwIP TCP Echo Server application
+  @page LwIP_TCP_Echo_Server LwIP TCP Echo Server example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    LwIP/LwIP_TCP_Echo_Server/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the LwIP TCP Echo Server application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the LwIP TCP Echo Server example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Application Description 
+@par Example Description 
 
-This application guides STM32Cube HAL API users to run TCP Echo Server application 
+This example guides STM32Cube HAL API users to run TCP Echo Server application 
 based on Raw API of LwIP TCP/IP stack
 
 To run this application, On the remote PC, open a command prompt window.
@@ -30,30 +36,22 @@ At the command prompt, enter:
   C:\>echotool IP_address /p tcp /r 7 /n 15 /t 2 /d Testing LwIP TCP echo server
 
 where:
-    - IP_address is the actual board's IP address. By default, the following 
+    – IP_address is the actual board’s IP address. By default, the following 
     static IP address is used: 192.168.0.10
-    - /p transport layer protocol used for communication (TCP)
-    - /r is the actual remote port on the echo server (echo port)
-    - /n is the number of echo requests (for example, 15)
-    - /t is the connection timeout in seconds (for example, 2)
-    - /d is the message to be sent for echo 
+    – /p transport layer protocol used for communication (TCP)
+    – /r is the actual remote port on the echo server (echo port)
+    – /n is the number of echo requests (for example, 15)
+    – /t is the connection timeout in seconds (for example, 2)
+    – /d is the message to be sent for echo 
 
-If the LCD is used (#define USE_LCD in main.h), log messages will be displayed 
-to inform user about ethernet cable status and the IP address value, else this 
-will be ensured by LEDs:
+STM32 Eval board LEDs are used for the following purpose:
   + LED1: ethernet cable is connected.
   + LED2: ethernet cable is not connected.
 
-If a DHCP server is available, a dynamic IP address can be allocated by enabling 
-the DHCP process (#define LWIP_DHCP in lwipopts.h)
-
-If a DHCP server is not available, after timeout connection, the device only gets a static
-IP address(the switch from static to dynamic IP address is not available in this application).
-
-Note: In this application the Ethernet Link ISR need the HAL time base to configure 
-the Ethernet MAC, so the Ethernet Link interrupt priority must be set lower (numerically greater) 
-than the HAL tick interrupt priority to ensure that the System tick increments while executing 
-the Ethernet Link ISR.
+Note: In this application the Ethernet Link ISR need the System tick interrupt 
+to configure the Ethernet MAC, so the Ethernet Link interrupt priority must be 
+set lower (numerically greater) than the Systick interrupt priority to ensure 
+that the System tick increments while executing the Ethernet Link ISR.
 
 @note Care must be taken when using HAL_Delay(), this function provides accurate delay (in milliseconds)
       based on variable incremented in SysTick ISR. This implies that if HAL_Delay() is called from
@@ -61,26 +59,22 @@ the Ethernet Link ISR.
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
       
-For more details about this application, refer to UM1713 "STM32Cube interfacing with LwIP and applications"
+For more details about this application, refer to UM1713 "STM32Cube interfacing with LwIP and examples"
 
-@par Keywords
-
-Connectivity, LwIP, Ethernet, TCP/IP, FreeRTOS, DHCP, echo server, 
 
 @par Directory contents
 
   - LwIP/LwIP_TCP_Echo_Server/Inc/app_ethernet.h          header of app_ethernet.c file
   - LwIP/LwIP_TCP_Echo_Server/Inc/ethernetif.h            header for ethernetif.c file
-  - LwIP/LwIP_TCP_Echo_Server/Inc/lcd_log_conf.h          LCD Log configuration file
   - LwIP/LwIP_TCP_Echo_Server/Inc/stm32f4xx_hal_conf.h    HAL configuration file
   - LwIP/LwIP_TCP_Echo_Server/Inc/stm32f4xx_it.h          STM32 interrupt handlers header file
   - LwIP/LwIP_TCP_Echo_Server/Inc/main.h                  Main program header file
   - LwIP/LwIP_TCP_Echo_Server/Inc/lwipopts.h              LwIP stack configuration options
   - LwIP/LwIP_TCP_Echo_Server/Inc/tcp_echoserver.h        Header for tcp echoserver application
-  - LwIP/LwIP_TCP_Echo_Server/Src/app_ethernet.c          Ethernet specific module
+  - LwIP/LwIP_TCP_Echo_Server/Src/app_ethernet.c          Ethernet specefic module
   - LwIP/LwIP_TCP_Echo_Server/Src/stm32f4xx_it.c          STM32 interrupt handlers
   - LwIP/LwIP_TCP_Echo_Server/Src/main.c                  Main program
   - LwIP/LwIP_TCP_Echo_Server/Src/system_stm32f4xx.c      STM32F4xx system clock configuration file
@@ -90,9 +84,9 @@ Connectivity, LwIP, Ethernet, TCP/IP, FreeRTOS, DHCP, echo server,
 
 @par Hardware and Software environment
 
-  - This application runs on STM32F407xx/STM32F417xx Devices.
+  - This example runs on STM32F407xx/STM32F417xx Devices.
     
-  - This application has been tested with the following environments:
+  - This example has been tested with the following environments:
      - STM324xG-EVAL board   
      - echotool: (http://bansky.net/echotool/) is used as echo client that sends
        data to the server and checking whether they came back      
@@ -111,7 +105,7 @@ Connectivity, LwIP, Ethernet, TCP/IP, FreeRTOS, DHCP, echo server,
 In order to make the program work, you must do the following :
  - Open your preferred toolchain 
  - Rebuild all files and load your image into target memory
- - Run the application
+ - Run the example
          
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

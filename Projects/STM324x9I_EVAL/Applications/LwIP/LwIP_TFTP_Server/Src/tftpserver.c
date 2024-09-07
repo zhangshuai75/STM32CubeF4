@@ -1,20 +1,4 @@
-/**
-  ******************************************************************************
-  * @file    LwIP/LwIP_TFTP_Server/Src/tftpserver.c
-  * @author  MCD Application Team
-  * @brief   basic tftp server implementation for IAP (only Write Req supported)
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+/* tftpserver.c */
 
 #include "tftpserver.h"
 #include "tftputils.h" 
@@ -32,7 +16,7 @@ typedef struct
   uint32_t  data_len;
 
   /* destination ip:port */
-  ip_addr_t to_ip;
+  struct ip_addr to_ip;
   int to_port;
 
   /* next block number */
@@ -66,7 +50,7 @@ char *tftp_errorcode_string[] = {
                                   "no such user",
                                 };
 
-void recv_callback_tftp(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t port);
+void recv_callback_tftp(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf, struct ip_addr *addr, u16_t port);
 
 
 /**
@@ -78,7 +62,7 @@ void recv_callback_tftp(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf, c
   * @param err: error code of type tftp_errorcode
   * @retval error code
   */
-err_t tftp_send_message(struct udp_pcb *upcb, const ip_addr_t *to_ip, unsigned short to_port, char *buf, unsigned short buflen)
+err_t tftp_send_message(struct udp_pcb *upcb, struct ip_addr *to_ip, unsigned short to_port, char *buf, unsigned short buflen)
 {
   err_t err;
   struct pbuf *pkt_buf; /* Chain of pbuf's to be sent */
@@ -133,7 +117,7 @@ int tftp_construct_error_message(char *buf, tftp_errorcode err)
   * @param  err: tftp error code
   * @retval error value
   */
-int tftp_send_error_message(struct udp_pcb *upcb, const ip_addr_t *to, int to_port, tftp_errorcode err)
+int tftp_send_error_message(struct udp_pcb *upcb, struct ip_addr *to, int to_port, tftp_errorcode err)
 {
   char buf[512];
   int error_len;
@@ -155,7 +139,7 @@ int tftp_send_error_message(struct udp_pcb *upcb, const ip_addr_t *to, int to_po
   * @param  buflen: buffer length
   * @retval error value
   */
-int tftp_send_data_packet(struct udp_pcb *upcb, const ip_addr_t *to, int to_port, unsigned short block,
+int tftp_send_data_packet(struct udp_pcb *upcb, struct ip_addr *to, int to_port, unsigned short block,
                           char *buf, int buflen)
 {
   char packet[TFTP_DATA_PKT_LEN_MAX]; /* (512+4) bytes */
@@ -178,7 +162,7 @@ int tftp_send_data_packet(struct udp_pcb *upcb, const ip_addr_t *to, int to_port
   * @param  block: block number
   * @retval error value
   */
-int tftp_send_ack_packet(struct udp_pcb *upcb, const ip_addr_t *to, int to_port, unsigned short block)
+int tftp_send_ack_packet(struct udp_pcb *upcb, struct ip_addr *to, int to_port, unsigned short block)
 {
 
   /* create the maximum possible size packet that a TFTP ACK packet can be */
@@ -209,7 +193,7 @@ void tftp_cleanup_rd(struct udp_pcb *upcb, tftp_connection_args *args)
   /* close the filesystem */
   f_close(&file_SD);
   f_mount(NULL, (TCHAR const*)"",0);
-  /* Free the tftp_connection_args structure reserved for */
+  /* Free the tftp_connection_args structure reserverd for */
   mem_free(args);
 
   /* Disconnect the udp_pcb*/  
@@ -232,7 +216,7 @@ void tftp_cleanup_wr(struct udp_pcb *upcb, tftp_connection_args *args)
   /* close the filesystem */
   f_close(&file_CR);
   f_mount(NULL, (TCHAR const*)"",0);
-  /* Free the tftp_connection_args structure reserved for */
+  /* Free the tftp_connection_args structure reserverd for */
   mem_free(args);
 
   /* Disconnect the udp_pcb*/
@@ -254,7 +238,7 @@ void tftp_cleanup_wr(struct udp_pcb *upcb, tftp_connection_args *args)
   * @retval None
   */
 void tftp_send_next_block(struct udp_pcb *upcb, tftp_connection_args *args,
-                          const ip_addr_t *to_ip, u16_t to_port)
+                          struct ip_addr *to_ip, u16_t to_port)
 {
   /* Function to read 512 bytes from the file to send (file_SD), put them
    * in "args->data" and return the number of bytes read */
@@ -277,7 +261,7 @@ void tftp_send_next_block(struct udp_pcb *upcb, tftp_connection_args *args,
   * @retval None
   */
 void rrq_recv_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p,
-                       const ip_addr_t *addr, u16_t port)
+                       struct ip_addr *addr, u16_t port)
 {
   /* Get our connection state  */
   tftp_connection_args *args = (tftp_connection_args *)arg;
@@ -319,7 +303,7 @@ void rrq_recv_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p,
   * @param  port: pointer on remote port
   * @retval None
   */
-void wrq_recv_callback(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t port)
+void wrq_recv_callback(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf, struct ip_addr *addr, u16_t port)
 {
   tftp_connection_args *args = (tftp_connection_args *)arg;
   int n = 0;
@@ -392,7 +376,7 @@ void wrq_recv_callback(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf, co
   * @param  FileName: pointer on filename to be read
   * @retval error code
   */
-int tftp_process_read(struct udp_pcb *upcb, const ip_addr_t *to, unsigned short to_port, char* FileName)
+int tftp_process_read(struct udp_pcb *upcb, struct ip_addr *to, unsigned short to_port, char* FileName)
 {
   tftp_connection_args *args = NULL;
 
@@ -446,7 +430,7 @@ int tftp_process_read(struct udp_pcb *upcb, const ip_addr_t *to, unsigned short 
   * @param  FileName: pointer on filename to be written 
   * @retval error code
   */
-int tftp_process_write(struct udp_pcb *upcb, const ip_addr_t *to, unsigned short to_port, char *FileName)
+int tftp_process_write(struct udp_pcb *upcb, struct ip_addr *to, unsigned short to_port, char *FileName)
 {
   tftp_connection_args *args = NULL;
 
@@ -494,7 +478,7 @@ int tftp_process_write(struct udp_pcb *upcb, const ip_addr_t *to, unsigned short
   * @param  port: pointer on source udp port
   * @retval None
   */
-void process_tftp_request(struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t port)
+void process_tftp_request(struct pbuf *pkt_buf, struct ip_addr *addr, u16_t port)
 {
   tftp_opcode op = tftp_decode_op(pkt_buf->payload);
   char FileName[30];
@@ -543,7 +527,7 @@ void process_tftp_request(struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t por
 
     case TFTP_WRQ: /* TFTP WRQ (write request) */
     {
-      /* Read the name of the file asked by the client to be received and written in the SD card */
+      /* Read the name of the file asked by the client to be received and writen in the SD card */
       tftp_extract_filename(FileName, pkt_buf->payload);
   
       /* Could not open filesystem */
@@ -582,7 +566,7 @@ void process_tftp_request(struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t por
   * @retval None
   */
 void recv_callback_tftp(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf,
-                        const ip_addr_t *addr, u16_t port)
+                        struct ip_addr *addr, u16_t port)
 {
   /* process new connection request */
   process_tftp_request(pkt_buf, addr, port);

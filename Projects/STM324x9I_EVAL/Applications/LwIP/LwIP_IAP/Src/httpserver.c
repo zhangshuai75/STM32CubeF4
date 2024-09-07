@@ -90,7 +90,7 @@ static int fs_open(char *name, struct fs_file *file);
   * @brief  callback function for handling connection errors
   * @param  arg: pointer to an argument to be passed to callback function
   * @param  err: LwIP error code   
-  * @retval None
+  * @retval none
   */
 static void conn_err(void *arg, err_t err)
 {
@@ -119,7 +119,7 @@ static void close_conn(struct tcp_pcb *pcb, struct http_state *hs)
   * @brief sends data found in  member "file" of a http_state struct
   * @param pcb: pointer to a tcp_pcb struct
   * @param hs: pointer to a http_state struct
-  * @retval None
+  * @retval none
   */
 static void send_data(struct tcp_pcb *pcb, struct http_state *hs)
 {
@@ -164,7 +164,7 @@ static err_t http_poll(void *arg, struct tcp_pcb *pcb)
 }
 
 /**
-  * @brief callback function called after a successful TCP data packet transmission  
+  * @brief callback function called after a successfull TCP data packet transmission  
   * @param arg: pointer to an argument to be passed to callback function
   * @param pcb: pointer on tcp_pcb structure
   * @param len
@@ -187,6 +187,7 @@ static err_t http_sent(void *arg, struct tcp_pcb *pcb, u16_t len)
     { 
       /* Generate a software reset */
       NVIC_SystemReset();
+      while(1);
     }
       
   }
@@ -206,13 +207,12 @@ static err_t http_recv(void *arg, struct tcp_pcb *pcb,  struct pbuf *p, err_t er
 {
   int32_t i,len=0;
   uint32_t DataOffset, FilenameOffset;
-  char *data, *ptr, filename[40], login[LOGIN_SIZE+1];
+  char *data, *ptr, filename[13], login[LOGIN_SIZE];
   struct fs_file file = {0, 0};
   struct http_state *hs;
-  struct pbuf *ptmp = p;
 
 #ifdef USE_LCD
-  char message[46];
+  char message[20];
 #endif
   
   hs = arg;
@@ -227,41 +227,43 @@ static err_t http_recv(void *arg, struct tcp_pcb *pcb,  struct pbuf *p, err_t er
       data = p->payload;
       len = p->tot_len;
       
-      /* process HTTP GET Login page requests */
-      if (strncmp(data, "GET / HTTP", 10) == 0)
+      /* process HTTP GET requests */
+      if (strncmp(data, "GET /", 5) == 0)
       {
-        /*send the login page (which is the index page) */
-        htmlpage = LoginPage;
-        fs_open("/index.html", &file);
-        hs->file = file.data;
-        hs->left = file.len;
-        pbuf_free(p);
-        
-        /* send index.html page */ 
-        send_data(pcb, hs);
-        
-        /* Tell TCP that we wish be to informed of data that has been
-        successfully sent by a call to the http_sent() function. */
-        tcp_sent(pcb, http_sent);
+        if ((strncmp(data, "GET /resetmcu.cgi", 17) ==0)&&(htmlpage == UploadDonePage))
+        {
+          htmlpage = ResetDonePage;
+          fs_open("/reset.html", &file);
+          hs->file = file.data;
+          hs->left = file.len;
+          pbuf_free(p);
+          
+          /* send reset.html page */ 
+          send_data(pcb, hs);   
+          resetpage = 1;
+          
+          /* Tell TCP that we wish be to informed of data that has been
+          successfully sent by a call to the http_sent() function. */
+          tcp_sent(pcb, http_sent);
+        }     
+        else
+        {
+          /*send the login page (which is the index page) */
+          htmlpage = LoginPage;
+          fs_open("/index.html", &file);
+          hs->file = file.data;
+          hs->left = file.len;
+          pbuf_free(p);
+                  
+          /* send index.html page */ 
+          send_data(pcb, hs);
+          
+          /* Tell TCP that we wish be to informed of data that has been
+          successfully sent by a call to the http_sent() function. */
+          tcp_sent(pcb, http_sent);
+        }
       }
-      /* process HTTP GET reset mcu requests */
-      else if ((strncmp(data, "GET /resetmcu.cgi", 17) ==0)&&(htmlpage == UploadDonePage))
-      {
-        htmlpage = ResetDonePage;
-        fs_open("/reset.html", &file);
-        hs->file = file.data;
-        hs->left = file.len;
-        pbuf_free(p);
-        
-        /* send reset.html page */ 
-        send_data(pcb, hs);   
-        resetpage = 1;
-        
-        /* Tell TCP that we wish be to informed of data that has been
-        successfully sent by a call to the http_sent() function. */
-        tcp_sent(pcb, http_sent);
-      }
-      
+            
       /* process POST request for checking login */
       else if ((strncmp(data, "POST /checklogin.cgi",20)==0)&&(htmlpage== LoginPage))
       {
@@ -321,7 +323,7 @@ static err_t http_recv(void *arg, struct tcp_pcb *pcb,  struct pbuf *p, err_t er
                break;
              }
           }  
-          /* case of MSIE8 : we do not receive data in the POST packet */ 
+          /* case of MSIE8 : we do not receive data in the POST packet*/ 
           if (DataOffset==0)
           {
              DataFlag++;
@@ -371,7 +373,7 @@ static err_t http_recv(void *arg, struct tcp_pcb *pcb,  struct pbuf *p, err_t er
            i =0;
            if (FilenameOffset)
            {
-             while((*(data+FilenameOffset + i)!=0x22 )&&(i < 40))
+             while((*(data+FilenameOffset + i)!=0x22 )&&(i<13))
              {
                filename[i] = *(data+FilenameOffset + i);
                i++;
@@ -406,7 +408,7 @@ static err_t http_recv(void *arg, struct tcp_pcb *pcb,  struct pbuf *p, err_t er
            LCD_UsrLog("  State: Erasing...\n");
 #endif /* USE_LCD */
           
-           TotalData =0;
+           TotalData =0 ;
            /* init flash */
            FLASH_If_Init();
            /* erase user flash area */
@@ -437,7 +439,7 @@ static err_t http_recv(void *arg, struct tcp_pcb *pcb,  struct pbuf *p, err_t er
            /* if last packet need to remove the http boundary tag */
            /* parse packet for "\r\n--" starting from end of data */
            i=4; 
-           while (strncmp ((char*)(data+ p->tot_len -i),http_crnl_2 , 4) && (p->tot_len -i > 0))
+           while (strncmp ((char*)(data+ p->tot_len -i),http_crnl_2 , 4))
            {
              i++;
            }
@@ -470,17 +472,8 @@ static err_t http_recv(void *arg, struct tcp_pcb *pcb,  struct pbuf *p, err_t er
         else
         {
           /* write data in flash */
-          len = ptmp->len;
-          len-= DataOffset;
-          /* write data in flash */
-          while(ptmp != NULL)
-          {
-            if(len)
-            IAP_HTTP_writedata(ptr,len);
-            ptmp = ptmp->next;
-            len = ptmp->len;
-            ptr = ptmp->payload;
-          }
+          if(len)
+          IAP_HTTP_writedata(ptr,len);
         }
         pbuf_free(p);
       }
@@ -548,9 +541,9 @@ static err_t http_accept(void *arg, struct tcp_pcb *pcb, err_t err)
 }
 
 /**
-  * @brief  initialize HTTP webserver  
+  * @brief  intialize HTTP webserver  
   * @param  none
-  * @retval None
+  * @retval none
   */
 void IAP_httpd_init(void)
 {
@@ -638,7 +631,7 @@ static uint32_t Parse_Content_Length(char *data, uint32_t len)
   * @brief  writes received data in flash    
   * @param  ptr: data pointer
   * @param  len: data length
-  * @retval None 
+  * @retval none 
   */
 static void IAP_HTTP_writedata(char * ptr, uint32_t len)            
 {

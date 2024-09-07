@@ -2,19 +2,38 @@
   ******************************************************************************
   * @file    DMA2D/DMA2D_MemToMemWithPFC/Src/stm32f4xx_hal_msp.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   HAL MSP module.       
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
   *
-  ******************************************************************************
-  */
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  ******************************************************************************  
+  */ 
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -50,7 +69,7 @@
 void HAL_DMA2D_MspInit(DMA2D_HandleTypeDef *hdma2d)
 {  
   /*##-1- Enable peripherals and GPIO Clocks #################################*/
-  __HAL_RCC_DMA2D_CLK_ENABLE();  
+  __DMA2D_CLK_ENABLE();  
   
   /*##-2- NVIC configuration  ################################################*/  
   /* NVIC configuration for DMA2D transfer complete interrupt */
@@ -70,10 +89,10 @@ void HAL_DMA2D_MspDeInit(DMA2D_HandleTypeDef *hdma2d)
   
   /*##-1- Reset peripherals ##################################################*/
   /* Enable DMA2D reset state */
-  __HAL_RCC_DMA2D_FORCE_RESET();
+  __DMA2D_FORCE_RESET();
   
   /* Release DMA2D from reset state */ 
-  __HAL_RCC_DMA2D_RELEASE_RESET();
+  __DMA2D_RELEASE_RESET();
 }
 
 /**
@@ -90,15 +109,15 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef *hltdc)
   
   /*##-1- Enable peripherals and GPIO Clocks #################################*/  
   /* Enable the LTDC Clock */
-  __HAL_RCC_LTDC_CLK_ENABLE();
+  __LTDC_CLK_ENABLE();
 
   /* Enable GPIOs clock */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOF_CLK_ENABLE();
-  __HAL_RCC_GPIOG_CLK_ENABLE();
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
+  __GPIOD_CLK_ENABLE();
+  __GPIOF_CLK_ENABLE();
+  __GPIOG_CLK_ENABLE();
 
   /*##-2- Configure peripheral GPIO ##########################################*/
   /******************** LTDC Pins configuration *************************/
@@ -119,7 +138,7 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef *hltdc)
 
   */
 
-  /* LTDC pins configuration: PA3 -- 12 */  
+  /* LTDC pins configuraiton: PA3 -- 12 */  
   GPIO_InitStructure.Pin = GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_6 |
                                 GPIO_PIN_11 | GPIO_PIN_12;
   GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;
@@ -128,34 +147,34 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef *hltdc)
   GPIO_InitStructure.Alternate= GPIO_AF14_LTDC;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
   
-  /* LTDC pins configuration: PB8 -- 11 */  
+  /* LTDC pins configuraiton: PB8 -- 11 */  
   GPIO_InitStructure.Pin = GPIO_PIN_8 | \
                              GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-  /* LTDC pins configuration: PC6 -- 10 */  
+  /* LTDC pins configuraiton: PC6 -- 10 */  
   GPIO_InitStructure.Pin = GPIO_PIN_6 | GPIO_PIN_7 | GPIO_PIN_10;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-  /* LTDC pins configuration: PD3 -- 6 */  
+  /* LTDC pins configuraiton: PD3 -- 6 */  
   GPIO_InitStructure.Pin = GPIO_PIN_3 | GPIO_PIN_6;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
   
-  /* LTDC pins configuration: PF10*/  
+  /* LTDC pins configuraiton: PF10*/  
   GPIO_InitStructure.Pin = GPIO_PIN_10;
   HAL_GPIO_Init(GPIOF, &GPIO_InitStructure);     
 
-  /* LTDC pins configuration: PG6 -- 7 */  
+  /* LTDC pins configuraiton: PG6 -- 7 */  
   GPIO_InitStructure.Pin = GPIO_PIN_6 | GPIO_PIN_7 | \
                              GPIO_PIN_11;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStructure);
  
-  /* LTDC pins configuration: PB1 -- 1 */  
+  /* LTDC pins configuraiton: PB1 -- 1 */  
   GPIO_InitStructure.Pin = GPIO_PIN_0 | GPIO_PIN_1;
   GPIO_InitStructure.Alternate= GPIO_AF9_LTDC;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-  /* LTDC pins configuration: PG10 -- 12 */  
+  /* LTDC pins configuraiton: PG10 -- 12 */  
   GPIO_InitStructure.Pin = GPIO_PIN_10 | GPIO_PIN_12;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStructure);
 }
@@ -172,10 +191,10 @@ void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef *hltdc)
   
   /*##-1- Reset peripherals ##################################################*/
   /* Enable LTDC reset state */
-  __HAL_RCC_LTDC_FORCE_RESET();
+  __LTDC_FORCE_RESET();
   
   /* Release LTDC from reset state */ 
-  __HAL_RCC_LTDC_RELEASE_RESET();
+  __LTDC_RELEASE_RESET();
 }
 
 /**
@@ -189,3 +208,5 @@ void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef *hltdc)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -2,20 +2,29 @@
   ******************************************************************************
   * @file    Demonstrations/Src/fatfs_storage.c
   * @author  MCD Application Team
-
+  * @version V1.0.0
+  * @date    26-June-2014
   * @brief   This file includes the Storage (FatFs) driver 
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include <string.h>
@@ -25,17 +34,10 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 uint8_t aBuffer[512];
-FATFS fs;
 FILINFO MyFileInfo;
 DIR MyDirectory;
 FIL MyFile;
 UINT BytesWritten, BytesRead;
-
-const uint8_t SlidesCheck[2] =
-  {
-    0x42, 0x4D
-  };
-
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -113,7 +115,7 @@ uint32_t Storage_OpenReadFile(uint8_t Xpoz, uint16_t Ypoz, const char *BmpName)
       BSP_LCD_DrawPixel(x, y, color); 
     }
     y--;
-    for (index = (i1/bit_pixel); index < i1; index++)
+    for (index = (i1/bit_pixel); index < i1 ; index++)
     {
       if( index%bit_pixel == 0)
       {
@@ -138,33 +140,16 @@ uint32_t Storage_OpenReadFile(uint8_t Xpoz, uint16_t Ypoz, const char *BmpName)
   */
 uint32_t Storage_CheckBitmapFile(const char* BmpName, uint32_t *FileLen)
 {
-//  FRESULT res;
-//  uint32_t err = 0;
-//  
-//  res = f_open(&MyFile, BmpName, FA_READ);
-//  if(res != FR_OK)
-//  {
-//    err = 1;
-//  }
-//  
-//  return err;
+  FRESULT res;
+  uint32_t err = 0;
   
-  if(f_mount(&fs, (TCHAR const*)"",0))
+  res = f_open(&MyFile, BmpName, FA_READ);
+  if(res != FR_OK)
   {
-    return 1;
-  }
-  if(f_open (&MyFile, (TCHAR const*)BmpName, FA_READ))
-  {
-    return 2;
+    err = 1;
   }
   
-  f_read (&MyFile, aBuffer, 6, (UINT *)&BytesRead);
-  
-  if (Buffercmp((uint8_t *)SlidesCheck, (uint8_t *) aBuffer, 2) != 0)
-  {
-    return 3;
-  }
-  return 0;
+  return err;
 }
 
 /**
@@ -175,61 +160,43 @@ uint32_t Storage_CheckBitmapFile(const char* BmpName, uint32_t *FileLen)
   */
 uint32_t Storage_GetDirectoryBitmapFiles(const char* DirName, char* Files[])
 {
+  uint32_t i = 0, j = 0;
   FRESULT res;
-  uint32_t index = 0;
-  
-  /* Open filesystem */
-  if(f_mount(&fs, (TCHAR const*)"",0) != FR_OK)
-  {
-    return 0;
-  }
-  
-  /* Start to search for wave files */
-  res = f_findfirst(&MyDirectory, &MyFileInfo, DirName, "*.bmp");
 
-  /* Repeat while an item is found */
-  while (MyFileInfo.fname[0])
+  res = f_opendir(&MyDirectory, DirName);
+  
+  if(res == FR_OK)
   {
-    if(res == FR_OK)
+    i = strlen(DirName);
+    for (;;)
     {
-      if(index < MAX_BMP_FILES)
+      res = f_readdir(&MyDirectory, &MyFileInfo);
+      if(res != FR_OK || MyFileInfo.fname[0] == 0) break;
+      if(MyFileInfo.fname[0] == '.') continue;
+      
+      if(!(MyFileInfo.fattrib & AM_DIR))
       {
-        sprintf (Files[index++], "%s", MyFileInfo.fname);
+        do
+        {
+          i++;
+        }
+        while (MyFileInfo.fname[i] != 0x2E);
+        
+        
+        if(j < MAX_BMP_FILES)
+        {
+          if((MyFileInfo.fname[i + 1] == 'B') && (MyFileInfo.fname[i + 2] == 'M') && (MyFileInfo.fname[i + 3] == 'P'))
+          {
+            sprintf(Files[j], "%-11.11s", MyFileInfo.fname);
+            j++;
+          }
+        }
+        i = 0;
       }
-      /* Search for next item */
-      res = f_findnext(&MyDirectory, &MyFileInfo);
-    }
-    else
-    {
-      index = 0;
-      break;
     }
   }
-
-  f_closedir(&MyDirectory);
-
-  return index; 
+    
+  return j;
 }
 
-/**
-  * @brief  Compares two buffers.
-  * @param  pBuffer1, pBuffer2: buffers to be compared.
-  * @param  BufferLength: buffer's length.
-  * @retval  0: pBuffer1 identical to pBuffer2
-  *          1: pBuffer1 differs from pBuffer2
-  */
-uint8_t Buffercmp(uint8_t* pBuffer1, uint8_t* pBuffer2, uint16_t BufferLength)
-{
-  while (BufferLength--)
-  {
-    if (*pBuffer1 != *pBuffer2)
-    {
-      return 1;
-    }
-
-    pBuffer1++;
-    pBuffer2++;
-  }
-
-  return 0;
-}
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

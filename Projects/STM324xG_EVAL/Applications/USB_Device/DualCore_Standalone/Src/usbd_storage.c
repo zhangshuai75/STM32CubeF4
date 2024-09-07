@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Device/DualCore_Standalone/Src/usbd_storage.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Memory management layer
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_storage.h"
 #include "stm324xg_eval_sd.h"
@@ -27,7 +37,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-__IO uint32_t writestatus, readstatus = 0;
 /* USB Mass storage Standard Inquiry Data */
 int8_t STORAGE_Inquirydata[] = { /* 36 */
   /* LUN 0 */
@@ -67,7 +76,7 @@ USBD_StorageTypeDef USBD_DISK_fops = {
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  Initializes the storage unit (medium)       
+  * @brief  Initailizes the storage unit (medium)       
   * @param  lun: Logical unit number
   * @retval Status (0 : Ok / -1 : Error)
   */
@@ -86,15 +95,15 @@ int8_t STORAGE_Init(uint8_t lun)
   */
 int8_t STORAGE_GetCapacity(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
-  HAL_SD_CardInfoTypeDef info;
+  HAL_SD_CardInfoTypedef info;
   int8_t ret = -1;  
   
   if(BSP_SD_IsDetected() != SD_NOT_PRESENT)
   {
     BSP_SD_GetCardInfo(&info);
     
-    *block_num =  info.LogBlockNbr  - 1;
-    *block_size = info.LogBlockSize;
+    *block_num = (info.CardCapacity)/STORAGE_BLK_SIZ  - 1;
+    *block_size = STORAGE_BLK_SIZ;
     ret = 0;
   }
   return ret;
@@ -118,7 +127,7 @@ int8_t STORAGE_IsReady(uint8_t lun)
       prev_status = 0;
       
     }
-    if(BSP_SD_GetCardState() == SD_TRANSFER_OK)
+    if(BSP_SD_GetStatus() == SD_TRANSFER_OK)
     {
       ret = 0;
     }
@@ -153,14 +162,7 @@ int8_t STORAGE_Read(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_l
   
   if(BSP_SD_IsDetected() != SD_NOT_PRESENT)
   {  
-    BSP_SD_ReadBlocks_DMA((uint32_t *)buf, blk_addr, blk_len);
-
-    /* Wait for Rx Transfer completion */
-    while (readstatus == 0){}
-    readstatus = 0;
-
-    /* Wait until SD card is ready to use for new operation */
-    while (BSP_SD_GetCardState() != SD_TRANSFER_OK){}
+    BSP_SD_ReadBlocks_DMA((uint32_t *)buf, blk_addr * STORAGE_BLK_SIZ, STORAGE_BLK_SIZ, blk_len);
     ret = 0;
   }
   return ret;
@@ -179,14 +181,7 @@ int8_t STORAGE_Write(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_
   
   if(BSP_SD_IsDetected() != SD_NOT_PRESENT)
   { 
-    BSP_SD_WriteBlocks_DMA((uint32_t *)buf, blk_addr, blk_len);
-    
-    /* Wait for Tx Transfer completion */
-    while (writestatus == 0){}
-    writestatus = 0;
-    
-    /* Wait until SD card is ready to use for new operation */
-    while (BSP_SD_GetCardState() != SD_TRANSFER_OK){}
+    BSP_SD_WriteBlocks_DMA((uint32_t *)buf, blk_addr * STORAGE_BLK_SIZ, STORAGE_BLK_SIZ, blk_len);
     ret = 0;
   }
   return ret;
@@ -202,22 +197,6 @@ int8_t STORAGE_GetMaxLun(void)
   return(STORAGE_LUN_NBR - 1);
 }
  
-/**
-  * @brief BSP Tx Transfer completed callbacks
-  * @param None
-  * @retval None
-  */
-void BSP_SD_WriteCpltCallback(void)
-{
-  writestatus = 1;
-}
 
-/**
-  * @brief BSP Rx Transfer completed callbacks
-  * @param None
-  * @retval None
-  */
-void BSP_SD_ReadCpltCallback(void)
-{
-  readstatus = 1;
-}
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+

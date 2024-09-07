@@ -1,30 +1,14 @@
 var NAVTREE =
 [
-  [ "CMSIS-Core (Cortex-M)", "index.html", [
+  [ "CMSIS-CORE", "index.html", [
     [ "Overview", "index.html", [
-      [ "Processor Support", "index.html#ref_v6-v8M", [
-        [ "Cortex-M Generic User Guides", "index.html#ref_man_sec", null ],
-        [ "Armv8-M and Armv8.1-M Architecture", "index.html#ARMv8M", null ]
-      ] ],
+      [ "Cortex-M Reference Manuals", "index.html#ref_man_sec", null ],
       [ "Tested and Verified Toolchains", "index.html#tested_tools_sec", null ]
     ] ],
-    [ "Revision History of CMSIS-Core (Cortex-M)", "core_revisionHistory.html", null ],
-    [ "Using CMSIS in Embedded Applications", "using_pg.html", "using_pg" ],
-    [ "Using TrustZone for Armv8-M", "using_TrustZone_pg.html", [
-      [ "Simplified Use Case with TrustZone", "using_TrustZone_pg.html#useCase_TrustZone", [
-        [ "Program Examples", "using_TrustZone_pg.html#Example_TrustZone", null ]
-      ] ],
-      [ "Programmers Model with TrustZone", "using_TrustZone_pg.html#Model_TrustZone", [
-        [ "Stack Sealing", "using_TrustZone_pg.html#RTOS_TrustZone_stacksealing", null ]
-      ] ],
-      [ "CMSIS Files for TrustZone", "using_TrustZone_pg.html#CMSIS_Files_TrustZone", [
-        [ "RTOS Thread Context Management", "using_TrustZone_pg.html#RTOS_TrustZone", null ]
-      ] ]
-    ] ],
-    [ "CMSIS-Core Device Templates", "templates_pg.html", "templates_pg" ],
-    [ "MISRA-C Deviations", "coreMISRA_Exceptions_pg.html", null ],
-    [ "Register Mapping", "regMap_pg.html", null ],
-    [ "Deprecated List", "deprecated.html", null ],
+    [ "Using CMSIS in Embedded Applications", "_using_pg.html", "_using_pg" ],
+    [ "Template Files", "_templates_pg.html", "_templates_pg" ],
+    [ "MISRA-C:2004 Compliance Exceptions", "_c_o_r_e__m_i_s_r_a__exceptions_pg.html", null ],
+    [ "Register Mapping", "_reg_map_pg.html", null ],
     [ "Reference", "modules.html", "modules" ],
     [ "Data Structures", "annotated.html", "annotated" ],
     [ "Data Fields", "functions.html", [
@@ -36,14 +20,10 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html",
-"group__intrinsic__SIMD__gr.html#ga980353d2c72ebb879282e49f592fddc0",
-"group__pmu8__events__armv81.html#gac714f988ae45871b2865f82c11383b36",
-"structTPI__Type.html"
+"_c_o_r_e__m_i_s_r_a__exceptions_pg.html",
+"struct_s_c_b___type.html#a3f51c43f952f3799951d0c54e76b0cb7"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
 var SYNCONMSG = 'click to disable panel synchronisation';
 var SYNCOFFMSG = 'click to enable panel synchronisation';
 var navTreeSubIndices = new Array();
@@ -126,12 +106,12 @@ function createIndent(o,domNode,node,level)
   var level=-1;
   var n = node;
   while (n.parentNode) { level++; n=n.parentNode; }
+  var imgNode = document.createElement("img");
+  imgNode.style.paddingLeft=(16*level).toString()+'px';
+  imgNode.width  = 16;
+  imgNode.height = 22;
+  imgNode.border = 0;
   if (node.childrenData) {
-    var imgNode = document.createElement("img");
-    imgNode.style.paddingLeft=(16*level).toString()+'px';
-    imgNode.width  = 16;
-    imgNode.height = 22;
-    imgNode.border = 0;
     node.plus_img = imgNode;
     node.expandToggle = document.createElement("a");
     node.expandToggle.href = "javascript:void(0)";
@@ -148,12 +128,8 @@ function createIndent(o,domNode,node,level)
     domNode.appendChild(node.expandToggle);
     imgNode.src = node.relpath+"ftv2pnode.png";
   } else {
-    var span = document.createElement("span");
-    span.style.display = 'inline-block';
-    span.style.width   = 16*(level+1)+'px';
-    span.style.height  = '22px';
-    span.innerHTML = '&#160;';
-    domNode.appendChild(span);
+    imgNode.src = node.relpath+"ftv2node.png";
+    domNode.appendChild(imgNode);
   } 
 }
 
@@ -372,7 +348,7 @@ function showNode(o, node, index, hash)
       if (!node.childrenVisited) {
         getNode(o, node);
       }
-      $(node.getChildrenUL()).css({'display':'block'});
+      $(node.getChildrenUL()).show();
       if (node.isLast) {
         node.plus_img.src = node.relpath+"ftv2mlastnode.png";
       } else {
@@ -404,22 +380,8 @@ function showNode(o, node, index, hash)
   }
 }
 
-function removeToInsertLater(element) {
-  var parentNode = element.parentNode;
-  var nextSibling = element.nextSibling;
-  parentNode.removeChild(element);
-  return function() {
-    if (nextSibling) {
-      parentNode.insertBefore(element, nextSibling);
-    } else {
-      parentNode.appendChild(element);
-    }
-  };
-}
-
 function getNode(o, po)
 {
-  var insertFunction = removeToInsertLater(po.li);
   po.childrenVisited = true;
   var l = po.childrenData.length-1;
   for (var i in po.childrenData) {
@@ -427,7 +389,6 @@ function getNode(o, po)
     po.children[i] = newNode(o, po, nodeData[0], nodeData[1], nodeData[2],
       i==l);
   }
-  insertFunction();
 }
 
 function gotoNode(o,subIndex,root,hash,relpath)
@@ -531,10 +492,7 @@ function initNavTree(toroot,relpath)
     navSync.click(function(){ toggleSyncButton(relpath); });
   }
 
-  $(window).load(function(){
-    navTo(o,toroot,window.location.hash,relpath);
-    showRoot();
-  });
+  navTo(o,toroot,window.location.hash,relpath);
 
   $(window).bind('hashchange', function(){
      if (window.location.hash && window.location.hash.length>1){
@@ -557,5 +515,7 @@ function initNavTree(toroot,relpath)
        navTo(o,toroot,window.location.hash,relpath);
      }
   })
+
+  $(window).load(showRoot);
 }
 

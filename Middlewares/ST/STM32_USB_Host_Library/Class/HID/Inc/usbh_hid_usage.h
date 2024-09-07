@@ -1,28 +1,31 @@
 /**
   ******************************************************************************
-  * @file    usbh_hid_usage.c
+  * @file    usbh_hid_keybd.c 
   * @author  MCD Application Team
-  * @brief   This file contain the USAGE page codes
+  * @version V3.1.0
+  * @date    19-June-2014
+  * @brief   This file contain the USAGE page codes              
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2015 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-  */
-
-/* Define to prevent recursive  ----------------------------------------------*/
-#ifndef __USDH_HID_USAGE_H
-#define __USDH_HID_USAGE_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+  */ 
+#ifndef _HID_USAGE_H_
+#define _HID_USAGE_H_
 
 /** @addtogroup USBH_LIB
   * @{
@@ -35,11 +38,11 @@ extern "C" {
 /** @addtogroup USBH_HID_CLASS
   * @{
   */
-
+  
 /** @defgroup USBH_HID_USAGE
-  * @brief This file is the Header file for usbh_hid_usage.c
+  * @brief This file is the Header file for USBH_HID_USAGE.c
   * @{
-  */
+  */ 
 
 
 /** @defgroup USBH_HID_USAGE_Exported_Types
@@ -86,7 +89,7 @@ extern "C" {
 #define HID_USAGE_PAGE_ARCADE     uint16_t (0x91)   /* Arcade Page */
 
 /****************************************************/
-/* Usage definitions for the "Generic Desktop" page */
+/* Usage definitions for the "Generic Decktop" page */
 /****************************************************/
 #define HID_USAGE_UNDEFINED     uint16_t (0x00)   /* Undefined */
 #define HID_USAGE_POINTER       uint16_t (0x01)   /* Pointer (Physical Collection) */
@@ -166,26 +169,23 @@ extern "C" {
 
 /**
   * @}
-  */
+  */ 
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __USDH_HID_USAGE_H */
+#endif /* _HID_USAGE_H_ */
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-  */
+  */ 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

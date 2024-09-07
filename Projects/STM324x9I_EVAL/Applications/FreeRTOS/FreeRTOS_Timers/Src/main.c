@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    FreeRTOS/FreeRTOS_Timers/Src/main.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main program body
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
@@ -24,14 +34,14 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
-static void osTimerCallback(void const *argument);
+static void osTimerCallback (void const *argument);
 static void ToggleLEDsThread(void const *argument);
 static void SystemClock_Config(void);
 
 /* Private functions ---------------------------------------------------------*/
 
 /**
-  * @brief  Main program
+  * @brief  Main program.
   * @param  None
   * @retval None
   */
@@ -45,10 +55,10 @@ int main(void)
      */
   HAL_Init();  
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock to 180 Mhz */
   SystemClock_Config();
   
-  /* Configure LED1 and LED2 */
+  /* Initialize LED1 and LED2 */
   BSP_LED_Init(LED1);
   BSP_LED_Init(LED2);
   
@@ -64,7 +74,7 @@ int main(void)
   osThreadCreate (osThread(LEDThread), NULL);
   
   /* Start scheduler */
-  osKernelStart();
+  osKernelStart (NULL, NULL);
 
   /* We should never get here as control is now taken by the scheduler */
   for(;;);
@@ -79,7 +89,7 @@ static void osTimerCallback (void const *argument)
 {
   (void) argument;  
   
-  /* Toggle LED1 */
+  /* Toggle LED1*/
   BSP_LED_Toggle(LED1);
 }
 
@@ -127,7 +137,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -146,7 +156,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
  
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
  
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
   clocks dividers */
@@ -159,9 +169,10 @@ static void SystemClock_Config(void)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
+  *   where the assert_param error has occurred.
   * @param  file: pointer to the source file name
   * @param  line: assert_param error line source number
   * @retval None
@@ -173,7 +184,8 @@ void assert_failed(uint8_t* file, uint32_t line)
 
   /* Infinite loop */
   while (1)
-  {
-  }
+  {}
 }
 #endif
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

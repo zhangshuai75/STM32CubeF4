@@ -2,16 +2,35 @@
   ******************************************************************************
   * @file    BSP/Src/ts_calibration.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example code shows how to calibrate the touchscreen.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -35,12 +54,10 @@ static TS_StateTypeDef  TS_State;
 static uint8_t Calibration_Done = 0;
 static int16_t  A1, A2, B1, B2;
 static int16_t aPhysX[2], aPhysY[2], aLogX[2], aLogY[2];
-
 /* Private function prototypes -----------------------------------------------*/
 static void TouchscreenCalibration_SetHint(void);
-static void GetPhysValues(int16_t LogX, int16_t LogY, int16_t * pPhysX, int16_t * pPhysY);
-static void WaitForPressedState(uint8_t Pressed);
-
+static void GetPhysValues(int16_t LogX, int16_t LogY, int16_t * pPhysX, int16_t * pPhysY) ;
+static void WaitForPressedState(uint8_t Pressed) ;
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -48,11 +65,11 @@ static void WaitForPressedState(uint8_t Pressed);
   * @param  None
   * @retval None
   */
-void Touchscreen_Calibration(void)
+void Touchscreen_Calibration (void)
 { 
   uint8_t status = 0;
   uint8_t i = 0;
-  
+
   TouchscreenCalibration_SetHint();
   
   status = BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
@@ -87,7 +104,7 @@ void Touchscreen_Calibration(void)
       Calibration_Done = 1;
       return;
     }
-    
+   
     HAL_Delay(5);
   }
 }
@@ -111,6 +128,7 @@ static void TouchscreenCalibration_SetHint(void)
   BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 - 12, (uint8_t *)"you need to calibrate it.", CENTER_MODE);
   BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 3, (uint8_t *)"Press on the black circles", CENTER_MODE);
 }
+
 
 /**
   * @brief  Get Physical position
@@ -142,7 +160,7 @@ static void GetPhysValues(int16_t LogX, int16_t LogY, int16_t * pPhysX, int16_t 
 }
 
 /**
-  * @brief  Wait For Pressed State.
+  * @brief  Main program
   * @param  None
   * @retval None
   */
@@ -167,11 +185,9 @@ static void WaitForPressedState(uint8_t Pressed)
         {
           return;
         }
-      } 
-      while (1);
+      } while (1);
     }
-  } 
-  while (1);
+  } while (1);
 }
 
 /**
@@ -186,7 +202,7 @@ uint16_t Calibration_GetX(uint16_t x)
 
 /**
   * @brief  Calibrate Y position
-  * @param  y: Y position
+  * @param  y : Y position
   * @retval calibrated y
   */
 uint16_t Calibration_GetY(uint16_t y)
@@ -194,10 +210,9 @@ uint16_t Calibration_GetY(uint16_t y)
   return (((A2 * y) + B2)/1000);
 }
 
-/**
-  * @brief  Check if the TS is calibrated
+/**check if the TS is calibrated
   * @param  None
-  * @retval calibration state (1 : calibrated / 0: no)
+* @retval calibration state (1 : calibrated / 0: no)
   */
 uint8_t IsCalibrationDone(void)
 {
@@ -210,4 +225,5 @@ uint8_t IsCalibrationDone(void)
   
 /**
   * @}
-  */
+  */ 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

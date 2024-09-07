@@ -2,23 +2,46 @@
   ******************************************************************************
   * @file    LwIP/LwIP_HTTP_Server_Socket_RTOS/Inc/lwipopts.h
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   lwIP Options Configuration.
-  *          This file is based on Utilities/lwip_v1.4.1/src/include/lwip/opt.h 
+  *          This file is based on Utilities\lwip_v1.4.1\src\include\lwip\opt.h 
   *          and contains the lwIP configuration for the STM32F4x7 demonstration.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 #ifndef __LWIPOPTS_H__
 #define __LWIPOPTS_H__
+
+/**
+ * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
+ * critical regions during buffer allocation, deallocation and memory
+ * allocation and deallocation.
+ */
+#define SYS_LIGHTWEIGHT_PROT    0
+
+#define ETHARP_TRUST_IP_MAC     0
+#define IP_REASSEMBLY           0
+#define IP_FRAG                 0
+#define ARP_QUEUEING            0
+#define TCP_LISTEN_BACKLOG      1
 
 /**
  * NO_SYS==1: Provides VERY minimal functionality. Otherwise,
@@ -34,16 +57,16 @@
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE                (10*1024)
+#define MEM_SIZE                (10 *1024)
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
    should be set high. */
-#define MEMP_NUM_PBUF           10
+#define MEMP_NUM_PBUF           50
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
 #define MEMP_NUM_UDP_PCB        6
-/* MEMP_NUM_TCP_PCB: the number of simultaneously active TCP
+/* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
 #define MEMP_NUM_TCP_PCB        10
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
@@ -59,7 +82,7 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
-#define PBUF_POOL_SIZE          8
+#define PBUF_POOL_SIZE          10
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
 #define PBUF_POOL_BUFSIZE       1524
@@ -93,6 +116,9 @@ a lot of data that needs to be copied, this should be set high. */
 
 
 /* ---------- DHCP options ---------- */
+/* Define LWIP_DHCP to 1 if you want DHCP configuration of
+   interfaces. DHCP is not implemented in lwIP 0.5.1, however, so
+   turning this on does currently not work. */
 #define LWIP_DHCP               1
 
 
@@ -103,6 +129,7 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* ---------- Statistics options ---------- */
 #define LWIP_STATS 0
+#define LWIP_PROVIDE_ERRNO 1
 
 /* ---------- link callback options ---------- */
 /* LWIP_NETIF_LINK_CALLBACK==1: Support a callback function from an interface
@@ -117,7 +144,7 @@ a lot of data that needs to be copied, this should be set high. */
 */
 
 /* 
-The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums by hardware:
+The STM32F4x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums by hardware:
  - To use this feature let the following define uncommented.
  - To disable it and process by CPU comment the  the checksum.
 */
@@ -137,7 +164,7 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
   #define CHECKSUM_CHECK_UDP              0
   /* CHECKSUM_CHECK_TCP==0: Check checksums by hardware for incoming TCP packets.*/
   #define CHECKSUM_CHECK_TCP              0
-  /* CHECKSUM_CHECK_ICMP==0: Check checksums by hardware for incoming ICMP packets.*/  
+  /* CHECKSUM_CHECK_ICMP==0: Check checksums by hardware for incoming ICMP packets.*/
   #define CHECKSUM_GEN_ICMP               0
 #else
   /* CHECKSUM_GEN_IP==1: Generate checksums in software for outgoing IP packets.*/
@@ -152,7 +179,7 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
   #define CHECKSUM_CHECK_UDP              1
   /* CHECKSUM_CHECK_TCP==1: Check checksums in software for incoming TCP packets.*/
   #define CHECKSUM_CHECK_TCP              1
-  /* CHECKSUM_CHECK_ICMP==1: Check checksums by hardware for incoming ICMP packets.*/  
+  /* CHECKSUM_CHECK_ICMP==1: Check checksums by hardware for incoming ICMP packets.*/
   #define CHECKSUM_GEN_ICMP               1
 #endif
 
@@ -178,23 +205,13 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define LWIP_SOCKET                     1
 
 /*
-   ------------------------------------
-   ---------- LWIP_NETIF_API options ----------
-   ------------------------------------
+   -----------------------------------
+   ---------- DEBUG options ----------
+   -----------------------------------
 */
-/**
- * LWIP_NETIF_API==1: Enable NETIF API
- */
-#define LWIP_NETIF_API                     1
 
-/*
-   ------------------------------------
-   ---------- httpd options ----------
-   ------------------------------------
-*/
-/** Set this to 1 to include "fsdata_custom.c" instead of "fsdata.c" for the
- * file system (to prevent changing the file included in CVS) */
-#define HTTPD_USE_CUSTOM_FSDATA   1
+#define LWIP_DEBUG                      0
+
 
 /*
    ---------------------------------
@@ -204,13 +221,16 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 
 #define TCPIP_THREAD_NAME              "TCP/IP"
 #define TCPIP_THREAD_STACKSIZE          1000
-#define TCPIP_MBOX_SIZE                 6
-#define DEFAULT_UDP_RECVMBOX_SIZE       6
-#define DEFAULT_TCP_RECVMBOX_SIZE       6
-#define DEFAULT_ACCEPTMBOX_SIZE         6
+#define TCPIP_MBOX_SIZE                 5
+#define DEFAULT_UDP_RECVMBOX_SIZE       2000
+#define DEFAULT_TCP_RECVMBOX_SIZE       2000
+#define DEFAULT_ACCEPTMBOX_SIZE         2000
 #define DEFAULT_THREAD_STACKSIZE        500
-#define TCPIP_THREAD_PRIO               osPriorityHigh
+#define TCPIP_THREAD_PRIO               (configMAX_PRIORITIES - 2)
+#define LWIP_COMPAT_MUTEX               1
 
 
 
 #endif /* __LWIPOPTS_H__ */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

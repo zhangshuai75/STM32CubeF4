@@ -2,20 +2,30 @@
   ******************************************************************************
   * @file    FatFs/FatFs_USBDisk/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main program body
   *          This sample code shows how to use FatFs with USB disk drive.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"    
 
@@ -26,7 +36,7 @@
 FATFS USBDISKFatFs;           /* File system object for USB disk logical drive */
 FIL MyFile;                   /* File object */
 char USBDISKPath[4];          /* USB Host logical drive path */
-USBH_HandleTypeDef hUSBHost; /* USB Host handle */
+USBH_HandleTypeDef hUSB_Host; /* USB Host handle */
 
 typedef enum {
   APPLICATION_IDLE = 0,  
@@ -63,26 +73,26 @@ int main(void)
   BSP_LED_Init(LED3);  
   BSP_LED_Init(LED4);
 
-  /* Configure the system clock to 168 MHz */
+  /* Configure the system clock to 168 Mhz */
   SystemClock_Config();
   
   /*##-1- Link the USB Host disk I/O driver ##################################*/
   if(FATFS_LinkDriver(&USBH_Driver, USBDISKPath) == 0)
   {
     /*##-2- Init Host Library ################################################*/
-    USBH_Init(&hUSBHost, USBH_UserProcess, 0);
+    USBH_Init(&hUSB_Host, USBH_UserProcess, 0);
     
     /*##-3- Add Supported Class ##############################################*/
-    USBH_RegisterClass(&hUSBHost, USBH_MSC_CLASS);
+    USBH_RegisterClass(&hUSB_Host, USBH_MSC_CLASS);
     
     /*##-4- Start Host Process ###############################################*/
-    USBH_Start(&hUSBHost);
+    USBH_Start(&hUSB_Host);
     
     /*##-5- Run Application (Blocking mode) ##################################*/
     while (1)
     {
       /* USB Host Background task */
-      USBH_Process(&hUSBHost);
+      USBH_Process(&hUSB_Host);
       
       /* Mass Storage Application State Machine */
       switch(Appli_state)
@@ -99,9 +109,7 @@ int main(void)
     }
   }
   /* TrueStudio compilation error correction */
-  while (1)
-  {
-  }
+  while (1) {}
 }
 
 /**
@@ -242,7 +250,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -303,3 +311,5 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

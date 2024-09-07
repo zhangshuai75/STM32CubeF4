@@ -2,24 +2,43 @@
   ******************************************************************************
   * @file    LTDC/LTDC_ColorKeying/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example describes how to enable and use 
-  *          the LTDC color keying functionality.
+  *          the color keying functionality.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "RGB565_480x272.h"
+#include "ARGB4444_480x272.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -33,13 +52,10 @@
 /* Private define ------------------------------------------------------------*/
 #define PRESSED_FIRST    0x00
 #define PRESSED_SECOND   0x01
-#define RGB565_COLOR_KEY 0xFFFFFF
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 LTDC_HandleTypeDef LtdcHandle;
 uint8_t ubPressedButton = PRESSED_FIRST;
-
-__IO uint32_t ReloadFlag = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 static void LCD_Config(void);
@@ -55,7 +71,6 @@ static void Error_Handler(void);
   */
 int main(void)
 {
-  static uint8_t buttonState = 0;
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, instruction and Data caches
        - Configure the Systick to generate an interrupt each 1 msec
@@ -64,62 +79,51 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock */
   SystemClock_Config();
 
   /* Configure LED3 */
   BSP_LED_Init(LED3);
   
-  /*##-1- Configure TAMPER Button ############################################*/
+  /*##-1- TAMPER button will be used #########################################*/
   BSP_PB_Init(BUTTON_TAMPER, BUTTON_MODE_GPIO);
   
   /*##-2- LCD Configuration ##################################################*/
   LCD_Config();
 
   /*##-3- Configure Color Keying  ############################################*/
-  HAL_LTDC_ConfigColorKeying_NoReload(&LtdcHandle, RGB565_COLOR_KEY, LTDC_LAYER_1);  
+  HAL_LTDC_ConfigColorKeying(&LtdcHandle, 0xFFFF, 1);  
 
-  /* Infinite loop */
   while (1)
   {
+    /* Wait for tamper button is pressed */
+    while (BSP_PB_GetState(BUTTON_TAMPER) != RESET)
+    {
+    }
 
-    if(BSP_PB_GetState(BUTTON_TAMPER) == GPIO_PIN_SET)
+    /* Wait for tamper button is released */
+    while (BSP_PB_GetState(BUTTON_TAMPER) != SET)
     {
-      /* user button is pressed     */
-      buttonState = 1;
     }
-    else if(buttonState == 1)
+  
+    if(ubPressedButton == PRESSED_FIRST)
     {
-      /* user button is released     */
-      buttonState = 0;
-    
-      if(ubPressedButton == PRESSED_FIRST)
-      {
-        /* Enable Color Keying on layer 1 */
-        HAL_LTDC_EnableColorKeying_NoReload(&LtdcHandle, LTDC_LAYER_1);
-        ubPressedButton = PRESSED_SECOND;  
-      }
-      else
-      {
-        /* Disable Color Keying on layer 1 */
-        HAL_LTDC_DisableColorKeying_NoReload(&LtdcHandle, LTDC_LAYER_1);
-        ubPressedButton = PRESSED_FIRST; 
-      }
-      
-      ReloadFlag = 0;
-      HAL_LTDC_Reload(&LtdcHandle,LTDC_SRCR_VBR);
-      
-      while(ReloadFlag == 0)
-      {
-        /* wait till reload takes effect (in the next vertical blanking period) */
-      }    
+      /* Enable Color Keying */
+      HAL_LTDC_EnableColorKeying(&LtdcHandle, 1);
+      ubPressedButton = PRESSED_SECOND;  
     }
+    else
+    {
+      /* Enable Color Keying */
+      HAL_LTDC_DisableColorKeying(&LtdcHandle, 1);
+      ubPressedButton = PRESSED_FIRST; 
+    }  
   }
 }
 
 /**
   * @brief LCD configuration.
-  * @note  This function Configure the LTDC peripheral :
+  * @note  This function Configure tha LTDC peripheral :
   *        1) Configure the Pixel Clock for the LCD
   *        2) Configure the LTDC Timing and Polarity
   *        3) Configure the LTDC Layer 1 :
@@ -157,9 +161,9 @@ static void LCD_Config(void)
   LtdcHandle.Init.AccumulatedVBP = 11; 
   /* Accumulated active width = Hsync + HBP + Active Width - 1 */ 
   LtdcHandle.Init.AccumulatedActiveH = 283;
-  /* Accumulated active height = Vsync + VBP + Active Height - 1 */
+  /* Accumulated active height = Vsync + VBP + Active Heigh - 1 */
   LtdcHandle.Init.AccumulatedActiveW = 522;
-  /* Total height = Vsync + VBP + Active Height + VFP - 1 */
+  /* Total height = Vsync + VBP + Active Heigh + VFP - 1 */
   LtdcHandle.Init.TotalHeigh = 285;
   /* Total width = Hsync + HBP + Active Width + HFP - 1 */
   LtdcHandle.Init.TotalWidth = 524;
@@ -185,10 +189,10 @@ static void LCD_Config(void)
   pLayerCfg.WindowY1 = 272;
   
   /* Pixel Format configuration*/ 
-  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_RGB565;
+  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_ARGB4444;
   
   /* Start Address configuration : frame buffer is located at FLASH memory */
-  pLayerCfg.FBStartAdress = (uint32_t)&RGB565_480x272;
+  pLayerCfg.FBStartAdress = (uint32_t)&ARGB4444_480x272;
   
   /* Alpha constant (255 totally opaque) */
   pLayerCfg.Alpha = 255;
@@ -214,8 +218,8 @@ static void LCD_Config(void)
     Error_Handler(); 
   }
   
-  /* Configure the Layer */
-  if(HAL_LTDC_ConfigLayer(&LtdcHandle, &pLayerCfg, LTDC_LAYER_1) != HAL_OK)
+  /* Configure the Layer*/
+  if(HAL_LTDC_ConfigLayer(&LtdcHandle, &pLayerCfg, 1) != HAL_OK)
   {
     /* Initialization Error */
     Error_Handler(); 
@@ -223,14 +227,17 @@ static void LCD_Config(void)
 }  
 
 /**
-  * @brief  Reload Event callback.
-  * @param  hltdc: pointer to a LTDC_HandleTypeDef structure that contains
-  *                the configuration information for the LTDC.
+  * @brief  This function is executed in case of error occurrence.
+  * @param  None
   * @retval None
   */
-void HAL_LTDC_ReloadEventCallback(LTDC_HandleTypeDef *hltdc)
+static void Error_Handler(void)
 {
-  ReloadFlag = 1;
+    /* Turn LED3 on */
+    BSP_LED_On(LED3);
+    while(1)
+    {
+    }
 }
 
 /**
@@ -264,7 +271,7 @@ static void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef  PeriphClkInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -284,7 +291,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -297,10 +304,10 @@ static void SystemClock_Config(void)
 
   /*##-2- LTDC Clock Configuration ###########################################*/  
   /* LCD clock configuration */
-  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 MHz */
-  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 MHz */
-  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/5 = 38.4 MHz */
-  /* LTDC clock frequency = PLLLCDCLK / LTDC_PLLSAI_DIVR_4 = 38.4/4 = 9.6 MHz */
+  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 Mhz */
+  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 Mhz */
+  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/5 = 38.4 Mhz */
+  /* LTDC clock frequency = PLLLCDCLK / LTDC_PLLSAI_DIVR_4 = 38.4/4 = 9.6Mhz */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
   PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
   PeriphClkInitStruct.PLLSAI.PLLSAIR = 5;
@@ -308,21 +315,8 @@ static void SystemClock_Config(void)
   HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);  
 }
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
-static void Error_Handler(void)
-{
-  /* Turn LED3 on */
-  BSP_LED_On(LED3);
-  while(1)
-  {
-  }
-}
-
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -349,3 +343,6 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

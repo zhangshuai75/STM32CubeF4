@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    Display/LTDC_Paint/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main program body
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "color2.h"
@@ -29,18 +39,20 @@
   */ 
 
 /* Private typedef -----------------------------------------------------------*/
-typedef enum {
+typedef enum
+{
   APPLICATION_IDLE = 0,  
   APPLICATION_START    
-}MSC_ApplicationTypeDef;
+}
+MSC_ApplicationTypeDef;
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-USBH_HandleTypeDef  hUSBHost;
+USBH_HandleTypeDef  hUSB_Host;
 FATFS USBDISK_FatFs;  /* File system object for USB Disk logical drive */
-FIL MyFile;           /* File object */
-char USB_Path[4];     /* USB Disk logical drive path */
+FIL MyFile;          /* File object */
+char USB_Path[4]; /* USB Disk logical drive path */
 
 const uint32_t aBMPHeader[14]=         
 {0x24A64D42, 
@@ -57,13 +69,13 @@ static uint32_t radius = 2;
 MSC_ApplicationTypeDef Appli_state = APPLICATION_IDLE;
 
 /* Private function prototypes -----------------------------------------------*/
-static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id);
+static void USBH_UserProcess (USBH_HandleTypeDef *phost, uint8_t id );
 static void Draw_Menu(void);
 static void GetPosition(void);
 static void SystemClock_Config(void);
 static void Error_Handler(void);
-static void Save_Picture(void);
-static void Prepare_Picture(void);
+static void SavePicture(void);
+static void PicturePrepare(void);
 static void Update_ColorSize(void);
 
 /* Private functions ---------------------------------------------------------*/
@@ -83,7 +95,7 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 168 MHz */
+  /* Configure the system clock */
   SystemClock_Config(); 
     
   /* Configure LED3 and LED4 */
@@ -121,17 +133,17 @@ int main(void)
  
   /*##-3- USB Initialization #################################################*/ 
   /* Init Host Library */
-  if (USBH_Init(&hUSBHost, USBH_UserProcess, 0) != USBH_OK)
+  if (USBH_Init(&hUSB_Host, USBH_UserProcess, 0) != USBH_OK)
   {
     /* USB Initialization Error */
     Error_Handler();
   }
   
   /* Add Supported Class */
-  USBH_RegisterClass(&hUSBHost, USBH_MSC_CLASS);
+  USBH_RegisterClass(&hUSB_Host, USBH_MSC_CLASS);
   
   /* Start Host Process */
-  if (USBH_Start(&hUSBHost) != USBH_OK)
+  if (USBH_Start(&hUSB_Host) != USBH_OK)
   {
     /* USB Initialization Error */
     Error_Handler();
@@ -153,23 +165,22 @@ int main(void)
   
   /*##-6- Draw the menu ######################################################*/
   Draw_Menu();  
-
-  /* Infinite loop */  
+  
   while (1)
   { 
   /*##-7- Configure the touch screen and Get the position ####################*/    
     GetPosition();
     
-    USBH_Process(&hUSBHost);
+    USBH_Process(&hUSB_Host);
   }
 }
 
 /**
-  * @brief  User Process
-  * @param  None
-  * @retval None
-  */
-static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
+* @brief  User Process
+* @param  None
+* @retval None
+*/
+static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
 {  
   switch (id)
   { 
@@ -188,6 +199,7 @@ static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
   }
 }
 
+
 /**
   * @brief  Configures and gets Touch screen position.
   * @param  None
@@ -200,7 +212,7 @@ static void GetPosition(void)
   static uint32_t color;
   static TS_StateTypeDef  TS_State;  
   
-  /* Height of color pen */
+  /* Heigh of color pen */
   color_heigh = 20;
   
   /* Get Touch screen position */
@@ -212,7 +224,7 @@ static void GetPosition(void)
   
   if ((TS_State.TouchDetected) & ( x > 0 ) & ( x < 50 ))
   { 
-    /* User selects one of the color pens */
+    /* User select one of the color pens*/
     if ((TS_State.TouchDetected) & ( y > 0 ) & ( y < color_heigh ))
     {
       BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
@@ -263,7 +275,7 @@ static void GetPosition(void)
     }    
     else if ((TS_State.TouchDetected) &  ( y > (12*color_heigh) ) & ( y < (13*color_heigh) ))
     {
-      /* Clear screen and reinitialize color and size */
+      /* Clear screen and reinitialize color and size*/
       /* Get the current text color */
       color = BSP_LCD_GetTextColor();
       BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
@@ -305,7 +317,7 @@ static void GetPosition(void)
   }
   else if ((TS_State.TouchDetected) & ( (x > 150) & ( y > (BSP_LCD_GetYSize() - 50) )) & ( x < 200 ) & ( y < (BSP_LCD_GetYSize()) ))
   {   
-    Save_Picture();
+    SavePicture();
   }    
 }
 
@@ -316,7 +328,7 @@ static void GetPosition(void)
   */
 static void Draw_Menu(void)
 { 
-  /* Set background Layer */
+  /* Set backround Layer */
   BSP_LCD_SelectLayer(0);
   
   /* Clear the LCD */
@@ -353,18 +365,19 @@ static void Draw_Menu(void)
 }
 
 /**
-  * @brief  Save the picture in USB Disk.
-  * @param  None
-  * @retval None
-  */
-void Save_Picture(void)
+* @brief  Save the picture in USB Disk.
+* @param  None
+* @retval None
+*/
+void SavePicture(void)
 { 
-  FRESULT res;           /* FatFs function common result code */
-  uint32_t bytesWritten; /* File write count */
+  FRESULT res;                                          /* FatFs function common result code */
+  uint32_t bytesWritten;                                /* File write count */
   
+
   BSP_LCD_SetLayerVisible(1, ENABLE);
   BSP_LCD_SetColorKeying(1, LCD_COLOR_WHITE);
-  /* Set foreground Layer */
+  /* Set foreround Layer */
   BSP_LCD_SelectLayer(1);
   BSP_LCD_SetTextColor(LCD_COLOR_DARKRED);
   BSP_LCD_SetFont(&Font20);
@@ -373,10 +386,10 @@ void Save_Picture(void)
   {
     BSP_LCD_DisplayStringAt(10, (BSP_LCD_GetYSize()-100), (uint8_t *)"Saving ... ", RIGHT_MODE);
     
-    /*##-1- Prepare the image to be saved ####################################*/
-    Prepare_Picture();
+    /*##-1- Prepare the image to be saved ######################################*/
+    PicturePrepare();
     
-    /*##-2- Create and Open a new bmp file object with write access ##########*/
+    /*##-4- Create and Open a new bmp file object with write access ##########*/
     if(f_open(&MyFile, "image.bmp", FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
     {
       /* 'image.bmp' file Open for write Error */
@@ -384,8 +397,8 @@ void Save_Picture(void)
     }
     else
     {
-      /*##-3- Write data to the BMP file #####################################*/
-      /* Write the BMP header */
+      /*##-5- Write data to the BMP file #####################################*/
+      /* Write the BMP headre */
       res = f_write(&MyFile, (uint32_t *)aBMPHeader, 54, (void *)&bytesWritten);
       /* Write the bmp file */
       res = f_write(&MyFile, (uint32_t *)CONVERTED_FRAME_BUFFER, ((BSP_LCD_GetYSize()-60)*(BSP_LCD_GetXSize()-60)*3), (void *)&bytesWritten);
@@ -397,7 +410,7 @@ void Save_Picture(void)
       }
       else
       {
-        /*##-4- Close the open text file #####################################*/
+        /*##-6- Close the open text file #####################################*/
         f_close(&MyFile);
         
         /* Success of the demo: no error occurrence */
@@ -427,15 +440,15 @@ void Save_Picture(void)
 }
 
 /**
-  * @brief  Prepares the picture to be Saved in USB Disk.
+  * @brief  Prepare the picture to be Saved in USB Disk.
   * @param  None
   * @retval None
   */
-static void Prepare_Picture(void) 
+static void PicturePrepare(void) 
 { 
   static DMA2D_HandleTypeDef hdma2d_dk;
-  uint32_t address1 = CONVERTED_FRAME_BUFFER;
-  uint32_t address2 = LCD_FRAME_BUFFER_LAYER0;
+  uint32_t Address1 = CONVERTED_FRAME_BUFFER;
+  uint32_t Address2 = LCD_FRAME_BUFFER_LAYER0;
   uint32_t index = 0;
   
   /* Configure the DMA2D Mode, Color Mode and output offset */
@@ -446,13 +459,13 @@ static void Prepare_Picture(void)
   /* Foreground Configuration */
   hdma2d_dk.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
   hdma2d_dk.LayerCfg[1].InputAlpha = 0xFF;
-  hdma2d_dk.LayerCfg[1].InputColorMode = DMA2D_INPUT_ARGB8888;
+  hdma2d_dk.LayerCfg[1].InputColorMode = DMA2D_ARGB8888;
   hdma2d_dk.LayerCfg[1].InputOffset = 60;
   
   hdma2d_dk.Instance = DMA2D; 
 
   /* Bypass the bitmap header */
-  address2 += ((BSP_LCD_GetXSize() * (BSP_LCD_GetYSize() - 61) + 60) * 4);  
+  Address2 += ((BSP_LCD_GetXSize() * (BSP_LCD_GetYSize() - 61) + 60) * 4);  
   
   /* Convert picture to RGB888 pixel format */
   for(index=0; index < (BSP_LCD_GetYSize() - 60); index++)
@@ -462,7 +475,7 @@ static void Prepare_Picture(void)
     {
       if(HAL_DMA2D_ConfigLayer(&hdma2d_dk, 1) == HAL_OK) 
       {
-        if (HAL_DMA2D_Start(&hdma2d_dk, address2, address1, (BSP_LCD_GetXSize() - 60), 1) == HAL_OK)
+        if (HAL_DMA2D_Start(&hdma2d_dk, Address2, Address1, (BSP_LCD_GetXSize() - 60), 1) == HAL_OK)
         {
           /* Polling For DMA transfer */  
           HAL_DMA2D_PollForTransfer(&hdma2d_dk, 10);
@@ -470,8 +483,8 @@ static void Prepare_Picture(void)
       }
     }    
     /* Increment the source and destination buffers */
-    address1 += ((BSP_LCD_GetXSize() - 60)*3);
-    address2 -= BSP_LCD_GetXSize()*4;
+    Address1 += ((BSP_LCD_GetXSize() - 60)*3);
+    Address2 -= BSP_LCD_GetXSize()*4;
   }
 }
 
@@ -482,15 +495,15 @@ static void Prepare_Picture(void)
   */
 static void Error_Handler(void)
 {
-  /* Turn LED4 on */
-  BSP_LED_On(LED4);
-  while(1)
-  {
-  }
+    /* Turn LED4 on */
+    BSP_LED_On(LED4);
+    while(1)
+    {
+    }
 }
 
 /**
-  * @brief  Updates the selected Color and Size
+  * @brief 
   * @param  None
   * @retval None
   */
@@ -498,19 +511,20 @@ static void Update_ColorSize(void)
 {
   static uint32_t color;
   
-  /* Clear the current circle */
+  /* clear the current circle */
   color = BSP_LCD_GetTextColor();
   BSP_LCD_SetTextColor(LCD_COLOR_WHITE);    
   BSP_LCD_FillCircle(220, (BSP_LCD_GetYSize()-24), 10);  
   BSP_LCD_SetTextColor(color);  
-  
+
   /* Update the selected color icon */
   BSP_LCD_FillCircle(220, (BSP_LCD_GetYSize()-24), radius);  
   
-  /* Draw black circle */
+  /* draw black circle */
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);    
   BSP_LCD_DrawCircle(220, (BSP_LCD_GetYSize() - 24), radius);
   BSP_LCD_SetTextColor(color);  
+  
 }
 
 /**
@@ -539,7 +553,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -568,6 +582,7 @@ static void SystemClock_Config(void)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -591,6 +606,5 @@ void assert_failed(uint8_t* file, uint32_t line)
   * @}
   */
 
-/**
-  * @}
-  */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

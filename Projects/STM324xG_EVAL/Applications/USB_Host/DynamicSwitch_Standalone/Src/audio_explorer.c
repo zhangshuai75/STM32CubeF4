@@ -1,17 +1,26 @@
 /**
   ******************************************************************************
-  * @file    USB_Host/DynamicSwitch_Standalone/Src/audio_explorer.c
+  * @file    USB_Host/DynamicSwitch_Standalone/Src/audio_explorer.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file provides uSD Card drive configuration
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
@@ -21,7 +30,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 FATFS SD_FatFs;
-char SD_Path[4];
+char SD_Path[4]; 
 FILELIST_FileTypeDef FileList;
 
 /* Private define ------------------------------------------------------------*/
@@ -39,7 +48,7 @@ uint8_t SD_StorageInit(void)
 {
   /*Initializes the SD card device*/
   BSP_SD_Init();
-
+  
   /* Check if the SD card is plugged in the slot */
   if(BSP_SD_IsDetected() == SD_PRESENT )
   {
@@ -49,21 +58,21 @@ uint8_t SD_StorageInit(void)
       if((f_mount(&SD_FatFs, (TCHAR const*)SD_Path, 0) != FR_OK))
       {
         /* FatFs Initialization Error */
-        LCD_ErrLog("Cannot Initialize SD FatFs! \n");
+        LCD_ErrLog("Cannot Initialize FatFs! \n");
         return 1;
       }
       else
       {
-        LCD_DbgLog ("INFO : SD FatFs Initialized! \n");
+        LCD_DbgLog ("INFO : FatFs Initialized! \n");
       }
-    }
+    }  
   }
   else
   {
     LCD_ErrLog("SD card NOT plugged \n");
     return 1;
   }
-  return 0;
+return 0;
 }
 
 /**
@@ -77,16 +86,22 @@ FRESULT SD_StorageParse(void)
   FILINFO fno;
   DIR dir;
   char *fn;
-
+  
+#if _USE_LFN
+  static char lfn[_MAX_LFN];
+  fno.lfname = lfn;
+  fno.lfsize = sizeof(lfn);
+#endif
+  
   res = f_opendir(&dir, SD_Path);
   FileList.ptr = 0;
-
+  
   if(res == FR_OK)
   {
     while (1)
     {
       res = f_readdir(&dir, &fno);
-
+      
       if(res != FR_OK || fno.fname[0] == 0)
       {
         break;
@@ -95,9 +110,12 @@ FRESULT SD_StorageParse(void)
       {
         continue;
       }
-
+#if _USE_LFN
+      fn = *fno.lfname ? fno.lfname : fno.fname;
+#else
       fn = fno.fname;
-
+#endif
+      
       if(FileList.ptr < FILEMGR_LIST_DEPDTH)
       {
         if((fno.fattrib & AM_DIR) == 0)
@@ -109,9 +127,11 @@ FRESULT SD_StorageParse(void)
             FileList.ptr++;
           }
         }
-      }
+      }   
     }
   }
   f_closedir(&dir);
   return res;
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

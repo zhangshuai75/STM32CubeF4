@@ -2,17 +2,36 @@
   ******************************************************************************
   * @file    DMA2D/DMA2D_MemToMemWithBlending/Src/main.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This example provides a description of how to configure 
   *          DMA2D peripheral in Memory to Memory with blending transfer mode.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
   */
@@ -64,7 +83,7 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 180 MHz */
+  /* Configure the system clock */
   SystemClock_Config();    
   
   /* Configure LED1, LED2 and LED3 */
@@ -84,8 +103,7 @@ int main(void)
     /* Initialization Error */
     Error_Handler(); 
   }
-
-  /* Infinite loop */  
+  
   while (1)
   {
   }
@@ -93,7 +111,7 @@ int main(void)
 
 /**
   * @brief DMA2D configuration.
-  * @note  This function Configure the DMA2D peripheral :
+  * @note  This function Configure tha DMA2D peripheral :
   *        1) Configure the Transfer mode as memory to memory with blending.
   *        2) Configure the output color mode as RGB565 pixel format.
   *        3) Configure the foreground
@@ -121,18 +139,18 @@ static void DMA2D_Config(void)
   /* Foreground Configuration */
   Dma2dHandle.LayerCfg[1].AlphaMode = DMA2D_REPLACE_ALPHA;
   Dma2dHandle.LayerCfg[1].InputAlpha = 0x7F;
-  Dma2dHandle.LayerCfg[1].InputColorMode = DMA2D_INPUT_RGB565;
+  Dma2dHandle.LayerCfg[1].InputColorMode = CM_RGB565;
   Dma2dHandle.LayerCfg[1].InputOffset = 0x0;
 
   /* Background Configuration */
   Dma2dHandle.LayerCfg[0].AlphaMode = DMA2D_REPLACE_ALPHA;
   Dma2dHandle.LayerCfg[0].InputAlpha = 0x7F;
-  Dma2dHandle.LayerCfg[0].InputColorMode = DMA2D_INPUT_RGB565;
+  Dma2dHandle.LayerCfg[0].InputColorMode = CM_RGB565;
   Dma2dHandle.LayerCfg[0].InputOffset = 0x0;
   
   Dma2dHandle.Instance          = DMA2D; 
   
-  /* DMA2D Initialization */
+  /* DMA2D Initialisation */
   if(HAL_DMA2D_Init(&Dma2dHandle) != HAL_OK) 
   {
     /* Initialization Error */
@@ -145,7 +163,7 @@ static void DMA2D_Config(void)
 
 /**
   * @brief LCD configuration.
-  * @note  This function Configure the LTDC peripheral :
+  * @note  This function Configure tha LTDC peripheral :
   *        1) Configure the Pixel Clock for the LCD
   *        2) Configure the LTDC Timing and Polarity
   *        3) Configure the LTDC Layer 2 :
@@ -184,18 +202,18 @@ static void LCD_Config(void)
   hltdc_F.Init.AccumulatedVBP = 11; 
   /* Accumulated active width = Hsync + HBP + Active Width - 1 */ 
   hltdc_F.Init.AccumulatedActiveH = 283;
-  /* Accumulated active height = Vsync + VBP + Active Height - 1 */
+  /* Accumulated active height = Vsync + VBP + Active Heigh - 1 */
   hltdc_F.Init.AccumulatedActiveW = 522;
-  /* Total height = Vsync + VBP + Active Height + VFP - 1 */
+  /* Total height = Vsync + VBP + Active Heigh + VFP - 1 */
   hltdc_F.Init.TotalHeigh = 285;
   /* Total width = Hsync + HBP + Active Width + HFP - 1 */
   hltdc_F.Init.TotalWidth = 524;
 
   /* LCD clock configuration */
-  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 MHz */
-  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 MHz */
-  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/5 = 38.4 MHz */
-  /* LTDC clock frequency = PLLLCDCLK / LTDC_PLLSAI_DIVR_4 = 38.4/4 = 9.6 MHz */
+  /* PLLSAI_VCO Input = HSE_VALUE/PLL_M = 1 Mhz */
+  /* PLLSAI_VCO Output = PLLSAI_VCO Input * PLLSAIN = 192 Mhz */
+  /* PLLLCDCLK = PLLSAI_VCO Output/PLLSAIR = 192/5 = 38.4 Mhz */
+  /* LTDC clock frequency = PLLLCDCLK / LTDC_PLLSAI_DIVR_4 = 38.4/4 = 9.6 Mhz */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
   PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
   PeriphClkInitStruct.PLLSAI.PLLSAIR = 5;
@@ -253,7 +271,7 @@ static void LCD_Config(void)
     Error_Handler(); 
   }
   
-  /* Configure the Layer */
+  /* Configure the Layer*/
   if(HAL_LTDC_ConfigLayer(&hltdc_F, &pLayerCfg, 1) != HAL_OK)
   {
     /* Initialization Error */
@@ -287,7 +305,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -306,7 +324,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
   
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();  
+  HAL_PWREx_ActivateOverDrive();  
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -325,11 +343,11 @@ static void SystemClock_Config(void)
   */
 static void Error_Handler(void)
 {
-  /* Turn LED3 on */
-  BSP_LED_On(LED3);
-  while(1)
-  {
-  }
+    /* Turn LED3 on */
+    BSP_LED_On(LED3);
+    while(1)
+    {
+    }
 }
 
 /**
@@ -359,6 +377,7 @@ static void TransferError(DMA2D_HandleTypeDef *hdma2d)
 }
 
 #ifdef  USE_FULL_ASSERT
+
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -385,3 +404,6 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */
+
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

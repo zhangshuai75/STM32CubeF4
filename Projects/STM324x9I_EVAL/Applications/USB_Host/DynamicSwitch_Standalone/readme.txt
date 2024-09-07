@@ -1,31 +1,37 @@
 /**
-  @page DynamicSwitch_Standalone USB Host Dynamic Switch application
+  @page DynamicSwitch_Standalone USB Host Dynamic Switch example
   
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    USB_Host/DynamicSwitch_Standalone/readme.txt 
   * @author  MCD Application Team
-  * @brief   Description of the USB Host Dynamic Switch application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the USB Host Dynamic Switch example.
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-   @endverbatim
+  @endverbatim
 
-@par Application Description 
+@par Example Description 
 
-This application is a part of the USB Host Library package using STM32Cube firmware. It describes how to use
-dynamically switch, on the same port, between available USB host applications on the STM32F4xx devices.
+This example is a part of the USB Host Library package using STM32Cube firmware. It describes how to use
+dynamically switch, on the same port, between available USB host examples on the STM32F4xx devices.
 
 The USBH_RegisterClass() API is provided by the USB Host Library to load the class driver. In this 
-application MSC, HID and AUDIO classes are loaded and the user can start his application depending on the
+example MSC, HID and AUDIO classes are loaded and the user can start his application depending on the
 connected device. 
 
 At the beginning of the main program the HAL_Init() function is called to reset all the peripherals,
@@ -64,15 +70,15 @@ For more details about the STM32Cube USB Host library, please refer to UM1720
 @par USB Library Configuration
 
 To select the appropriate USB Core to work with, user must add the following macro defines within the
-compiler preprocessor (already done in the preconfigured projects provided with this application):
+compiler preprocessor (already done in the preconfigured projects provided with this example):
       - "USE_USB_HS" when using USB High Speed (HS) Core
       - "USE_USB_FS" when using USB Full Speed (FS) Core 
       - "USE_USB_HS" and "USE_USB_HS_IN_FS" when using USB High Speed (HS) Core in FS mode
 
 It is possible to fine tune needed USB Host features by modifying defines values in USBH configuration
-file "usbh_conf.h" available under the project includes directory, in a way to fit the application
+file “usbh_conf.h” available under the project includes directory, in a way to fit the application
 requirements, such as:
-  - Level of debug: USBH_DEBUG_LEVEL
+- Level of debug: USBH_DEBUG_LEVEL
                   0: No debug messages
                   1: Only User messages are shown
                   2: User and Error messages are shown
@@ -80,17 +86,12 @@ requirements, such as:
    By default debug messages are displayed on the debugger IO terminal; to redirect the Library
    messages on the LCD screen, lcd_log.c driver need to be added to the application sources.
  
-  - Number of supported classes: USBH_MAX_NUM_SUPPORTED_CLASS  
+- Number of supported classes: USBH_MAX_NUM_SUPPORTED_CLASS  
 
-@par Keywords
-
-Connectivity, USB_Host, MSC, HID, AUDIO, Full-Speed, High-Speed, LCD, SD Card, Mass Storage, FatFS
 
 @par Directory contents
 
   - USB_Host/DynamicSwitch_Standalone/Src/main.c                  Main program
-  - USB_Host/DynamicSwitch_Standalone/Src/usbh_diskio_dma.c       FatFS usbh diskio driver implementation
-  - USB_Host/DynamicSwitch_Standalone/Src/sd_diskio.c             FatFS sd diskio driver implementation
   - USB_Host/DynamicSwitch_Standalone/Src/system_stm32f4xx.c      STM32F4xx system clock configuration file
   - USB_Host/DynamicSwitch_Standalone/Src/stm32f4xx_it.c          Interrupt handlers
   - USB_Host/DynamicSwitch_Standalone/Src/menu.c                  Main Menu State Machine
@@ -106,20 +107,18 @@ Connectivity, USB_Host, MSC, HID, AUDIO, Full-Speed, High-Speed, LCD, SD Card, M
   - USB_Host/DynamicSwitch_Standalone/Src/mouse.c                 HID mouse functions  
   - USB_Host/DynamicSwitch_Standalone/Src/keyboard.c              HID keyboard functions
   - USB_Host/DynamicSwitch_Standalone/Inc/main.h                  Main program header file
-  - USB_Host/DynamicSwitch_Standalone/Inc/usbh_diskio_dma.h       FatFS usbh diskio driver header file
-  - USB_Host/DynamicSwitch_Standalone/Inc/sd_diskio.h             FatFS sd diskio driver header file
   - USB_Host/DynamicSwitch_Standalone/Inc/stm32f4xx_it.h          Interrupt handlers header file
   - USB_Host/DynamicSwitch_Standalone/Inc/lcd_log_conf.h          LCD log configuration file
   - USB_Host/DynamicSwitch_Standalone/Inc/stm32f4xx_hal_conf.h    HAL configuration file
   - USB_Host/DynamicSwitch_Standalone/Inc/usbh_conf.h             USB Host driver Configuration file
-  - USB_Host/DynamicSwitch_Standalone/Inc/ffconf.h                FAT file system module configuration file
+  - USB_Host/DynamicSwitch_Standalone/Inc/ffconf.h                FatFs Module Configuration file
  
 
 @par Hardware and Software environment
 
-  - This application runs on STM32F429xx/STM32F439xx devices.
+  - This example runs on STM32F429xx/STM32F439xx devices.
     
-  - This application has been tested with STMicroelectronics STM324x9I-EVAL RevB 
+  - This example has been tested with STMicroelectronics STM324x9I-EVAL RevB 
     evaluation boards and can be easily tailored to any other supported device 
     and development board.
 
@@ -127,8 +126,8 @@ Connectivity, USB_Host, MSC, HID, AUDIO, Full-Speed, High-Speed, LCD, SD Card, M
     - Insert a microSD card containing .Wav audio file into the STM324x9I-EVAL uSD slot (CN17)
     - Plug the USB device into the STM324x9I-EVAL board through 'USB micro A-Male 
       to A-Female' cable to the connector:
-      - CN9 : to use USB High Speed (HS)  with embedded PHY(U7)
-      - CN14: to use USB Full Speed (FS) 
+      - CN9 : to use USB High Speed (HS) 
+      - CN14: to use USB Full Speed (FS) with embedded PHY(U7)
               Please ensure that jumper JP16 is not fitted.
       - CN15: to use USB HS-IN-FS.
               Note that some FS signals are shared with the HS ULPI bus, so some PCB rework is needed.
@@ -145,6 +144,7 @@ In order to make the program work, you must do the following :
    - STM324x9I-EVAL_USBH-FS: to configure the project for STM32F4xx devices using USB OTG FS peripheral
    - STM324x9I-EVAL_USBH-HS-IN-FS: to configure the project for STM32F4xx devices and use USB OTG HS 
                                    peripheral In FS (using embedded PHY).
- - Run the application
+ - Run the example
  
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

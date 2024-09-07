@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    Display/LTDC_Paint/Src/ts_calibration.c 
   * @author  MCD Application Team
-  * @brief   This application code shows how to calibrate the touchscreen.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   This example code shows how to calibrate the touchscreen.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -37,8 +47,8 @@ static int16_t aPhysX[2], aPhysY[2], aLogX[2], aLogY[2];
 
 /* Private function prototypes -----------------------------------------------*/
 static void TouchscreenCalibration_SetHint(void);
-static void GetPhysValues(int16_t LogX, int16_t LogY, int16_t * pPhysX, int16_t * pPhysY);
-static void WaitForPressedState(uint8_t Pressed);
+static void GetPhysValues(int16_t LogX, int16_t LogY, int16_t * pPhysX, int16_t * pPhysY) ;
+static void WaitForPressedState(uint8_t Pressed) ;
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -47,7 +57,7 @@ static void WaitForPressedState(uint8_t Pressed);
   * @param  None
   * @retval None
   */
-void Touchscreen_Calibration(void)
+void Touchscreen_Calibration (void)
 { 
   uint8_t status = 0;
   uint8_t i = 0;
@@ -111,6 +121,7 @@ static void TouchscreenCalibration_SetHint(void)
   BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 3, (uint8_t*)"Press on the black circles", CENTER_MODE);
 }
 
+
 /**
   * @brief  Get Physical position
   * @param  LogX : logical X position
@@ -141,8 +152,8 @@ static void GetPhysValues(int16_t LogX, int16_t LogY, int16_t * pPhysX, int16_t 
 }
 
 /**
-  * @brief  Wait For Pressed State
-  * @param  Pressed: Pressed State
+  * @brief  Main program
+  * @param  None
   * @retval None
   */
 static void WaitForPressedState(uint8_t Pressed) 
@@ -173,7 +184,7 @@ static void WaitForPressedState(uint8_t Pressed)
 
 /**
   * @brief  Calibrate X position
-  * @param  x: X position
+  * @param  x : X position
   * @retval calibrated x
   */
 uint16_t Calibration_GetX(uint16_t x)
@@ -183,7 +194,7 @@ uint16_t Calibration_GetX(uint16_t x)
 
 /**
   * @brief  Calibrate Y position
-  * @param  y: Y position
+  * @param  y : Y position
   * @retval calibrated y
   */
 uint16_t Calibration_GetY(uint16_t y)
@@ -191,10 +202,9 @@ uint16_t Calibration_GetY(uint16_t y)
   return (((A2 * y) + B2)/1000);
 }
 
-/**
-  * @brief  Check if the TS is calibrated
+/**check if the TS is calibrated
   * @param  None
-  * @retval calibration state
+* @retval calibration state (1 : calibrated / 0: no)
   */
 uint8_t IsCalibrationDone(void)
 {
@@ -208,3 +218,5 @@ uint8_t IsCalibrationDone(void)
 /**
   * @}
   */
+    
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -2,19 +2,25 @@
   @page STemWin_Simulation Readme file
  
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
-  * @file    WIN32/STemWin_Simulation/readme.txt 
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
+  * @file    readme.txt 
   * @author  MCD Application Team
+  * @version V1.0.0
+  * @date    26-June-2014  
   * @brief   Description of the STemWin Simulation project. 
   ******************************************************************************
-  * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
    @endverbatim
@@ -54,11 +60,8 @@ by the downloaded one.
 
 @par Software environment 
   - This Simulation project runs on VS Express for Desktop on windows platform
-  - This project has been tested with Microsoft Visual Studio Express 2017 for Windows Desktop on Windows 7
+  - This project has been tested with Microsoft Visual Studio Express 2012 for Windows Desktop on Windows 7
 
-@par Keywords
-
-STemWin, Simulation, Microsoft Visual C++, LCD
 
 @par How to use it ? 
 
@@ -69,5 +72,5 @@ In order to use the simulation project :
   - A "hello world" message will be shown in the Simulation display
   - the MainTask.c could be overwritten by user code to run his own code
  
-
+ * <h3><center>&copy; COPYRIGHT STMicroelectronics</center></h3>
  */

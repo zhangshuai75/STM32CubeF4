@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Device/MSC_Standalone/Src/main.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   USB device Mass storage demo main file
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -44,8 +54,14 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 168 MHz */
+  /* Configure the system clock to 168 Mhz */
   SystemClock_Config();
+  
+  /* Configure LED1, LED2, LED3 and LED4 */
+  BSP_LED_Init(LED1);
+  BSP_LED_Init(LED2);
+  BSP_LED_Init(LED3);
+  BSP_LED_Init(LED4);
   
   /* Init MSC Application */
   USBD_Init(&USBD_Device, &MSC_Desc, 0);
@@ -87,11 +103,11 @@ int main(void)
   */
 static void SystemClock_Config(void)
 {
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+  RCC_OscInitTypeDef RCC_OscInit;
+  RCC_ClkInitTypeDef RCC_ClkInit;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -99,137 +115,42 @@ static void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /* Configure RCC Oscillators: All parameters can be changed according to user’s needs */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 25;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
-  HAL_RCC_OscConfig(&RCC_OscInitStruct);
+  RCC_OscInit.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInit.HSEState = RCC_HSE_ON;
+  RCC_OscInit.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInit.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInit.PLL.PLLM = 25;
+  RCC_OscInit.PLL.PLLN = 336;
+  RCC_OscInit.PLL.PLLP = 2;
+  RCC_OscInit.PLL.PLLQ = 7;
+  HAL_RCC_OscConfig(&RCC_OscInit);
   
   /* RCC Clocks: All parameters can be changed according to user’s needs */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK |RCC_CLOCKTYPE_HCLK |RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
-  
-  /* STM32F405x/407x/415x/417x Revision Z and upper devices: prefetch is supported  */
-  if (HAL_GetREVID() >= 0x1001)
-  {
-    /* Enable the Flash prefetch */
-    __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
-  }
+  RCC_ClkInit.ClockType = RCC_CLOCKTYPE_SYSCLK |RCC_CLOCKTYPE_HCLK |RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInit.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInit.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInit.APB1CLKDivider = RCC_HCLK_DIV4;  
+  RCC_ClkInit.APB2CLKDivider = RCC_HCLK_DIV2;  
+  HAL_RCC_ClockConfig(&RCC_ClkInit, FLASH_LATENCY_5);
 }
 
 /**
-  * @brief  Initializes the SD MSP.
-  * @param  hsd: SD handle
-  * @param  Params : pointer on additional configuration parameters, can be NULL.
+  * @brief  Toggles LEDs to shows user input state.
+  * @param  None
+  * @retval None
   */
-void BSP_SD_MspInit(SD_HandleTypeDef *hsd, void *Params)
+void Toggle_Leds(void)
 {
-  static DMA_HandleTypeDef dmaRxHandle;
-  static DMA_HandleTypeDef dmaTxHandle;
-  GPIO_InitTypeDef GPIO_Init_Structure;
+  static uint32_t ticks;
   
-  /* Enable SDIO clock */
-  __HAL_RCC_SDIO_CLK_ENABLE();
-  
-  /* Enable DMA2 clocks */
-  __DMAx_TxRx_CLK_ENABLE();
-
-  /* Enable GPIOs clock */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __SD_DETECT_GPIO_CLK_ENABLE();
-  
-  /* Common GPIO configuration */
-  GPIO_Init_Structure.Mode      = GPIO_MODE_AF_PP;
-  GPIO_Init_Structure.Pull      = GPIO_PULLUP;
-  GPIO_Init_Structure.Speed     = GPIO_SPEED_HIGH;
-  GPIO_Init_Structure.Alternate = GPIO_AF12_SDIO;
-  
-  /* GPIOC configuration */
-  GPIO_Init_Structure.Pin = GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12;
-   
-  HAL_GPIO_Init(GPIOC, &GPIO_Init_Structure);
-
-  /* GPIOD configuration */
-  GPIO_Init_Structure.Pin = GPIO_PIN_2;
-  HAL_GPIO_Init(GPIOD, &GPIO_Init_Structure);
-
-  /* SD Card detect pin configuration */
-  GPIO_Init_Structure.Mode      = GPIO_MODE_INPUT;
-  GPIO_Init_Structure.Pull      = GPIO_PULLUP;
-  GPIO_Init_Structure.Speed     = GPIO_SPEED_HIGH;
-  GPIO_Init_Structure.Pin       = SD_DETECT_PIN;
-  HAL_GPIO_Init(SD_DETECT_GPIO_PORT, &GPIO_Init_Structure);
-    
-  /* NVIC configuration for SDIO interrupts */
-  HAL_NVIC_SetPriority(SDIO_IRQn, 0x05, 0);
-  HAL_NVIC_EnableIRQ(SDIO_IRQn);
-    
-  /* Configure DMA Rx parameters */
-  dmaRxHandle.Init.Channel             = SD_DMAx_Rx_CHANNEL;
-  dmaRxHandle.Init.Direction           = DMA_PERIPH_TO_MEMORY;
-  dmaRxHandle.Init.PeriphInc           = DMA_PINC_DISABLE;
-  dmaRxHandle.Init.MemInc              = DMA_MINC_ENABLE;
-  dmaRxHandle.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
-  dmaRxHandle.Init.MemDataAlignment    = DMA_MDATAALIGN_WORD;
-  dmaRxHandle.Init.Mode                = DMA_PFCTRL;
-  dmaRxHandle.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
-  dmaRxHandle.Init.FIFOMode            = DMA_FIFOMODE_ENABLE;
-  dmaRxHandle.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-  dmaRxHandle.Init.MemBurst            = DMA_MBURST_INC4;
-  dmaRxHandle.Init.PeriphBurst         = DMA_PBURST_INC4;
-  
-  dmaRxHandle.Instance = SD_DMAx_Rx_STREAM;
-  
-  /* Associate the DMA handle */
-  __HAL_LINKDMA(hsd, hdmarx, dmaRxHandle);
-  
-  /* Deinitialize the stream for new transfer */
-  HAL_DMA_DeInit(&dmaRxHandle);
-  
-  /* Configure the DMA stream */
-  HAL_DMA_Init(&dmaRxHandle);
-  
-  /* Configure DMA Tx parameters */
-  dmaTxHandle.Init.Channel             = SD_DMAx_Tx_CHANNEL;
-  dmaTxHandle.Init.Direction           = DMA_MEMORY_TO_PERIPH;
-  dmaTxHandle.Init.PeriphInc           = DMA_PINC_DISABLE;
-  dmaTxHandle.Init.MemInc              = DMA_MINC_ENABLE;
-  dmaTxHandle.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
-  dmaTxHandle.Init.MemDataAlignment    = DMA_MDATAALIGN_WORD;
-  dmaTxHandle.Init.Mode                = DMA_PFCTRL;
-  dmaTxHandle.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
-  dmaTxHandle.Init.FIFOMode            = DMA_FIFOMODE_ENABLE;
-  dmaTxHandle.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-  dmaTxHandle.Init.MemBurst            = DMA_MBURST_INC4;
-  dmaTxHandle.Init.PeriphBurst         = DMA_PBURST_INC4;
-  
-  dmaTxHandle.Instance = SD_DMAx_Tx_STREAM;
-  
-  /* Associate the DMA handle */
-  __HAL_LINKDMA(hsd, hdmatx, dmaTxHandle);
-  
-  /* Deinitialize the stream for new transfer */
-  HAL_DMA_DeInit(&dmaTxHandle);
-  
-  /* Configure the DMA stream */
-  HAL_DMA_Init(&dmaTxHandle); 
-  
-  /* NVIC configuration for DMA transfer complete interrupt */
-  HAL_NVIC_SetPriority(SD_DMAx_Rx_IRQn, 0x06, 0);
-  HAL_NVIC_EnableIRQ(SD_DMAx_Rx_IRQn);
-  
-  /* NVIC configuration for DMA transfer complete interrupt */
-  HAL_NVIC_SetPriority(SD_DMAx_Tx_IRQn, 0x06, 0);
-  HAL_NVIC_EnableIRQ(SD_DMAx_Tx_IRQn);
+  if(ticks++ == 100)
+  {
+    BSP_LED_Toggle(LED1);
+    BSP_LED_Toggle(LED2);
+    BSP_LED_Toggle(LED3);
+    BSP_LED_Toggle(LED4);
+    ticks = 0;
+  }  
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -251,3 +172,5 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

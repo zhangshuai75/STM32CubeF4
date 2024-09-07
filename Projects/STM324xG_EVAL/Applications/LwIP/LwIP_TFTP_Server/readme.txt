@@ -1,32 +1,41 @@
 /**
-  @page LwIP_TFTP_Server LwIP TFTP Server application
+  @page LwIP_TFTP_Server LwIP TFTP Server example
  
   @verbatim
-  ******************** (C) COPYRIGHT 2017 STMicroelectronics *******************
+  ******************** (C) COPYRIGHT 2014 STMicroelectronics *******************
   * @file    LwIP/LwIP_TFTP_Server/readme.txt
   * @author  MCD Application Team
-  * @brief   Description of the LwIP TFTP Server application.
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Description of the LwIP TFTP Server example.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
    @endverbatim
 
-@par Application Description
+@par Description
 
-This application guides STM32Cube HAL API users to run a tftp server demonstration
+This example guides STM32Cube HAL API users to run a tftp server demonstration
 for STM32F4xx devices.
 
 User has to use a PC SW tool (ex. TFTPD32) to send/receive data to/from micro SD 
 card installed in STM324xG-EVAL board 
-                                                                                        
+
 If the LCD is used (#define USE_LCD in main.h), log messages will be displayed 
 to inform user about ethernet cable status and the IP address value, else this 
 will be ensured by LEDs:
@@ -34,21 +43,12 @@ will be ensured by LEDs:
   + LED2: ethernet cable is not connected.
 
 If a DHCP server is available, a dynamic IP address can be allocated by enabling 
-the DHCP process (#define LWIP_DHCP in lwipopts.h) 
+the DHCP process (#define USE_DHCP in main.h) 
 
-If a DHCP server is not available, after timeout connection, the device only gets a static
-IP address(the switch from static to dynamic IP address is not available in this application).
-
-Note: Files to be transferred must have a short file name format (8.3), 
-      maximum 8 characters for name and 3 characters for type, example:
-       image.jpg => valid name
-       image.jpeg => invalid name 
-       image1234.jpg => invalid name      
-
-Note: In this application the Ethernet Link ISR need the HAL time base to configure 
-the Ethernet MAC, so the Ethernet Link interrupt priority must be set lower (numerically greater) 
-than the HAL tick interrupt priority to ensure that the System tick increments while executing 
-the Ethernet Link ISR.
+Note: In this application the Ethernet Link ISR need the System tick interrupt 
+to configure the Ethernet MAC, so the Ethernet Link interrupt priority must be 
+set lower (numerically greater) than the Systick interrupt priority to ensure 
+that the System tick increments while executing the Ethernet Link ISR.
 
 @note Care must be taken when using HAL_Delay(), this function provides accurate delay (in milliseconds)
       based on variable incremented in SysTick ISR. This implies that if HAL_Delay() is called from
@@ -56,31 +56,26 @@ the Ethernet Link ISR.
       than the peripheral interrupt. Otherwise the caller ISR process will be blocked.
       To change the SysTick interrupt priority you have to use HAL_NVIC_SetPriority() function.
       
-@note The application needs to ensure that the SysTick time base is always set to 1 millisecond
+@note The application need to ensure that the SysTick time base is always set to 1 millisecond
       to have correct HAL operation.
       
-For more details about this application, refer to UM1713 "STM32Cube interfacing with LwIP and applications"
+For more details about this application, refer to UM1713 "STM32Cube interfacing with LwIP and examples"
 
-@par Keywords
-
-Connectivity, LwIP, Ethernet, TFTP Server, TCP/IP, DHCP, send, receive, SD Card, LCD
 
 @par Directory contents
 
     - LwIP/LwIP_TFTP_Server/Inc/app_ethernet.h           header of app_ethernet.c file
     - LwIP/LwIP_TFTP_Server/Inc/ethernetif.h             header for ethernetif.c file
-    - LwIP/LwIP_TFTP_Server/Inc/lcd_log_conf.h           LCD Log configuration file
-    - LwIP/LwIP_TFTP_Server/Inc/ffconf.h                 FAT file system module configuration file
+    - LwIP/LwIP_TFTP_Server/Inc/lcd_log_conf.h           lcd_log configuration file
+    - LwIP/LwIP_TFTP_Server/Inc/ffconf.h                 fatfs module configuration file
     - LwIP/LwIP_TFTP_Server/Inc/main.h                   Main program header file
-    - LwIP/LwIP_TFTP_Server/Inc/sd_diskio.h              FatFS sd diskio driver header file
     - LwIP/LwIP_TFTP_Server/Inc/lwipopts.h               LwIP stack configuration options
     - LwIP/LwIP_TFTP_Server/Inc/stm32f4xx_hal_conf.h     HAL Configuration file
     - LwIP/LwIP_TFTP_Server/Inc/stm32f4xx_it.h           header for stm32f4xx_it.c
     - LwIP/LwIP_TFTP_Server/Inc/tftpserver.h             header for tftpserver.c
     - LwIP/LwIP_TFTP_Server/Inc/tftputils.h              header for tftputils.c
-    - LwIP/LwIP_TFTP_Server/Src/app_ethernet.c           Ethernet specific module
+    - LwIP/LwIP_TFTP_Server/Src/app_ethernet.c           Ethernet specefic module
     - LwIP/LwIP_TFTP_Server/Src/main.c                   Main program  
-    - LwIP/LwIP_TFTP_Server/Src/sd_diskio.c              FatFS sd diskio driver implementation
     - LwIP/LwIP_TFTP_Server/Src/ethernetif.c             Interfacing LwIP to ETH driver
     - LwIP/LwIP_TFTP_Server/Src/system_stm32f4xx.c       STM32 system configuration file
     - LwIP/LwIP_TFTP_Server/Src/stm32f4xx_it.c           Interrupt handlers
@@ -90,9 +85,9 @@ Connectivity, LwIP, Ethernet, TFTP Server, TCP/IP, DHCP, send, receive, SD Card,
 
 @par Hardware and Software environment
 
-  - This application runs on STM32F407xx/STM32F417xx Devices.
+  - This example runs on STM32F407xx/STM32F417xx Devices.
 
-  - This application has been tested with the following environments:
+  - This example has been tested with the following environments:
      - STM324xG-EVAL board
      - TFTP client and DHCP server: PC utility TFTPD32 (http://tftpd32.jounin.net/)
   
@@ -110,7 +105,7 @@ Connectivity, LwIP, Ethernet, TFTP Server, TCP/IP, DHCP, send, receive, SD Card,
 In order to make the program work, you must do the following :
  - Open your preferred toolchain 
  - Rebuild all files and load your image into target memory
- - Run the application
+ - Run the example
 
- * <h2><center>&copy; </center></h2>
+ * <h2><center>&copy; COPYRIGHT STMicroelectronics</center></h2>
  */

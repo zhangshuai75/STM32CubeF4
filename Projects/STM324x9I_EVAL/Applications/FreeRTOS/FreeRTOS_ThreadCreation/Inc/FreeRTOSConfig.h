@@ -1,5 +1,5 @@
 /*
-    FreeRTOS V9.0.0 - Copyright (C) 2015 Real Time Engineers Ltd. 
+    FreeRTOS V7.6.0 - Copyright (C) 2013 Real Time Engineers Ltd. 
     All rights reserved
 
     VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
@@ -22,7 +22,7 @@
 
     FreeRTOS is free software; you can redistribute it and/or modify it under
     the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
+    Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
 
     >>! NOTE: The modification to the GPL is included to allow you to distribute
     >>! a combined work that includes FreeRTOS without being obliged to provide
@@ -90,12 +90,12 @@
 #define configUSE_IDLE_HOOK			0
 #define configUSE_TICK_HOOK			0
 #define configCPU_CLOCK_HZ			( SystemCoreClock )
-#define configTICK_RATE_HZ			( ( TickType_t ) 1000 )
-#define configMAX_PRIORITIES			(  8 )
-#define configMINIMAL_STACK_SIZE		( ( uint16_t ) 128 )
-#define configTOTAL_HEAP_SIZE       ( ( size_t ) ( 2 * 1024 ) )          /* 2 Kbytes */
+#define configTICK_RATE_HZ			( ( portTickType ) 1000 )
+#define configMAX_PRIORITIES			( ( unsigned portBASE_TYPE ) 8 )
+#define configMINIMAL_STACK_SIZE		( ( unsigned short ) 128 )
+#define configTOTAL_HEAP_SIZE			( ( size_t ) ( 15 * 1024 ) )
 #define configMAX_TASK_NAME_LEN			( 16 )
-#define configUSE_TRACE_FACILITY		0
+#define configUSE_TRACE_FACILITY		1
 #define configUSE_16_BIT_TICKS			0
 #define configIDLE_SHOULD_YIELD			1
 #define configUSE_MUTEXES			1
@@ -112,7 +112,7 @@
 #define configMAX_CO_ROUTINE_PRIORITIES        ( 2 )
 
 /* Software timer definitions. */
-#define configUSE_TIMERS			0
+#define configUSE_TIMERS			1
 #define configTIMER_TASK_PRIORITY		( 2 )
 #define configTIMER_QUEUE_LENGTH		10
 #define configTIMER_TASK_STACK_DEPTH	        ( configMINIMAL_STACK_SIZE * 2 )

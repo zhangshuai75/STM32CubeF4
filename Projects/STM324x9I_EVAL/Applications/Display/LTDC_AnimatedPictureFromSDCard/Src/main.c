@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    Display/LTDC_AnimatedPictureFromSDCard/Src/main.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file provides main program functions
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -56,7 +66,7 @@ int main(void)
 {  
   uwInternelBuffer = (uint8_t *)0xC0260000;
   uint32_t counter = 0;
-  uint8_t str[30];
+  uint8_t  str[30];
   
   /* STM32F4xx HAL library initialization:
        - Configure the Flash prefetch, instruction and Data caches
@@ -66,123 +76,109 @@ int main(void)
      */
   HAL_Init();
   
-  /* Configure the system clock to 175 MHz */
+  /* Configure the system clock to 175 Mhz */
   SystemClock_Config();
   
   /* Configure LED3 */
   BSP_LED_Init(LED3);
   
   /*##-1- Configure LCD ######################################################*/
-  LCD_Config();
-
-  /*##-2- Initialization SD card ######################################################*/
-  if(BSP_SD_Init() != MSD_OK)
+  LCD_Config();  
+  
+  /*##-2- Link the SD Card disk I/O driver ###################################*/
+  if(FATFS_LinkDriver(&SD_Driver, SD_Path) == 0)
   {
-    /* SD Initialization Error */
-    /* Set the Text Color */
-    BSP_LCD_SetTextColor(LCD_COLOR_RED);
-
-    BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"  Please insert SD Card ");
-  }
-  else
-  {
-    /*##-3- Link the SD Card disk I/O driver ###################################*/
-    if(FATFS_LinkDriver(&SD_Driver, SD_Path) != 0)
+    /*##-3- Initialize the Directory Files pointers (heap) #####################*/
+    for (counter = 0; counter < MAX_BMP_FILES; counter++)
     {
-      Error_Handler();
+      pDirectoryFiles[counter] = malloc(MAX_BMP_FILE_NAME);
+      if(pDirectoryFiles[counter] == NULL)
+      {
+        /* Set the Text Color */
+        BSP_LCD_SetTextColor(LCD_COLOR_RED);
+        
+        BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"  Cannot allocate memory ");
+        while(1)
+        {
+        }       
+      }
+    }
+    
+    /*##-4- Display Background picture #########################################*/
+    /* Select Background Layer  */
+    BSP_LCD_SelectLayer(0);
+    
+    /* Register the file system object to the FatFs module */
+    if(f_mount(&SD_FatFs, (TCHAR const*)SD_Path, 0) != FR_OK)
+    {
+      /* FatFs Initialization Error */
+      /* Set the Text Color */
+      BSP_LCD_SetTextColor(LCD_COLOR_RED);
+      
+      BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"  FatFs Initialization Error ");
+    }
+    else
+    {    
+      /* Open directory */
+      if (f_opendir(&directory, (TCHAR const*)"/BACK") != FR_OK)
+      {
+        /* Set the Text Color */
+        BSP_LCD_SetTextColor(LCD_COLOR_RED);
+        
+        BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"    Open directory.. fails");
+        while(1)
+        {
+        } 
+      }
+    }
+    
+    if (Storage_CheckBitmapFile("BACK/image.bmp", &uwBmplen) == 0)
+    {
+      /* Format the string */
+      Storage_OpenReadFile(uwInternelBuffer, "BACK/image.bmp");
+      /* Write bmp file on LCD frame buffer */
+      BSP_LCD_DrawBitmap(0, 0, uwInternelBuffer);
     }
     else
     {
-      /*##-4- Initialize the Directory Files pointers (heap) ###################*/
+      /* Set the Text Color */
+      BSP_LCD_SetTextColor(LCD_COLOR_RED);
+      
+      BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"    File type not supported. "); 
+      while(1)
+      {
+      }  
+    }        
+    
+    /*##-5- Display Foreground picture #######################################*/
+    /* Select Foreground Layer  */
+    BSP_LCD_SelectLayer(1);
+    
+    /* Decrease the foreground transprency */
+    BSP_LCD_SetTransparency(1, 200); 
+    
+    /* Get the BMP file names on root directory */
+    ubNumberOfFiles = Storage_GetDirectoryBitmapFiles("/TOP", pDirectoryFiles);
+    
+    if (ubNumberOfFiles == 0)
+    {
       for (counter = 0; counter < MAX_BMP_FILES; counter++)
       {
-        pDirectoryFiles[counter] = malloc(MAX_BMP_FILE_NAME);
-        if(pDirectoryFiles[counter] == NULL)
-        {
-          /* Set the Text Color */
-          BSP_LCD_SetTextColor(LCD_COLOR_RED);
-
-          BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"  Cannot allocate memory ");
-          while(1)
-          {
-          }
-        }
+        free(pDirectoryFiles[counter]);
       }
-
-      /*##-5- Display Background picture #######################################*/
-      /* Select Background Layer  */
-      BSP_LCD_SelectLayer(0);
-
-      /* Register the file system object to the FatFs module */
-      if(f_mount(&SD_FatFs, (TCHAR const*)SD_Path, 0) != FR_OK)
+      /* Set the Text Color */
+      BSP_LCD_SetTextColor(LCD_COLOR_RED);
+      
+      BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"    No Bitmap files...      ");
+      while(1)
       {
-        /* FatFs Initialization Error */
-        /* Set the Text Color */
-        BSP_LCD_SetTextColor(LCD_COLOR_RED);
-
-        BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"  FatFs Initialization Error ");
-      }
-      else
-      {    
-        /* Open directory */
-        if (f_opendir(&directory, (TCHAR const*)"/BACK") != FR_OK)
-        {
-          /* Set the Text Color */
-          BSP_LCD_SetTextColor(LCD_COLOR_RED);
-
-          BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"    Open directory.. fails");
-          while(1)
-          {
-          }
-        }
-      }
-
-      if (Storage_CheckBitmapFile("BACK/image.bmp", &uwBmplen) == 0)
-      {
-        /* Format the string */
-        Storage_OpenReadFile(uwInternelBuffer, "BACK/image.bmp");
-        /* Write bmp file on LCD frame buffer */
-        BSP_LCD_DrawBitmap(0, 0, uwInternelBuffer);
-      }
-      else
-      {
-        /* Set the Text Color */
-        BSP_LCD_SetTextColor(LCD_COLOR_RED);
-
-        BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"    File type not supported. "); 
-        while(1)
-        {
-        }  
-      }
-
-      /*##-6- Display Foreground picture #######################################*/
-      /* Select Foreground Layer  */
-      BSP_LCD_SelectLayer(1);
-
-      /* Decrease the foreground transparency */
-      BSP_LCD_SetTransparency(1, 200); 
-
-      /* Get the BMP file names on root directory */
-      ubNumberOfFiles = Storage_GetDirectoryBitmapFiles("/TOP", pDirectoryFiles);
-
-      if (ubNumberOfFiles == 0)
-      {
-        for (counter = 0; counter < MAX_BMP_FILES; counter++)
-        {
-          free(pDirectoryFiles[counter]);
-        }
-        /* Set the Text Color */
-        BSP_LCD_SetTextColor(LCD_COLOR_RED);
-
-        BSP_LCD_DisplayStringAtLine(8, (uint8_t*)"    No Bitmap files...      ");
-        while(1)
-        {
-        }
       } 
-    }
+    } 
   }
-
-  /* Infinite loop */
+  else
+  {
+    Error_Handler();
+  }
   while(1)
   { 
     counter = 0;
@@ -205,11 +201,12 @@ int main(void)
         /* Write bmp file on LCD frame buffer */
         BSP_LCD_DrawBitmap(0, 0, uwInternelBuffer);
         
-        /* Jump to next image */
+        /* jump to next image */
         counter++;   
       }
       else
       {
+        
         /* Set the Text Color */
         BSP_LCD_SetTextColor(LCD_COLOR_RED); 
         
@@ -224,16 +221,15 @@ int main(void)
 }
 
 /**
-  * @brief  LCD configuration.
-  * @param  None
-  * @retval None
+  * @brief LCD configuration.
+  * @retval
+  *  None
   */
+
 static void LCD_Config(void)
 {
-  /* LCD Initialization */
-  /* Two layers are used in this application simultaneously 
-     so "LCD_MIN_PCLK" is recommended to programme the PCLK at 18 MHz */    
-  BSP_LCD_InitEx(LCD_MIN_PCLK);
+  /* LCD Initialization */ 
+  BSP_LCD_Init();
 
   /* LCD Layers Initialization */ 
   BSP_LCD_LayerDefaultInit(0, LCD_FB_START_ADDRESS);
@@ -255,7 +251,7 @@ static void LCD_Config(void)
   /* Configure and enable the Color Keying feature */
   BSP_LCD_SetColorKeying(1, 0); 
 
-  /* Configure the transparency for foreground: Increase the transparency */
+  /* Configure the transparency for foreground: Increase the transprency */
   BSP_LCD_SetTransparency(1, 100);
 }
 
@@ -299,7 +295,7 @@ static void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
 
   /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
+  __PWR_CLK_ENABLE();
 
   /* The voltage scaling allows optimizing the power consumption when the device is 
      clocked below the maximum system frequency, to update the voltage scaling value 
@@ -318,7 +314,7 @@ static void SystemClock_Config(void)
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   /* Activate the Over-Drive mode */
-  HAL_PWREx_EnableOverDrive();
+  HAL_PWREx_ActivateOverDrive();
   
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
      clocks dividers */
@@ -333,7 +329,7 @@ static void SystemClock_Config(void)
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
+  *   where the assert_param error has occurred.
   * @param  file: pointer to the source file name
   * @param  line: assert_param error line source number
   * @retval None
@@ -345,8 +341,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 
   /* Infinite loop */
   while (1)
-  {
-  }
+  {}
 }
 #endif
 
@@ -357,3 +352,5 @@ void assert_failed(uint8_t* file, uint32_t line)
 /**
   * @}
   */ 
+  
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

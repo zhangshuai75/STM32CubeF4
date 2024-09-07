@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------/
-/  FatFs - FAT file system module configuration file  R0.11  (C)ChaN, 2014
+/  FatFs - FAT file system module configuration file  R0.10  (C)ChaN, 2013
 /----------------------------------------------------------------------------/
 /
 / CAUTION! Do not forget to make clean the project after any changes to
@@ -7,7 +7,7 @@
 /
 /----------------------------------------------------------------------------*/
 #ifndef _FFCONF
-#define _FFCONF 32020 /* Revision ID */
+#define _FFCONF 80960 /* Revision ID */
 
 /*-----------------------------------------------------------------------------/
 / Additional user header to be used  
@@ -154,13 +154,12 @@
 / is tied to the partitions listed in VolToPart[]. */
 
 
-#define	_MIN_SS                 512
-#define	_MAX_SS                 512
-/* These options configure the range of sector size to be supported. (512, 1024, 2048 or
-/  4096) Always set both 512 for most systems, all memory card and harddisk. But a larger
-/  value may be required for on-board flash memory and some type of optical media.
-/  When _MAX_SS is larger than _MIN_SS, FatFs is configured to variable sector size and
-/  GET_SECTOR_SIZE command must be implemented to the disk_ioctl() function. */
+#define _MAX_SS    512  /* 512, 1024, 2048 or 4096 */
+/* Maximum sector size to be handled.
+/  Always set 512 for memory card and hard disk but a larger value may be
+/  required for on-board flash memory, floppy disk and optical disk.
+/  When _MAX_SS is larger than 512, it configures FatFs to variable sector size
+/  and GET_SECTOR_SIZE command must be implemented to the disk_ioctl() function. */
 
 
 #define _USE_ERASE     0 /* 0:Disable or 1:Enable */
@@ -173,7 +172,7 @@
 /  option to 1 and f_getfree() function at first time after volume mount will
 /  force a full FAT scan.
 /
-/  0: Load all information in the FSINFO if available.
+/  0: Load all informations in the FSINFO if available.
 /  1: Do not trust free cluster count in the FSINFO.
 */
 

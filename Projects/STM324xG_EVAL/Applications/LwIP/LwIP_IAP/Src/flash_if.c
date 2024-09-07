@@ -2,18 +2,21 @@
   ******************************************************************************
   * @file    LwIP/LwIP_IAP/Src/flash_if.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file provides high level routines to manage internal Flash 
   *          programming (erase and write). 
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   ******************************************************************************
   */
 
@@ -58,10 +61,10 @@ int8_t FLASH_If_Erase(uint32_t StartSector)
     FLASH_EraseInitTypeDef FLASH_EraseInitStruct;
     uint32_t sectornb = 0;
     
-    FLASH_EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
+    FLASH_EraseInitStruct.TypeErase = TYPEERASE_SECTORS;
     FLASH_EraseInitStruct.Sector = FLASH_SECTOR_5;
     FLASH_EraseInitStruct.NbSectors = 7;
-    FLASH_EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+    FLASH_EraseInitStruct.VoltageRange = VOLTAGE_RANGE_3;
     
     if (HAL_FLASHEx_Erase(&FLASH_EraseInitStruct, &sectornb) != HAL_OK)
       return (1);
@@ -91,7 +94,7 @@ uint32_t FLASH_If_Write(__IO uint32_t* FlashAddress, uint32_t* Data ,uint16_t Da
   {
     /* Device voltage range supposed to be [2.7V to 3.6V], the operation will
        be done by word */ 
-    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, *FlashAddress,  *(uint32_t*)(Data+i)) == HAL_OK)
+    if (HAL_FLASH_Program(TYPEPROGRAM_WORD, *FlashAddress,  *(uint32_t*)(Data+i)) == HAL_OK)
     {
      /* Check the written value */
       if (*(uint32_t*)*FlashAddress != *(uint32_t*)(Data+i))
@@ -111,3 +114,5 @@ uint32_t FLASH_If_Write(__IO uint32_t* FlashAddress, uint32_t* Data ,uint16_t Da
 
   return (0);
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

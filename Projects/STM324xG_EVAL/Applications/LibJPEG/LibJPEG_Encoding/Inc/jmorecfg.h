@@ -277,7 +277,7 @@ typedef int boolean;
 #undef  C_MULTISCAN_FILES_SUPPORTED /* Multiple-scan JPEG files? */
 #undef  C_PROGRESSIVE_SUPPORTED	    /* Progressive JPEG? (Requires MULTISCAN)*/
 #undef  DCT_SCALING_SUPPORTED	    /* Input rescaling via DCT? (Requires DCT_ISLOW)*/
-#undef  ENTROPY_OPT_SUPPORTED	    /* Optimization of entropy coding params? */
+#undef  ENTROPY_OPT_SUPPORTED	    /* Optimization of entropy coding parms? */
 /* Note: if you selected 12-bit data precision, it is dangerous to turn off
  * ENTROPY_OPT_SUPPORTED.  The standard Huffman tables are only good for 8-bit
  * precision, so jchuff.c normally uses entropy optimization to compute
@@ -317,9 +317,9 @@ typedef int boolean;
  *    can't use color quantization if you change that value.
  */
 
-#define RGB_RED		2	/* Offset of Red in an RGB scanline element */
+#define RGB_RED		0	/* Offset of Red in an RGB scanline element */
 #define RGB_GREEN	1	/* Offset of Green */
-#define RGB_BLUE	0	/* Offset of Blue */
+#define RGB_BLUE	2	/* Offset of Blue */
 #define RGB_PIXELSIZE	3	/* JSAMPLEs per RGB scanline element */
 
 
@@ -339,6 +339,9 @@ typedef int boolean;
 
 #elif defined ( __GNUC__ )
   #define INLINE         inline     /*!< inline keyword for GNU Compiler       */
+
+#elif defined ( __TASKING__ )
+  #define INLINE         inline     /*!< inline keyword for TASKING Compiler   */
 #endif
 #ifndef INLINE
 #define INLINE			/* default is to define it as empty */

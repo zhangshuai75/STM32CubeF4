@@ -2,19 +2,28 @@
   ******************************************************************************
   * @file    FatFs/FatFs_USBDisk_RTOS/Src/usbh_conf.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   USB Host configuration file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
@@ -37,8 +46,8 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hhcd)
   if(hhcd->Instance == USB_OTG_FS)
   {
     /* Configure USB FS GPIOs */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_GPIOH_CLK_ENABLE();
+    __GPIOA_CLK_ENABLE();
+    __GPIOH_CLK_ENABLE();
     
     GPIO_InitStruct.Pin = (GPIO_PIN_11 | GPIO_PIN_12);
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -59,7 +68,7 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hhcd)
     HAL_GPIO_Init(GPIOH, &GPIO_InitStruct); 
     
     /* Enable USB FS Clocks */ 
-    __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
+    __USB_OTG_FS_CLK_ENABLE();
     
     /* Set USBFS Interrupt to the lowest priority */
     HAL_NVIC_SetPriority(OTG_FS_IRQn, 5, 0);
@@ -71,13 +80,13 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hhcd)
   else if(hhcd->Instance == USB_OTG_HS)
   {
     /* Configure USB HS GPIOs */
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-    __HAL_RCC_GPIOH_CLK_ENABLE();        
-    __HAL_RCC_GPIOI_CLK_ENABLE();
+    __GPIOA_CLK_ENABLE();
+    __GPIOB_CLK_ENABLE();
+    __GPIOC_CLK_ENABLE();
+    __GPIOH_CLK_ENABLE();        
+    __GPIOI_CLK_ENABLE();
     
-    /* CLK */
+    // CLK
     GPIO_InitStruct.Pin = GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -85,30 +94,30 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef *hhcd)
     GPIO_InitStruct.Alternate = GPIO_AF10_OTG_HS;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct); 
     
-    /* D0 */
+    // D0
     GPIO_InitStruct.Pin = GPIO_PIN_3;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct); 
     
-    /* D1 D2 D3 D4 D5 D6 D7 */
+    // D1 D2 D3 D4 D5 D6 D7
     GPIO_InitStruct.Pin = GPIO_PIN_0  | GPIO_PIN_1  | GPIO_PIN_5 |\
                           GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct); 
     
-    /* STP */     
+    // STP    
     GPIO_InitStruct.Pin = GPIO_PIN_0;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct); 
     
-    /* NXT */
+    //NXT 
     GPIO_InitStruct.Pin = GPIO_PIN_4;
     HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);   
     
-    /* DIR */
+    //DIR
     GPIO_InitStruct.Pin = GPIO_PIN_11;
     HAL_GPIO_Init(GPIOI, &GPIO_InitStruct);     
     
     /* Enable USB HS Clocks */ 
-    __HAL_RCC_USB_OTG_HS_CLK_ENABLE();
-    __HAL_RCC_USB_OTG_HS_ULPI_CLK_ENABLE();
+    __USB_OTG_HS_CLK_ENABLE();
+    __USB_OTG_HS_ULPI_CLK_ENABLE();
     
     /* Set USBHS Interrupt to the lowest priority */
     HAL_NVIC_SetPriority(OTG_HS_IRQn, 5, 0);
@@ -128,13 +137,13 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef *hhcd)
   if(hhcd->Instance == USB_OTG_FS)
   {  
     /* Disable USB FS Clocks */ 
-    __HAL_RCC_USB_OTG_FS_CLK_DISABLE();
+    __USB_OTG_FS_CLK_DISABLE();
   }
   else if(hhcd->Instance == USB_OTG_HS)
   {  
     /* Disable USB FS Clocks */ 
-    __HAL_RCC_USB_OTG_HS_CLK_DISABLE();
-    __HAL_RCC_USB_OTG_HS_ULPI_CLK_DISABLE(); 
+    __USB_OTG_HS_CLK_DISABLE();
+    __USB_OTG_HS_ULPI_CLK_DISABLE(); 
   }  
 }
 
@@ -170,27 +179,6 @@ void HAL_HCD_Connect_Callback(HCD_HandleTypeDef *hhcd)
 void HAL_HCD_Disconnect_Callback(HCD_HandleTypeDef *hhcd)
 {
   USBH_LL_Disconnect(hhcd->pData);
-}
-
-/**
-  * @brief  Port Port Enabled callback.
-  * @param  hhcd: HCD handle
-  * @retval None
-  */
-void HAL_HCD_PortEnabled_Callback(HCD_HandleTypeDef *hhcd)
-{
-  USBH_LL_PortEnabled(hhcd->pData);
-} 
-
-
-/**
-  * @brief  Port Port Disabled callback.
-  * @param  hhcd: HCD handle
-  * @retval None
-  */
-void HAL_HCD_PortDisabled_Callback(HCD_HandleTypeDef *hhcd)
-{
-  USBH_LL_PortDisabled(hhcd->pData);
 } 
 
 /**
@@ -227,6 +215,7 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost)
   hhcd.Init.phy_itface = HCD_PHY_EMBEDDED; 
   hhcd.Init.Sof_enable = 0;
   hhcd.Init.speed = HCD_SPEED_FULL;
+  hhcd.Init.vbus_sensing_enable = 0;
   /* Link the driver to the stack */
   hhcd.pData = phost;
   phost->pData = &hhcd;
@@ -242,6 +231,7 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost)
   hhcd.Init.phy_itface = HCD_PHY_ULPI; 
   hhcd.Init.Sof_enable = 0;
   hhcd.Init.speed = HCD_SPEED_HIGH;
+  hhcd.Init.vbus_sensing_enable = 0;
   hhcd.Init.use_external_vbus = 1;  
   /* Link the driver to the stack */
   hhcd.pData = phost;
@@ -330,7 +320,7 @@ USBH_StatusTypeDef USBH_LL_ResetPort (USBH_HandleTypeDef *phost)
 }
 
 /**
-  * @brief  Returns the last transferred packet size.
+  * @brief  Returns the last transfered packet size.
   * @param  phost: Host handle
   * @param  pipe: Pipe index   
   * @retval Packet Size
@@ -393,7 +383,7 @@ USBH_StatusTypeDef USBH_LL_ClosePipe(USBH_HandleTypeDef *phost, uint8_t pipe)
   * @param  ep_type: Endpoint Type
   *          This parameter can be one of these values:
   *            @arg EP_TYPE_CTRL: Control type
-  *            @arg EP_TYPE_ISOC: Isochronous type
+  *            @arg EP_TYPE_ISOC: Isochrounous type
   *            @arg EP_TYPE_BULK: Bulk type
   *            @arg EP_TYPE_INTR: Interrupt type
   * @param  token: Endpoint Type
@@ -458,7 +448,6 @@ USBH_URBStateTypeDef USBH_LL_GetURBState(USBH_HandleTypeDef *phost, uint8_t pipe
   */
 USBH_StatusTypeDef USBH_LL_DriverVBUS(USBH_HandleTypeDef *phost, uint8_t state)
 {
-#ifdef USE_USB_FS
   if(state == 0)
   {
     HAL_GPIO_WritePin(GPIOH, GPIO_PIN_5, GPIO_PIN_SET);
@@ -469,7 +458,6 @@ USBH_StatusTypeDef USBH_LL_DriverVBUS(USBH_HandleTypeDef *phost, uint8_t state)
   }
   
   HAL_Delay(200);
-#endif /* USE_USB_FS */
   return USBH_OK;  
 }
 
@@ -523,3 +511,5 @@ void USBH_Delay(uint32_t Delay)
 {
   HAL_Delay(Delay);  
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

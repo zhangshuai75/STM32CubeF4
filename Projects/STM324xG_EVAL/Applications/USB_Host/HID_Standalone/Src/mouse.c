@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Host/HID_Standalone/Src/mouse.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   This file implements Functions for mouse menu
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -87,7 +97,7 @@ void HID_MouseMenuProcess(void)
   case HID_MOUSE_WAIT:
     if(hid_demo.select != prev_select)
     {
-      prev_select = hid_demo.select;
+      prev_select = hid_demo.select ;
       HID_SelectItem(DEMO_MOUSE_menu, hid_demo.select & 0x7F);
       
       /* Handle select item */
@@ -164,8 +174,8 @@ void USR_MOUSE_ProcessData(HID_MOUSE_Info_TypeDef *data)
 
 /**
   * @brief  Handles mouse scroll to update the mouse position on display window.
-  * @param  x: USB HID Mouse X coordinate
-  * @param  y: USB HID Mouse Y coordinate
+  * @param  x: USB HID Mouse X co-ordinate
+  * @param  y: USB HID Mouse Y co-ordinate
   * @retval None
   */
 static void HID_MOUSE_UpdatePosition(int8_t x, int8_t y)
@@ -274,3 +284,5 @@ void HID_MOUSE_ButtonReleased(uint8_t button_idx)
     break;
   }
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -2,29 +2,38 @@
   ******************************************************************************
   * @file    USB_Device/CustomHID_Standalone/Src/stm32f4xx_it.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main Interrupt Service Routines.
   *          This file provides template for all exceptions handler and 
   *          peripherals interrupt service routine.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
 
-/* Includes ------------------------------------------------------------------ */
+/* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
 
-/* Private typedef ----------------------------------------------------------- */
-/* Private define ------------------------------------------------------------ */
-/* Private macro ------------------------------------------------------------- */
-/* Private variables --------------------------------------------------------- */
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd;
 extern USBD_HandleTypeDef USBD_Device;
 extern ADC_HandleTypeDef AdcHandle;
@@ -32,11 +41,11 @@ extern uint32_t ADCConvertedValue;
 extern uint32_t ADC_Prev_ConvertedValue;
 extern uint8_t SendBuffer[2];
 
-/* Private function prototypes ----------------------------------------------- */
-/* Private functions --------------------------------------------------------- */
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
 
 /******************************************************************************/
-/* Cortex-M4 Processor Exceptions Handlers */
+/*             Cortex-M4 Processor Exceptions Handlers                        */
 /******************************************************************************/
 
 /**
@@ -132,16 +141,16 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
-void SysTick_Handler(void)
+void SysTick_Handler (void)
 {
-  HAL_IncTick();
+  HAL_IncTick(); 
 }
 
 /******************************************************************************/
-/* STM32F4xx Peripherals Interrupt Handlers */
-/* Add here the Interrupt Handler for the used peripheral(s) (PPP), for the */
-/* available peripheral interrupt handler's name please refer to the startup */
-/* file (startup_stm32f4xx.s).  */
+/*                 STM32F4xx Peripherals Interrupt Handlers                   */
+/*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
+/*  available peripheral interrupt handler's name please refer to the startup */
+/*  file (startup_stm32f4xx.s).                                               */
 /******************************************************************************/
 
 /**
@@ -177,13 +186,13 @@ void ADCx_DMA_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(AdcHandle.DMA_Handle);
   SendBuffer[0] = ADC_REPORT_ID;
-
-  if (abs((ADCConvertedValue >> 4) - (ADC_Prev_ConvertedValue >> 4)) > 4)
+  
+  if(abs((ADCConvertedValue >>4) - (ADC_Prev_ConvertedValue >>4)) > 4)
   {
-    SendBuffer[1] = (uint8_t) (ADCConvertedValue >> 4);
-
-    USBD_CUSTOM_HID_SendReport(&USBD_Device, SendBuffer, 2);
-
+    SendBuffer[1] = (uint8_t)(ADCConvertedValue >>4);
+    
+    USBD_CUSTOM_HID_SendReport (&USBD_Device, SendBuffer, 2);
+    
     ADC_Prev_ConvertedValue = ADCConvertedValue;
   }
 }
@@ -193,4 +202,8 @@ void ADCx_DMA_IRQHandler(void)
   * @param  None
   * @retval None
   */
-/* void PPP_IRQHandler(void) { } */
+/*void PPP_IRQHandler(void)
+{
+}*/
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

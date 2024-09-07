@@ -2,18 +2,27 @@
   ******************************************************************************
   * @file    USB_Device/HID_Standalone/Src/stm32f4xx_it.c
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   Main Interrupt Service Routines.
   *          This file provides template for all exceptions handler and 
   *          peripherals interrupt service routine.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
@@ -132,7 +141,7 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
-void SysTick_Handler(void)
+void SysTick_Handler (void)
 {
   static __IO uint32_t counter=0;
   HAL_IncTick();
@@ -149,6 +158,7 @@ void SysTick_Handler(void)
     }
     counter =0;
   }
+  Toggle_Leds();
 }
 
 /******************************************************************************/
@@ -215,10 +225,10 @@ void OTG_HS_WKUP_IRQHandler(void)
   }
 #ifdef USE_USB_FS
   /* Clear EXTI pending Bit*/
-  __HAL_USB_OTG_FS_WAKEUP_EXTI_CLEAR_FLAG();
+  __HAL_USB_FS_EXTI_CLEAR_FLAG();
 #else
   /* Clear EXTI pending Bit*/
-  __HAL_USB_OTG_HS_WAKEUP_EXTI_CLEAR_FLAG();
+  __HAL_USB_HS_EXTI_CLEAR_FLAG();
 #endif
   
 }
@@ -241,7 +251,7 @@ void EXTI15_10_IRQHandler(void)
   */
 static void GetPointerData(uint8_t *pbuf)
 {
-  int8_t  x = 0, y = 0;
+  int8_t  x = 0, y = 0 ;
   
   switch(BSP_JOY_GetState())
   {
@@ -280,3 +290,4 @@ static void GetPointerData(uint8_t *pbuf)
 /*void PPP_IRQHandler(void)
 {
 }*/
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

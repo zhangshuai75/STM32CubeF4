@@ -28,7 +28,7 @@
  *
  * Credits go to Adam Dunkels (and the current maintainers) of this software.
  *
- * Christiaan Simons rewrote this file to get a more stable echo application.
+ * Christiaan Simons rewrote this file to get a more stable echo example.
  *
  **/
 
@@ -52,12 +52,11 @@ enum tcp_echoserver_states
   ES_CLOSING
 };
 
-/* structure for maintaining connection infos to be passed as argument 
+/* structure for maintaing connection infos to be passed as argument 
    to LwIP callbacks*/
 struct tcp_echoserver_struct
 {
   u8_t state;             /* current connection state */
-  u8_t retries;
   struct tcp_pcb *pcb;    /* pointer on the current tcp_pcb */
   struct pbuf *p;         /* pointer on the received/to be transmitted pbuf */
 };
@@ -123,13 +122,12 @@ static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
   /* set priority for the newly accepted tcp connection newpcb */
   tcp_setprio(newpcb, TCP_PRIO_MIN);
 
-  /* allocate structure es to maintain tcp connection information */
+  /* allocate structure es to maintain tcp connection informations */
   es = (struct tcp_echoserver_struct *)mem_malloc(sizeof(struct tcp_echoserver_struct));
   if (es != NULL)
   {
     es->state = ES_ACCEPTED;
     es->pcb = newpcb;
-    es->retries = 0;
     es->p = NULL;
     
     /* pass newly allocated es structure as argument to newpcb */
@@ -142,7 +140,7 @@ static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
     tcp_err(newpcb, tcp_echoserver_error);
     
     /* initialize lwip tcp_poll callback function for newpcb */
-    tcp_poll(newpcb, tcp_echoserver_poll, 0);
+    tcp_poll(newpcb, tcp_echoserver_poll, 1);
     
     ret_err = ERR_OK;
   }
@@ -242,18 +240,14 @@ static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p
     }
     ret_err = ERR_OK;
   }
-  else if(es->state == ES_CLOSING)
-  {
-    /* odd case, remote side closing twice, trash data */
-    tcp_recved(tpcb, p->tot_len);
-    es->p = NULL;
-    pbuf_free(p);
-    ret_err = ERR_OK;
-  }
+  
+  /* data received when connection already closed */
   else
   {
-    /* unknown es->state, trash data  */
+    /* Acknowledge data reception */
     tcp_recved(tpcb, p->tot_len);
+    
+    /* free pbuf and do nothing */
     es->p = NULL;
     pbuf_free(p);
     ret_err = ERR_OK;
@@ -298,7 +292,6 @@ static err_t tcp_echoserver_poll(void *arg, struct tcp_pcb *tpcb)
   {
     if (es->p != NULL)
     {
-      tcp_sent(tpcb, tcp_echoserver_sent);
       /* there is a remaining pbuf (chain) , try to send data */
       tcp_echoserver_send(tpcb, es);
     }
@@ -335,12 +328,10 @@ static err_t tcp_echoserver_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
   LWIP_UNUSED_ARG(len);
 
   es = (struct tcp_echoserver_struct *)arg;
-  es->retries = 0;
   
   if(es->p != NULL)
   {
     /* still got pbufs to send */
-    tcp_sent(tpcb, tcp_echoserver_sent);
     tcp_echoserver_send(tpcb, es);
   }
   else
@@ -378,7 +369,6 @@ static void tcp_echoserver_send(struct tcp_pcb *tpcb, struct tcp_echoserver_stru
     if (wr_err == ERR_OK)
     {
       u16_t plen;
-      u8_t freed;
 
       plen = ptr->len;
      
@@ -391,15 +381,12 @@ static void tcp_echoserver_send(struct tcp_pcb *tpcb, struct tcp_echoserver_stru
         pbuf_ref(es->p);
       }
       
-     /* chop first pbuf from chain */
-      do
-      {
-        /* try hard to free pbuf */
-        freed = pbuf_free(ptr);
-      }
-      while(freed == 0);
-     /* we can read more data now */
-     tcp_recved(tpcb, plen);
+      /* free pbuf: will free pbufs up to es->p (because es->p has a reference count > 0) */
+      pbuf_free(ptr);
+
+      /* Update tcp window size to be advertized : should be called when received
+      data (with the amount plen) has been processed by the application layer */
+      tcp_recved(tpcb, plen);
    }
    else if(wr_err == ERR_MEM)
    {

@@ -2,171 +2,252 @@
   ******************************************************************************
   * @file    LwIP/LwIP_HTTP_Server_Socket_RTOS/Src/app_ethernet.c 
   * @author  MCD Application Team
-  * @brief   Ethernet specific module
+  * @version V1.1.0
+  * @date    26-June-2014
+  * @brief   Ethernet specefic module
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "lwip/opt.h"
 #include "main.h"
-#if LWIP_DHCP
+#include "lcd_log.h"
 #include "lwip/dhcp.h"
-#endif
 #include "app_ethernet.h"
 #include "ethernetif.h"
-#ifdef USE_LCD
-#include "lcd_log.h"
-#endif
-#include "lwip/netifapi.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-#if LWIP_DHCP
+#ifdef USE_DHCP
 #define MAX_DHCP_TRIES  4
-__IO uint8_t DHCP_state = DHCP_OFF;
+uint32_t DHCPfineTimer = 0;
+__IO uint8_t DHCP_state;
 #endif
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 /**
-  * @brief  Notify the User about the network interface config status
+  * @brief  Notify the User about the nework interface config status 
   * @param  netif: the network interface
   * @retval None
   */
-void ethernet_link_status_updated(struct netif *netif)
+void User_notification(struct netif *netif) 
 {
   if (netif_is_up(netif))
  {
-#if LWIP_DHCP
+#ifdef USE_DHCP
     /* Update DHCP state machine */
     DHCP_state = DHCP_START;
-#elif defined(USE_LCD)
+#else
+#ifdef USE_LCD
     uint8_t iptxt[20];
-    sprintf((char *)iptxt, "%s", ip4addr_ntoa(netif_ip4_addr(netif)));
+    
+    sprintf((char*)iptxt, "%d.%d.%d.%d", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+    
+    LCD_UsrLog ("Static IP address: %s\n", iptxt);
+ 
+#else    
+    /* Turn On LED 1 to indicate ETH and LwIP init success*/
+    BSP_LED_On(LED1);
+#endif /* USE_LCD */
+#endif /* USE_DHCP */
+ }
+ else
+  {  
+#ifdef USE_DHCP
+    /* Update DHCP state machine */
+    DHCP_state = DHCP_LINK_DOWN;
+#endif  /* USE_DHCP */
+#ifdef USE_LCD
+   LCD_UsrLog ("The network cable is not connected \n");
+#else    
+    /* Turn On LED 2 to indicate ETH and LwIP init error */
+    BSP_LED_On(LED2);
+#endif /* USE_LCD */
+  } 
+}
+
+/**
+  * @brief  This function notify user about link status changement.
+  * @param  netif: the network interface
+  * @retval None
+  */
+void ethernetif_notify_conn_changed(struct netif *netif)
+{
+  struct ip_addr ipaddr;
+  struct ip_addr netmask;
+  struct ip_addr gw;
+
+  if(netif_is_link_up(netif))
+  {
+#ifdef USE_DHCP
+#ifdef USE_LCD
+    LCD_UsrLog ("The network cable is now connected \n");
+#else
+    BSP_LED_Off(LED2);
+    BSP_LED_On(LED1);
+#endif /* USE_LCD */
+    /* Update DHCP state machine */
+    DHCP_state = DHCP_START;
+#else
+    IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+    IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1 , NETMASK_ADDR2, NETMASK_ADDR3);
+    IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);    
+
+#ifdef USE_LCD        
+    uint8_t iptxt[20];
+    
+    sprintf((char*)iptxt, "%d.%d.%d.%d", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+    LCD_UsrLog ("The network cable is now connected \n");
     LCD_UsrLog ("Static IP address: %s\n", iptxt);
 #else
-    BSP_LED_On(LED1);
     BSP_LED_Off(LED2);
-#endif /* LWIP_DHCP */
+    BSP_LED_On(LED1);
+#endif /* USE_LCD */
+#endif /* USE_DHCP */   
+    
+    netif_set_addr(netif, &ipaddr , &netmask, &gw);
+    
+    /* When the netif is fully configured this function must be called.*/
+    netif_set_up(netif);     
   }
   else
   {
-#if LWIP_DHCP
+#ifdef USE_DHCP
     /* Update DHCP state machine */
     DHCP_state = DHCP_LINK_DOWN;
-#elif defined(USE_LCD)
+#endif /* USE_DHCP */
+    
+    /*  When the netif link is down this function must be called.*/
+    netif_set_down(netif);
+    
+#ifdef USE_LCD
     LCD_UsrLog ("The network cable is not connected \n");
 #else
     BSP_LED_Off(LED1);
     BSP_LED_On(LED2);
-#endif /* LWIP_DHCP */
+#endif /* USE_LCD */    
   }
+  /* Clear IO Expander Interrupt flag */
+  BSP_IO_ITClear();
 }
 
-#if LWIP_DHCP
+#ifdef USE_DHCP
 /**
   * @brief  DHCP Process
-  * @param  argument: network interface
+* @param  argument: network interface
   * @retval None
   */
-void DHCP_Thread(void const * argument)
+void DHCP_thread(void const * argument)
 {
   struct netif *netif = (struct netif *) argument;
-  ip_addr_t ipaddr;
-  ip_addr_t netmask;
-  ip_addr_t gw;
-  struct dhcp *dhcp;
-#ifdef USE_LCD
-  uint8_t iptxt[20];
-#endif
-
+  struct ip_addr ipaddr;
+  struct ip_addr netmask;
+  struct ip_addr gw;
+  uint32_t IPaddress;
+  
   for (;;)
   {
     switch (DHCP_state)
     {
     case DHCP_START:
       {
-        ip_addr_set_zero_ip4(&netif->ip_addr);
-        ip_addr_set_zero_ip4(&netif->netmask);
-        ip_addr_set_zero_ip4(&netif->gw);
+        netif->ip_addr.addr = 0;
+        netif->netmask.addr = 0;
+        netif->gw.addr = 0;
+        IPaddress = 0;
+        dhcp_start(netif);
         DHCP_state = DHCP_WAIT_ADDRESS;
 #ifdef USE_LCD
-        LCD_UsrLog ("  State: Looking for DHCP server ...\n");
-#else
-        BSP_LED_Off(LED1);
-        BSP_LED_Off(LED2);
+      LCD_UsrLog ("  State: Looking for DHCP sever ...\n");
 #endif
-        netifapi_dhcp_start(netif);
       }
       break;
+      
     case DHCP_WAIT_ADDRESS:
-      {
-        if (dhcp_supplied_address(netif))
+      {        
+        /* Read the new IP address */
+        IPaddress = netif->ip_addr.addr;
+        
+        if (IPaddress!=0) 
         {
-          DHCP_state = DHCP_ADDRESS_ASSIGNED;
+          DHCP_state = DHCP_ADDRESS_ASSIGNED;	
+          
+          /* Stop DHCP */
+          dhcp_stop(netif);
+          
+#ifdef USE_LCD 
+        uint8_t iptab[4];
+        uint8_t iptxt[20];
+  
+        iptab[0] = (uint8_t)(IPaddress >> 24);
+        iptab[1] = (uint8_t)(IPaddress >> 16);
+        iptab[2] = (uint8_t)(IPaddress >> 8);
+        iptab[3] = (uint8_t)(IPaddress);
 
-#ifdef USE_LCD
-          sprintf((char *)iptxt, "%s", ip4addr_ntoa(netif_ip4_addr(netif)));
-          LCD_UsrLog ("IP address assigned by a DHCP server: %s\n", iptxt);
+        sprintf((char*)iptxt, "%d.%d.%d.%d", iptab[3], iptab[2], iptab[1], iptab[0]);       
+
+        LCD_UsrLog ("IP address assigned by a DHCP server: %s\n", iptxt);
 #else
-          BSP_LED_On(LED1);
-          BSP_LED_Off(LED2);
-#endif
+     BSP_LED_On(LED1);   
+#endif 
         }
         else
         {
-          dhcp = (struct dhcp *)netif_get_client_data(netif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
-
           /* DHCP timeout */
-          if (dhcp->tries > MAX_DHCP_TRIES)
+          if (netif->dhcp->tries > MAX_DHCP_TRIES)
           {
             DHCP_state = DHCP_TIMEOUT;
-
+            
+            /* Stop DHCP */
+            dhcp_stop(netif);
+            
             /* Static address used */
-            IP_ADDR4(&ipaddr, IP_ADDR0 ,IP_ADDR1 , IP_ADDR2 , IP_ADDR3 );
-            IP_ADDR4(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-            IP_ADDR4(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-            netifapi_netif_set_addr(netif, ip_2_ip4(&ipaddr), ip_2_ip4(&netmask), ip_2_ip4(&gw));
-
-#ifdef USE_LCD
-            sprintf((char *)iptxt, "%s", ip4addr_ntoa(netif_ip4_addr(netif)));
-            LCD_UsrLog ("DHCP Timeout !! \n");
-            LCD_UsrLog ("Static IP address: %s\n", iptxt);
+            IP4_ADDR(&ipaddr, IP_ADDR0 ,IP_ADDR1 , IP_ADDR2 , IP_ADDR3 );
+            IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
+            IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+            netif_set_addr(netif, &ipaddr , &netmask, &gw);
+            
+#ifdef USE_LCD  
+          uint8_t iptxt[20];
+          
+          sprintf((char*)iptxt, "%d.%d.%d.%d", IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
+          LCD_UsrLog ("DHCP timeout !!\n");
+          LCD_UsrLog ("Static IP address  : %s\n", iptxt);      
 #else
-            BSP_LED_On(LED1);
-            BSP_LED_Off(LED2);
+     BSP_LED_On(LED1);  
 #endif
           }
         }
       }
       break;
-  case DHCP_LINK_DOWN:
-    {
-      DHCP_state = DHCP_OFF;
-#ifdef USE_LCD
-      LCD_UsrLog ("The network cable is not connected \n");
-#else
-      BSP_LED_Off(LED1);
-      BSP_LED_On(LED2);
-#endif
-    }
-    break;
+      
     default: break;
     }
-
-    /* wait 500 ms */
-    osDelay(500);
+    
+    /* wait 250 ms */
+    osDelay(250);
   }
 }
-#endif  /* LWIP_DHCP */
+#endif  /* USE_DHCP */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

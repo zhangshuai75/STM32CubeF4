@@ -2,19 +2,29 @@
   ******************************************************************************
   * @file    USB_Host/CDC_Standalone/Src/cdc_send.c 
   * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    26-June-2014
   * @brief   CDC Send state machine
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
   *
   ******************************************************************************
   */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -35,7 +45,7 @@ uint8_t BLANK_LINE [] = "                                                       
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-FIL MyFile = {0};
+FIL MyFile = {0} ;
 uint8_t FilePos = 0;
 uint8_t FileOffset = 0;
 uint8_t PrevPos = 0;
@@ -273,7 +283,7 @@ static void CDC_ShowFiles(uint8_t offset, uint8_t select)
   if(offset < FileList.ptr)
   {
     BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-    for (i = 4; i < 14; i++)
+    for (i = 4 ; i < 14; i++)
     {
       BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
       BSP_LCD_DisplayStringAtLine(i, BLANK_LINE);
@@ -301,7 +311,7 @@ void USBH_CDC_TransmitCallback(USBH_HandleTypeDef *phost)
   
   if(use_file == 1)
   {
-if( MyFile.fptr >= f_size(& MyFile))
+    if( MyFile.fptr >= MyFile.fsize)
     {
       f_close(&MyFile);
       LCD_DbgLog (">> File sent\n" );
@@ -320,3 +330,5 @@ if( MyFile.fptr >= f_size(& MyFile))
     LCD_DbgLog (">> Data sent\n" );
   }
 }
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

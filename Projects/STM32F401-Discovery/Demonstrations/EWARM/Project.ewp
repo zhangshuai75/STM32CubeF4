@@ -174,7 +174,6 @@
           <name>CCDefines</name>
           <state>STM32F401xC</state>
           <state>USE_STM32F401_DISCO</state>
-          <state>USE_HAL_DRIVER</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -608,7 +607,7 @@
         </option>
         <option>
           <name>OOCObjCopyEnable</name>
-          <state>1</state>
+          <state>0</state>
         </option>
       </data>
     </settings>
